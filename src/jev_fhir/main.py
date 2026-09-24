@@ -13,7 +13,8 @@ from pydantic import BaseModel, ValidationError
 from pydantic.v1 import ValidationError as PydanticV1ValidationError
 
 from jev_fhir.config import Settings, get_settings
-from jev_fhir.dependencies import AppServices
+from jev_fhir.demo.catalog import FixtureCatalog
+from jev_fhir.dependencies import AppServices, DemoServices
 from jev_fhir.jev_client.client import JevClient, JevClientError, LiveJevClient
 from jev_fhir.jev_client.mock import MockJevClient
 from jev_fhir.logger import configure_logging
@@ -21,7 +22,7 @@ from jev_fhir.metrics import HTTP_LATENCY, HTTP_REQUESTS
 from jev_fhir.modules.bundle_router import BundleRouter
 from jev_fhir.modules.notifiable_detector import NotifiableDiseaseDetector
 from jev_fhir.modules.quality_scorer import QualityScorer
-from jev_fhir.routes import metrics, notifiable, quality, routing
+from jev_fhir.routes import demo, metrics, notifiable, quality, routing
 
 
 class ErrorResponse(BaseModel):
@@ -68,6 +69,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             )
             client_kind = "live"
 
+        demo_services = (
+            DemoServices(catalog=FixtureCatalog(effective_settings.labels_dir))
+            if effective_settings.demo_enabled
+            else None
+        )
         app.state.services = AppServices(
             quality_scorer=QualityScorer(jev_client),
             bundle_router=BundleRouter(jev_client),
@@ -76,6 +82,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             settings=effective_settings,
             jev_client=jev_client,
             jev_model=None if effective_settings.mock_jev else effective_settings.jev_model,
+            demo=demo_services,
         )
         yield
         if isinstance(jev_client, LiveJevClient):
@@ -137,6 +144,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(routing.router, prefix="/api/v1")
     app.include_router(notifiable.router, prefix="/api/v1")
     app.include_router(metrics.router, prefix="/api/v1")
+    if effective_settings.demo_enabled:
+        app.include_router(demo.router, prefix="/api/v1/demo")
 
     @app.get("/health", tags=["health"])
     async def health(request: Request) -> dict[str, str | None]:

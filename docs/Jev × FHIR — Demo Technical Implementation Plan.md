@@ -1069,22 +1069,53 @@ make lint && make typecheck && make test      # coverage ≥ 95%; demo/schemas.p
 **D1a evaluation checklist:**
 
 ```
-☐ make lint / typecheck / test green; coverage ≥ 95%; demo/schemas.py and demo/catalog.py ≥ 90%
-☐ Step 1 settings present with the exact names and defaults; .env.example has DEMO_ENABLED=true
-☐ Step 2 models match the contract field-for-field (names, types, bounds, validators)
-☐ Disabled app: no route or OpenAPI path starts with /api/v1/demo; services.demo is None
-☐ Enabled app: services.demo.catalog present; catalog has 204 entries matching labels/
-☐ load_resource on an unknown or traversal-style id raises KeyError without filesystem access
-☐ grep catalog.py: no Path join / open() using a caller-supplied string
-☐ tests/test_api.py passes unchanged; no D1b–D1e code present
+✅ make lint / typecheck / test green; coverage ≥ 95%; demo/schemas.py and demo/catalog.py ≥ 90%
+   → 350 passed (342 → 350), 97% total; schemas.py 100%, catalog.py 97% (line 81, the load_resource success path, is untested)
+✅ Step 1 settings present with the exact names and defaults; .env.example has DEMO_ENABLED=true
+✅ Step 2 models match the contract field-for-field (names, types, bounds, both validators, from_settings mapping,
+   apply() re-validates) — checked by reading schemas.py against Step 2
+✅ Disabled app: no route or OpenAPI path starts with /api/v1/demo; services.demo is None
+   (test + real server: DEMO_ENABLED=false → health 200, 0 demo paths, clean log)
+✅ Enabled app: services.demo.catalog present; catalog has 204 entries matching labels/
+   (real server: DEMO_ENABLED=true → health 200, 0 demo paths since the router is empty, clean log)
+✅ load_resource on an unknown or traversal-style id raises KeyError without filesystem access
+   (test patches Path.read_text to fail; lookup is a dict allow-list built from label paths)
+✅ grep catalog.py: no Path join / open() using a caller-supplied string (paths come only from fixture_path(label))
+✅ tests/test_api.py passes unchanged (git diff empty); no D1b–D1e code present (routes/demo.py has no endpoints;
+   no lanes/compare/feed/pipeline/static modules)
+```
+
+**Issues found (first check) and fixes (Sep 25, 2026, Claude Code):**
+
+```
+✅ FIXED ❌ Step 2 ground_truth: now the label minus only {"fixture", "source", "difficulty"}, so rationale and
+   approved_by are included. Dumped with mode="json" (the score band is a JSON list, as in the label files).
+   Test: test_ground_truth_is_label_minus_fixture_source_difficulty (compares every entry with its validated label)
+✅ FIXED ❌ Step 4 signature: entries(self, *, module: DemoModule | None = None, source: Source | None = None,
+   difficulty: Difficulty | None = None), matching the contract exactly (verified with inspect.signature)
+✅ FIXED ⚠️ label NIK marker: " · NIK ✓" / " · NIK ✗" / nothing for True / False / None
+   (invalid_nik → "review_needed · 70–100 · NIK ✗"). Test: test_quality_label_marks_nik_expectation
+✅ FIXED ⚠️ test_approved_mirrors_labels now compares entry.approved with each label's approved_by. Shown to still hold
+   after a simulated approval of the hard + unit labels (the old version would have failed)
+✅ FIXED ⚠️ test_catalog_totals derives every count (total, per module, per source, per difficulty) and the id order
+   from the label files instead of hard-coding 204 / 71
+✅ FIXED ⚠️ new test_load_resource_returns_the_labelled_fixture covers the load_resource success path (catalog.py 100%);
+   the difficulty filter is covered by the totals test
+✅ FIXED ℹ️ DemoServices docstring no longer names a phase
+ℹ️ OPEN (D1b decision) get_demo raises HTTPException(404, "not_found"), so the body is FastAPI's default {"detail": ...},
+   not the project's ErrorResponse. No route uses it yet; D1b's /fixtures 404 (`not_found`) should settle it.
+   Recommendation: return the ErrorResponse shape for consistency with every other API error.
+ℹ️ OPEN (cosmetic) schema classes have no docstrings, unlike the rest of the codebase
 ```
 
 **D1a evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Results:   <checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: Sep 25, 2026 by Claude Code (fresh-session review); fixes applied and re-checked in the same session
+Checks:    make lint / typecheck clean; make test 353 passed (342 → 353), 97% total; demo/catalog.py 100%,
+           demo/schemas.py 100%; tests/test_api.py unchanged; real server starts cleanly with demo on and off
+Results:   8/8 checklist items ✅; both ❌ contract deviations fixed; all ⚠️ fixed; 2 ℹ️ open (above)
+Verdict:   PASS. D1b can start. Settle the get_demo 404 body format in D1b.
 ```
 
 ---

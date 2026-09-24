@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     jev_max_retries: int = 2
     jev_retry_budget_s: float = 12.0
     labels_dir: Path = PROJECT_ROOT / "benchmarks" / "dataset" / "labels"
+    demo_enabled: bool = False
+    demo_pipeline_max_concurrency: int = 4
+    demo_cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    demo_results_dir: Path = PROJECT_ROOT / "benchmarks" / "results"
+    demo_web_dist: Path = PROJECT_ROOT / "web" / "dist"
     log_level: str = "INFO"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
