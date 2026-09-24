@@ -1,0 +1,22 @@
+{
+  "code": {
+    "coding": [
+      {
+        "code": "2345-7",
+        "display": "Laboratory test",
+        "system": "http://loinc.org"
+      }
+    ]
+  },
+  "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+  "id": "generated-observation-003",
+  "resourceType": "Observation",
+  "status": "final",
+  "subject": {
+    "reference": "Patient/generated-patient-000"
+  },
+  "valueQuantity": {
+    "unit": "mg/dL",
+    "value": 27
+  }
+}

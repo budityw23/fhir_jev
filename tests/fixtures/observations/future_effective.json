@@ -1,0 +1,24 @@
+{
+  "resourceType": "Observation",
+  "id": "future-effective",
+  "status": "final",
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "718-7"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/demo"
+  },
+  "encounter": {
+    "reference": "Encounter/demo"
+  },
+  "effectiveDateTime": "2030-01-01T00:00:00Z",
+  "valueQuantity": {
+    "value": 13.5,
+    "unit": "g/dL"
+  }
+}

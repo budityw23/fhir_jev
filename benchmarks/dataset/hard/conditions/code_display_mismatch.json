@@ -1,0 +1,30 @@
+{
+  "resourceType": "Condition",
+  "id": "code-display-mismatch",
+  "subject": {
+    "reference": "Patient/demo"
+  },
+  "clinicalStatus": {
+    "coding": [
+      {
+        "code": "active"
+      }
+    ]
+  },
+  "verificationStatus": {
+    "coding": [
+      {
+        "code": "confirmed"
+      }
+    ]
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "code": "J06.9",
+        "display": "Dengue fever"
+      }
+    ]
+  }
+}

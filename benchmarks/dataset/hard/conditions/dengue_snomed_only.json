@@ -1,0 +1,30 @@
+{
+  "resourceType": "Condition",
+  "id": "dengue-snomed-only",
+  "subject": {
+    "reference": "Patient/demo"
+  },
+  "clinicalStatus": {
+    "coding": [
+      {
+        "code": "active"
+      }
+    ]
+  },
+  "verificationStatus": {
+    "coding": [
+      {
+        "code": "confirmed"
+      }
+    ]
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "38362002",
+        "display": "Dengue (disorder)"
+      }
+    ]
+  }
+}

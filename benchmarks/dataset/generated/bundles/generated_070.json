@@ -1,0 +1,48 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-70-0",
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      },
+      "resource": {
+        "address": [
+          {
+            "city": "Surabaya",
+            "country": "ID",
+            "postalCode": "48177",
+            "text": "Jl. Melati No. 132, Medan"
+          }
+        ],
+        "birthDate": "1997-02-04",
+        "gender": "female",
+        "id": "generated-patient-070",
+        "identifier": [
+          {
+            "system": "nik",
+            "value": "1271014402979777"
+          }
+        ],
+        "name": [
+          {
+            "family": "Permata",
+            "given": [
+              "Agus"
+            ]
+          }
+        ],
+        "resourceType": "Patient",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+628778556450"
+          }
+        ]
+      }
+    }
+  ],
+  "id": "generated-bundle-070",
+  "resourceType": "Bundle",
+  "type": "batch"
+}

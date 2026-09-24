@@ -1,0 +1,20 @@
+{
+  "resourceType": "Condition",
+  "id": "condition-dbd-text-only",
+  "code": {
+    "text": "Demam berdarah dengue (DBD)"
+  },
+  "subject": {
+    "reference": "Patient/demo-jakarta"
+  },
+  "onsetDateTime": "2026-04-10",
+  "recordedDate": "2026-04-11",
+  "recorder": {
+    "reference": "Practitioner/demo-prac"
+  },
+  "note": [
+    {
+      "text": "Bali clinical context; synthetic demo record."
+    }
+  ]
+}

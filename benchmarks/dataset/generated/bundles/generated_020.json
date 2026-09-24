@@ -1,0 +1,52 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-20-1",
+      "resource": {
+        "code": {
+          "text": "Follow-up condition"
+        },
+        "encounter": {
+          "reference": "Encounter/generated-encounter-020"
+        },
+        "id": "generated-condition-200",
+        "resourceType": "Condition",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-20-0",
+      "resource": {
+        "class": {
+          "code": "AMB",
+          "display": "ambulatory",
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+        },
+        "id": "generated-encounter-020",
+        "resourceType": "Encounter",
+        "status": "finished"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-20-2",
+      "resource": {
+        "code": {
+          "text": "Follow-up condition"
+        },
+        "encounter": {
+          "reference": "Encounter/generated-encounter-020"
+        },
+        "id": "generated-condition-201",
+        "resourceType": "Condition",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    }
+  ],
+  "id": "generated-bundle-020",
+  "resourceType": "Bundle",
+  "type": "collection"
+}

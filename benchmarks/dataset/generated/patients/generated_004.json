@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "city": "Medan",
+      "country": "ID",
+      "postalCode": "47930",
+      "text": "Jl. Melati No. 18, Jakarta"
+    }
+  ],
+  "birthDate": "1991-09-10",
+  "gender": "female",
+  "id": "generated-patient-004",
+  "identifier": [
+    {
+      "system": "nik",
+      "value": "3471015009915926"
+    }
+  ],
+  "name": [
+    {
+      "family": "Saputra",
+      "given": [
+        "Fajar"
+      ]
+    }
+  ],
+  "resourceType": "Patient",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+628856528252"
+    }
+  ]
+}

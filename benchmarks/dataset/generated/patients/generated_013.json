@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "city": "Jakarta",
+      "country": "ID",
+      "postalCode": "88504",
+      "text": "Jl. Melati No. 96, Surabaya"
+    }
+  ],
+  "birthDate": "2031-03-02",
+  "gender": "male",
+  "id": "generated-patient-013",
+  "identifier": [
+    {
+      "system": "nik",
+      "value": "3471011011918318"
+    }
+  ],
+  "name": [
+    {
+      "family": "Wardani",
+      "given": [
+        "Fajar"
+      ]
+    }
+  ],
+  "resourceType": "Patient",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+628264109919"
+    }
+  ]
+}

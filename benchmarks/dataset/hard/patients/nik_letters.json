@@ -1,0 +1,26 @@
+{
+  "resourceType": "Patient",
+  "id": "nik-letters",
+  "identifier": [
+    {
+      "system": "https://fhir.kemkes.go.id/id/nik",
+      "value": "31730101019000AB"
+    }
+  ],
+  "name": [
+    {
+      "family": "Wijaya",
+      "given": [
+        "Sari"
+      ]
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1990-01-01",
+  "address": [
+    {
+      "text": "Jl. Merdeka 1",
+      "country": "ID"
+    }
+  ]
+}

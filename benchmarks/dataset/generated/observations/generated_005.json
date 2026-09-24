@@ -1,0 +1,21 @@
+{
+  "code": {
+    "coding": [
+      {
+        "code": "789-8",
+        "display": "Laboratory test"
+      }
+    ]
+  },
+  "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+  "id": "generated-observation-005",
+  "resourceType": "Observation",
+  "status": "final",
+  "subject": {
+    "reference": "Patient/generated-patient-000"
+  },
+  "valueQuantity": {
+    "unit": "mg/dL",
+    "value": 137
+  }
+}

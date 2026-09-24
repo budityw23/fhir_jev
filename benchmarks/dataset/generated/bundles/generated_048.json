@@ -1,0 +1,159 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-48-0",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-480",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-48-2",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-482",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-48-3",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-483",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-48-1",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-481",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-48-5",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-485",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-48-6",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-486",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-48-4",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-484",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-48-7",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-487",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    }
+  ],
+  "id": "generated-bundle-048",
+  "resourceType": "Bundle",
+  "type": "batch"
+}

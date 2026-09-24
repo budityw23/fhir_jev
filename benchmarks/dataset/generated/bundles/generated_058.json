@@ -1,0 +1,49 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-58-1",
+      "resource": {
+        "id": "generated-dispense-581",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-58-2",
+      "resource": {
+        "id": "generated-dispense-582",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-58-0",
+      "resource": {
+        "id": "generated-dispense-580",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    }
+  ],
+  "id": "generated-bundle-058",
+  "resourceType": "Bundle",
+  "type": "collection"
+}

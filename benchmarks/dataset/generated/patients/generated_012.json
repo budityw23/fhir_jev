@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "city": "Surabaya",
+      "country": "ID",
+      "postalCode": "76542",
+      "text": "Jl. Melati No. 185, Makassar"
+    }
+  ],
+  "birthDate": "1995-02-10",
+  "gender": "female",
+  "id": "generated-patient-012",
+  "identifier": [
+    {
+      "system": "nik",
+      "value": "1271015002952592"
+    }
+  ],
+  "name": [
+    {
+      "family": "-",
+      "given": [
+        "Aditya"
+      ]
+    }
+  ],
+  "resourceType": "Patient",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+628875340444"
+    }
+  ]
+}

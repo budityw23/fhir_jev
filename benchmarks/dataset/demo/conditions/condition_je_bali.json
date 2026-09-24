@@ -1,0 +1,26 @@
+{
+  "resourceType": "Condition",
+  "id": "condition-je-bali",
+  "code": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "code": "A83.0",
+        "display": "Japanese encephalitis"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/demo-jakarta"
+  },
+  "onsetDateTime": "2026-04-10",
+  "recordedDate": "2026-04-11",
+  "recorder": {
+    "reference": "Practitioner/demo-prac"
+  },
+  "note": [
+    {
+      "text": "Bali clinical context; synthetic demo record."
+    }
+  ]
+}

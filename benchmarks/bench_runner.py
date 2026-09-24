@@ -12,9 +12,19 @@ from typing import Any, TypeVar, cast
 
 from jev_fhir.baselines.bundle_router import route_bundle as rule_route_bundle
 from jev_fhir.baselines.notifiable import is_notifiable as rule_is_notifiable
-from jev_fhir.baselines.quality import score_patient as rule_score_patient
+from jev_fhir.baselines.quality import (
+    score_observation as rule_score_observation,
+)
+from jev_fhir.baselines.quality import (
+    score_patient as rule_score_patient,
+)
 from jev_fhir.config import PROJECT_ROOT, Settings
-from jev_fhir.dataset.labels import QualityLabel, load_labels
+from jev_fhir.dataset.labels import (
+    NotifiableLabel,
+    QualityLabel,
+    RouteLabel,
+    load_labels,
+)
 from jev_fhir.jev_client import JevClient, LiveJevClient, MockJevClient, RecordingJevClient
 from jev_fhir.modules.bundle_router import BundleRouter
 from jev_fhir.modules.notifiable_detector import NotifiableDiseaseDetector
@@ -22,7 +32,6 @@ from jev_fhir.modules.quality_scorer import QualityScorer
 
 ROOT = PROJECT_ROOT
 FIXTURES = ROOT / "tests" / "fixtures"
-GROUND_TRUTH = ROOT / "benchmarks" / "ground_truth"
 DISEASE_DATA = ROOT / "data" / "notifiable_diseases.json"
 PRICE_PER_BILLION_TOKENS_USD = 42.0
 
@@ -114,16 +123,51 @@ def make_client(live: bool, settings: Settings) -> tuple[JevClient, str, str | N
     )
 
 
-async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict[str, Any]:
-    """Run the unit dataset using mock mode by default and live Jev on demand."""
+def breakdown(rows: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, float | int]]]:
+    """Summarize correctness by source and difficulty for the demo report."""
+
+    def summarize(items: list[dict[str, Any]]) -> dict[str, float | int]:
+        return {
+            "count": len(items),
+            "jev_accuracy": accuracy(items, "jev_correct"),
+            "rule_accuracy": accuracy(items, "rule_correct"),
+        }
+
+    return {
+        "source": {
+            value: summarize([row for row in rows if row["source"] == value])
+            for value in ("unit", "hard", "generated", "demo")
+        },
+        "difficulty": {
+            value: summarize([row for row in rows if row["difficulty"] == value])
+            for value in ("easy", "hard")
+        },
+    }
+
+
+async def run_benchmark(
+    *, live: bool = False, limit: int | None = None, dataset: str = "unit"
+) -> dict[str, Any]:
+    """Run the selected labelled dataset using mock mode by default."""
+    if dataset not in {"unit", "full"}:
+        raise ValueError("dataset must be unit or full")
     settings = Settings()
     inner_client, mode, model = make_client(live, settings)
-    quality_labels = limited(load_labels(settings.labels_dir / "quality.json", QualityLabel), limit)
+
+    def select_labels(path: Path, model: type[Any]) -> list[Any]:
+        labels = load_labels(path, model)
+        return (
+            labels if dataset == "full" else [label for label in labels if label.source == "unit"]
+        )
+
+    quality_labels = limited(
+        select_labels(settings.labels_dir / "quality.json", QualityLabel), limit
+    )
     route_labels = limited(
-        cast(list[dict[str, Any]], load_json(GROUND_TRUTH / "bundle_routes.json")), limit
+        select_labels(settings.labels_dir / "bundle_routes.json", RouteLabel), limit
     )
     disease_labels = limited(
-        cast(list[dict[str, Any]], load_json(GROUND_TRUTH / "notifiable_diseases.json")), limit
+        select_labels(settings.labels_dir / "notifiable.json", NotifiableLabel), limit
     )
     all_tokens = 0
     try:
@@ -135,7 +179,11 @@ async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict
             resource = cast(dict[str, Any], load_json(ROOT / label.fixture))
             recording = RecordingJevClient(inner_client)
             result = await QualityScorer(recording).score(resource, label.resource_type)
-            baseline = rule_score_patient(resource)
+            baseline = (
+                rule_score_patient(resource)
+                if label.resource_type == "Patient"
+                else rule_score_observation(resource)
+            )
             baseline_score = baseline["score"]
             if not isinstance(baseline_score, int):
                 raise TypeError("rule quality baseline must return an integer score")
@@ -153,6 +201,9 @@ async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict
             quality_rows.append(
                 {
                     "fixture": label.fixture,
+                    "source": label.source,
+                    "difficulty": label.difficulty,
+                    "approved_by": label.approved_by,
                     "expected_action": label.expected_action,
                     "expected_score_range": [lower, upper],
                     "jev_action": result.action,
@@ -176,11 +227,11 @@ async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict
         route_latencies: list[float] = []
         route_confidence: list[tuple[float, bool]] = []
         for route_label in route_labels:
-            fixture = str(route_label["fixture"])
-            bundle = cast(dict[str, Any], load_json(FIXTURES / fixture))
+            fixture = route_label.fixture
+            bundle = cast(dict[str, Any], load_json(ROOT / fixture))
             recording = RecordingJevClient(inner_client)
             route_result = await BundleRouter(recording).route(bundle)
-            expected_category = str(route_label["expected_category"])
+            expected_category = route_label.expected_category
             calls = recording.drain()
             row_tokens = sum(call.result.tokens_used for call in calls)
             all_tokens += row_tokens
@@ -189,6 +240,9 @@ async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict
             route_rows.append(
                 {
                     "fixture": fixture,
+                    "source": route_label.source,
+                    "difficulty": route_label.difficulty,
+                    "approved_by": route_label.approved_by,
                     "expected_category": expected_category,
                     "jev_category": route_result.category,
                     "rule_category": rule_category,
@@ -209,11 +263,11 @@ async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict
         rule_predictions: list[bool] = []
         disease_expected: list[bool] = []
         for disease_label in disease_labels:
-            fixture = str(disease_label["fixture"])
-            condition = cast(dict[str, Any], load_json(FIXTURES / fixture))
+            fixture = disease_label.fixture
+            condition = cast(dict[str, Any], load_json(ROOT / fixture))
             recording = RecordingJevClient(inner_client)
             disease_result = await NotifiableDiseaseDetector(recording).detect(condition)
-            expected_notifiable = bool(disease_label["expected_notifiable"])
+            expected_notifiable = disease_label.expected_notifiable
             rule_result = rule_is_notifiable(condition, DISEASE_DATA)
             calls = recording.drain()
             row_tokens = sum(call.result.tokens_used for call in calls)
@@ -222,6 +276,9 @@ async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict
             disease_rows.append(
                 {
                     "fixture": fixture,
+                    "source": disease_label.source,
+                    "difficulty": disease_label.difficulty,
+                    "approved_by": disease_label.approved_by,
                     "expected_notifiable": expected_notifiable,
                     "jev_notifiable": disease_result.is_notifiable,
                     "rule_notifiable": rule_result,
@@ -243,7 +300,7 @@ async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict
             "generated_at": datetime.now(UTC).isoformat(),
             "mode": mode,
             "jev_model": model,
-            "dataset": "unit",
+            "dataset": dataset,
             "quality_labels_banded": True,
             "token_and_cost": {
                 "tokens_used": billed_tokens,
@@ -261,6 +318,8 @@ async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict
                     "latency": latency_metrics(quality_latencies),
                     "confidence_calibration": calibration(quality_confidence),
                     "rows": quality_rows,
+                    "breakdown": breakdown(quality_rows),
+                    "unapproved_labels": sum(row["approved_by"] is None for row in quality_rows),
                 },
                 "bundle_router": {
                     "fixture_count": len(route_rows),
@@ -269,6 +328,8 @@ async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict
                     "latency": latency_metrics(route_latencies),
                     "confidence_calibration": calibration(route_confidence),
                     "rows": route_rows,
+                    "breakdown": breakdown(route_rows),
+                    "unapproved_labels": sum(row["approved_by"] is None for row in route_rows),
                 },
                 "notifiable_detector": {
                     "fixture_count": len(disease_rows),
@@ -281,6 +342,8 @@ async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict
                     "latency": latency_metrics(disease_latencies),
                     "confidence_calibration": calibration(disease_confidence),
                     "rows": disease_rows,
+                    "breakdown": breakdown(disease_rows),
+                    "unapproved_labels": sum(row["approved_by"] is None for row in disease_rows),
                 },
             },
         }
@@ -308,6 +371,43 @@ def markdown_report(results: dict[str, Any]) -> str:
             f"{result['rule_accuracy']:.3f} | {latency['mean_ms']:.3f} | "
             f"{latency['p50_ms']:.3f} | {latency['p95_ms']:.3f} |"
         )
+    if results["dataset"] == "full":
+        for name, result in modules.items():
+            lines.extend(["", f"## {name} breakdown", "", "### By source", ""])
+            lines.extend(
+                [
+                    "| Source | Count | Jev accuracy | Rule accuracy |",
+                    "| --- | ---: | ---: | ---: |",
+                ]
+            )
+            source = cast(dict[str, dict[str, float | int]], result["breakdown"]["source"])
+            for value, metrics in source.items():
+                lines.append(
+                    f"| {value} | {metrics['count']} | {metrics['jev_accuracy']:.3f} | "
+                    f"{metrics['rule_accuracy']:.3f} |"
+                )
+            lines.extend(["", "### By difficulty", ""])
+            lines.extend(
+                [
+                    "| Difficulty | Count | Jev accuracy | Rule accuracy |",
+                    "| --- | ---: | ---: | ---: |",
+                ]
+            )
+            difficulty = cast(dict[str, dict[str, float | int]], result["breakdown"]["difficulty"])
+            for value, metrics in difficulty.items():
+                lines.append(
+                    f"| {value} | {metrics['count']} | {metrics['jev_accuracy']:.3f} | "
+                    f"{metrics['rule_accuracy']:.3f} |"
+                )
+            pending = int(result["unapproved_labels"])
+            if pending:
+                lines.extend(
+                    [
+                        "",
+                        f"⚠️ {pending} labels not yet approved by a human; "
+                        "treat accuracy as provisional.",
+                    ]
+                )
     lines.extend(["", f"Token/cost accounting: {results['token_and_cost']}"])
     return "\n".join(lines) + "\n"
 
@@ -323,21 +423,22 @@ def write_reports(results: dict[str, Any], output_dir: Path) -> tuple[Path, Path
 
 
 async def async_main(
-    output_dir: Path, *, live: bool = False, limit: int | None = None
+    output_dir: Path, *, live: bool = False, limit: int | None = None, dataset: str = "unit"
 ) -> tuple[Path, Path]:
-    return write_reports(await run_benchmark(live=live, limit=limit), output_dir)
+    return write_reports(await run_benchmark(live=live, limit=limit, dataset=dataset), output_dir)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--live", action="store_true")
     parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument("--dataset", choices=("unit", "full"), default="unit")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "benchmarks" / "results")
     args = parser.parse_args()
     if args.limit is not None and args.limit < 1:
         parser.error("--limit must be positive")
     json_path, markdown_path = asyncio.run(
-        async_main(args.output_dir, live=args.live, limit=args.limit)
+        async_main(args.output_dir, live=args.live, limit=args.limit, dataset=args.dataset)
     )
     print(f"Wrote {json_path}")
     print(f"Wrote {markdown_path}")

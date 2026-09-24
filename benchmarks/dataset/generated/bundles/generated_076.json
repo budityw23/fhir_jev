@@ -1,0 +1,48 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-76-0",
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      },
+      "resource": {
+        "address": [
+          {
+            "city": "Denpasar",
+            "country": "ID",
+            "postalCode": "78062",
+            "text": "Jl. Melati No. 128, Semarang"
+          }
+        ],
+        "birthDate": "1995-07-13",
+        "gender": "female",
+        "id": "generated-patient-076",
+        "identifier": [
+          {
+            "system": "nik",
+            "value": "3471015307957205"
+          }
+        ],
+        "name": [
+          {
+            "family": "Yusuf",
+            "given": [
+              "Nadia"
+            ]
+          }
+        ],
+        "resourceType": "Patient",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+628300593456"
+          }
+        ]
+      }
+    }
+  ],
+  "id": "generated-bundle-076",
+  "resourceType": "Bundle",
+  "type": "transaction"
+}

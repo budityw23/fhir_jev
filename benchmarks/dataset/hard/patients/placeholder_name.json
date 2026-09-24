@@ -1,0 +1,26 @@
+{
+  "resourceType": "Patient",
+  "id": "placeholder-name",
+  "identifier": [
+    {
+      "system": "https://fhir.kemkes.go.id/id/nik",
+      "value": "3173010101900001"
+    }
+  ],
+  "name": [
+    {
+      "family": "-",
+      "given": [
+        "unknown"
+      ]
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1990-01-01",
+  "address": [
+    {
+      "text": "Jl. Merdeka 1",
+      "country": "ID"
+    }
+  ]
+}

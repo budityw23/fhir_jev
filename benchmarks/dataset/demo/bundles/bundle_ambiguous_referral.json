@@ -1,0 +1,114 @@
+{
+  "resourceType": "Bundle",
+  "id": "demo-ambiguous-referral",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "demo-jakarta",
+        "identifier": [
+          {
+            "system": "nik",
+            "value": "3173014203900001"
+          }
+        ],
+        "name": [
+          {
+            "family": "Pratama",
+            "given": [
+              "Nadia",
+              "Ayu"
+            ]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1990-03-02",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+628123456789"
+          }
+        ],
+        "address": [
+          {
+            "text": "Jl. Melati 10, Jakarta Selatan",
+            "city": "Jakarta",
+            "postalCode": "12190",
+            "country": "ID"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "demo-enc",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB"
+        },
+        "subject": {
+          "reference": "Patient/demo-jakarta"
+        },
+        "period": {
+          "start": "2026-04-10T09:00:00+07:00"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "demo-prac",
+        "name": [
+          {
+            "family": "Putri",
+            "given": [
+              "Dewi"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "demo-imm",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza"
+        },
+        "patient": {
+          "reference": "Patient/demo-jakarta"
+        },
+        "occurrenceDateTime": "2026-04-10"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationDispense",
+        "id": "demo-med",
+        "status": "completed",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol"
+        },
+        "subject": {
+          "reference": "Patient/demo-jakarta"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "demo-cond",
+        "code": {
+          "text": "Referral review"
+        },
+        "subject": {
+          "reference": "Patient/demo-jakarta"
+        }
+      }
+    }
+  ]
+}

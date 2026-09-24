@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "city": "Denpasar",
+      "country": "ID",
+      "postalCode": "23396",
+      "text": "Jl. Melati No. 40, Medan"
+    }
+  ],
+  "birthDate": "1999-05-26",
+  "gender": "female",
+  "id": "generated-patient-002",
+  "identifier": [
+    {
+      "system": "nik",
+      "value": "3173016605992616"
+    }
+  ],
+  "name": [
+    {
+      "family": "Budiman",
+      "given": [
+        "Nadia"
+      ]
+    }
+  ],
+  "resourceType": "Patient",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+628398362082"
+    }
+  ]
+}

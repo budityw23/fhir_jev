@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "city": "Yogyakarta",
+      "country": "ID",
+      "postalCode": "88172",
+      "text": "Jl. Melati No. 161, Surabaya"
+    }
+  ],
+  "birthDate": "2031-03-02",
+  "gender": "female",
+  "id": "generated-patient-010",
+  "identifier": [
+    {
+      "system": "nik",
+      "value": "1271015703931490"
+    }
+  ],
+  "name": [
+    {
+      "family": "Cahyadi",
+      "given": [
+        "Bayu"
+      ]
+    }
+  ],
+  "resourceType": "Patient",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+628264112119"
+    }
+  ]
+}

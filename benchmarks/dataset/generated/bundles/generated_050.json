@@ -1,0 +1,97 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-50-5",
+      "resource": {
+        "id": "generated-immunization-505",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-50-2",
+      "resource": {
+        "id": "generated-immunization-502",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-50-1",
+      "resource": {
+        "id": "generated-immunization-501",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-50-3",
+      "resource": {
+        "id": "generated-immunization-503",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-50-4",
+      "resource": {
+        "id": "generated-immunization-504",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-50-0",
+      "resource": {
+        "id": "generated-immunization-500",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    }
+  ],
+  "id": "generated-bundle-050",
+  "resourceType": "Bundle",
+  "type": "collection"
+}

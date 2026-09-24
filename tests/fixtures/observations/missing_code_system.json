@@ -1,0 +1,23 @@
+{
+  "resourceType": "Observation",
+  "id": "missing-code-system",
+  "status": "final",
+  "code": {
+    "coding": [
+      {
+        "code": "718-7"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/demo"
+  },
+  "encounter": {
+    "reference": "Encounter/demo"
+  },
+  "effectiveDateTime": "2026-01-02T10:00:00Z",
+  "valueQuantity": {
+    "value": 13.5,
+    "unit": "g/dL"
+  }
+}

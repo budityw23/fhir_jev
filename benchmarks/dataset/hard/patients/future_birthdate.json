@@ -1,0 +1,26 @@
+{
+  "resourceType": "Patient",
+  "id": "future-birthdate",
+  "identifier": [
+    {
+      "system": "https://fhir.kemkes.go.id/id/nik",
+      "value": "3173010101900001"
+    }
+  ],
+  "name": [
+    {
+      "family": "Wijaya",
+      "given": [
+        "Sari"
+      ]
+    }
+  ],
+  "gender": "female",
+  "birthDate": "2031-05-01",
+  "address": [
+    {
+      "text": "Jl. Merdeka 1",
+      "country": "ID"
+    }
+  ]
+}

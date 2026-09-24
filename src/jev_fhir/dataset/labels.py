@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Literal, TypeVar
 
@@ -54,9 +55,28 @@ class QualityLabel(LabelBase):
         return self
 
 
+class RouteLabel(LabelBase):
+    """Expected category for a FHIR Bundle routing decision."""
+
+    expected_category: Literal[
+        "lab_result", "medication_dispense", "immunization_report", "encounter_summary", "unknown"
+    ]
+
+
+class NotifiableLabel(LabelBase):
+    """Expected reporting status for a FHIR Condition."""
+
+    expected_status: Literal["confirmed_notifiable", "review_needed", "not_notifiable"]
+
+    @property
+    def expected_notifiable(self) -> bool:
+        """Return the binary form consumed by the detector benchmark."""
+        return self.expected_status == "confirmed_notifiable"
+
+
 def load_labels(path: Path, model: type[L]) -> list[L]:
     """Load and validate a JSON array of labels."""
-    return [model.model_validate(item) for item in __import__("json").loads(path.read_text())]
+    return [model.model_validate(item) for item in json.loads(path.read_text())]
 
 
 def fixture_path(label: LabelBase) -> Path:

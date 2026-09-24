@@ -1,282 +1,986 @@
 [
   {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      70,
+      100
+    ],
     "fixture": "tests/fixtures/patients/address_no_country.json",
-    "source": "unit",
-    "difficulty": "easy",
     "rationale": "Demographics and a valid NIK are present; missing address country is a minor interoperability gap.",
-    "approved_by": null,
     "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
     "expected_action": "auto_accept",
+    "expected_nik_valid": true,
     "expected_score_range": [
       70,
       100
     ],
-    "expected_nik_valid": true
-  },
-  {
     "fixture": "tests/fixtures/patients/complete_patient.json",
-    "source": "unit",
-    "difficulty": "easy",
     "rationale": "All core demographics and a valid 16-digit NIK are present; the record is usable for intake.",
-    "approved_by": null,
     "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
     "expected_action": "auto_accept",
+    "expected_nik_valid": true,
     "expected_score_range": [
       70,
       100
     ],
-    "expected_nik_valid": true
-  },
-  {
     "fixture": "tests/fixtures/patients/complete_patient_two.json",
-    "source": "unit",
-    "difficulty": "easy",
     "rationale": "Complete demographic record with a valid NIK and sufficient contact context for routine processing.",
-    "approved_by": null,
     "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
     "expected_action": "auto_accept",
+    "expected_nik_valid": true,
     "expected_score_range": [
       70,
       100
     ],
-    "expected_nik_valid": true
-  },
-  {
     "fixture": "tests/fixtures/patients/empty_telecom.json",
-    "source": "unit",
-    "difficulty": "easy",
     "rationale": "Core identity and demographics are complete; an empty telecom list is not a blocking quality defect.",
-    "approved_by": null,
     "resource_type": "Patient",
-    "expected_action": "auto_accept",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": false,
     "expected_score_range": [
       70,
       100
     ],
-    "expected_nik_valid": true
-  },
-  {
     "fixture": "tests/fixtures/patients/full_no_nik.json",
-    "source": "unit",
-    "difficulty": "easy",
     "rationale": "Demographics are complete, but the only identifier is a local MRN with no Indonesian NIK; the NIK gate fails, so a human must confirm identity before acceptance.",
-    "approved_by": null,
     "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
     "expected_action": "review_needed",
+    "expected_nik_valid": false,
     "expected_score_range": [
       70,
       100
     ],
-    "expected_nik_valid": false
-  },
-  {
     "fixture": "tests/fixtures/patients/invalid_nik.json",
-    "source": "unit",
-    "difficulty": "easy",
     "rationale": "Demographics are complete, but the NIK has 15 digits instead of 16; the NIK gate fails, so the record goes to review despite a high completeness score.",
-    "approved_by": null,
     "resource_type": "Patient",
-    "expected_action": "review_needed",
-    "expected_score_range": [
-      70,
-      100
-    ],
-    "expected_nik_valid": false
+    "source": "unit"
   },
   {
-    "fixture": "tests/fixtures/patients/minimal_patient.json",
-    "source": "unit",
-    "difficulty": "easy",
-    "rationale": "Only resource identity is present; essential demographic and identifier fields are absent.",
     "approved_by": null,
-    "resource_type": "Patient",
+    "difficulty": "easy",
     "expected_action": "review_needed",
+    "expected_nik_valid": null,
     "expected_score_range": [
       0,
       35
     ],
-    "expected_nik_valid": null
+    "fixture": "tests/fixtures/patients/minimal_patient.json",
+    "rationale": "Only resource identity is present; essential demographic and identifier fields are absent.",
+    "resource_type": "Patient",
+    "source": "unit"
   },
   {
-    "fixture": "tests/fixtures/patients/missing_address.json",
-    "source": "unit",
-    "difficulty": "easy",
-    "rationale": "Identity and clinical demographics are usable with a valid NIK; address can be completed later.",
     "approved_by": null,
-    "resource_type": "Patient",
+    "difficulty": "easy",
     "expected_action": "auto_accept",
+    "expected_nik_valid": true,
     "expected_score_range": [
       70,
       90
     ],
-    "expected_nik_valid": true
+    "fixture": "tests/fixtures/patients/missing_address.json",
+    "rationale": "Identity and clinical demographics are usable with a valid NIK; address can be completed later.",
+    "resource_type": "Patient",
+    "source": "unit"
   },
   {
-    "fixture": "tests/fixtures/patients/missing_all_demographics.json",
-    "source": "unit",
-    "difficulty": "easy",
-    "rationale": "The record has no usable demographic content beyond the FHIR resource shell.",
     "approved_by": null,
-    "resource_type": "Patient",
+    "difficulty": "easy",
     "expected_action": "review_needed",
+    "expected_nik_valid": null,
     "expected_score_range": [
       0,
       30
     ],
-    "expected_nik_valid": null
+    "fixture": "tests/fixtures/patients/missing_all_demographics.json",
+    "rationale": "The record has no usable demographic content beyond the FHIR resource shell.",
+    "resource_type": "Patient",
+    "source": "unit"
   },
   {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      70,
+      90
+    ],
     "fixture": "tests/fixtures/patients/missing_birthdate.json",
-    "source": "unit",
-    "difficulty": "easy",
     "rationale": "A valid NIK and other core demographics are present; birth date is an important but recoverable gap.",
-    "approved_by": null,
     "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
     "expected_action": "auto_accept",
+    "expected_nik_valid": true,
     "expected_score_range": [
       70,
       90
     ],
-    "expected_nik_valid": true
-  },
-  {
     "fixture": "tests/fixtures/patients/missing_gender.json",
-    "source": "unit",
-    "difficulty": "easy",
     "rationale": "Identity, NIK, and most demographics are present; gender should be reviewed but does not block intake.",
-    "approved_by": null,
     "resource_type": "Patient",
-    "expected_action": "auto_accept",
-    "expected_score_range": [
-      70,
-      90
-    ],
-    "expected_nik_valid": true
+    "source": "unit"
   },
   {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      20,
+      65
+    ],
     "fixture": "tests/fixtures/patients/missing_identifier.json",
-    "source": "unit",
-    "difficulty": "easy",
     "rationale": "The record cannot be reliably matched without an identifier, despite some demographic fields being present.",
-    "approved_by": null,
     "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
     "expected_action": "review_needed",
+    "expected_nik_valid": true,
     "expected_score_range": [
       20,
       65
     ],
-    "expected_nik_valid": null
-  },
-  {
     "fixture": "tests/fixtures/patients/missing_name.json",
-    "source": "unit",
-    "difficulty": "easy",
     "rationale": "A valid NIK is present but no patient name is available for safe operational review.",
-    "approved_by": null,
     "resource_type": "Patient",
-    "expected_action": "review_needed",
-    "expected_score_range": [
-      20,
-      65
-    ],
-    "expected_nik_valid": true
+    "source": "unit"
   },
   {
-    "fixture": "tests/fixtures/patients/multiple_identifiers.json",
-    "source": "unit",
-    "difficulty": "easy",
-    "rationale": "Multiple identifiers include a valid NIK and the remaining demographic fields are complete.",
     "approved_by": null,
-    "resource_type": "Patient",
+    "difficulty": "easy",
     "expected_action": "auto_accept",
+    "expected_nik_valid": true,
     "expected_score_range": [
       70,
       100
     ],
-    "expected_nik_valid": true
+    "fixture": "tests/fixtures/patients/multiple_identifiers.json",
+    "rationale": "Multiple identifiers include a valid NIK and the remaining demographic fields are complete.",
+    "resource_type": "Patient",
+    "source": "unit"
   },
   {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": false,
+    "expected_score_range": [
+      70,
+      100
+    ],
     "fixture": "tests/fixtures/patients/non_indonesian.json",
-    "source": "unit",
-    "difficulty": "easy",
     "rationale": "Complete record for a foreign patient identified by passport only; with no Indonesian NIK the gate fails, so identity needs manual confirmation.",
-    "approved_by": null,
     "resource_type": "Patient",
-    "expected_action": "review_needed",
-    "expected_score_range": [
-      70,
-      100
-    ],
-    "expected_nik_valid": false
+    "source": "unit"
   },
   {
-    "fixture": "tests/fixtures/patients/only_identifier.json",
-    "source": "unit",
-    "difficulty": "easy",
-    "rationale": "A valid NIK alone is insufficient because demographic, contact, and address data are absent.",
     "approved_by": null,
-    "resource_type": "Patient",
+    "difficulty": "easy",
     "expected_action": "review_needed",
+    "expected_nik_valid": true,
     "expected_score_range": [
       0,
       45
     ],
-    "expected_nik_valid": true
+    "fixture": "tests/fixtures/patients/only_identifier.json",
+    "rationale": "A valid NIK alone is insufficient because demographic, contact, and address data are absent.",
+    "resource_type": "Patient",
+    "source": "unit"
   },
   {
-    "fixture": "tests/fixtures/patients/only_name.json",
-    "source": "unit",
-    "difficulty": "easy",
-    "rationale": "A name alone cannot support reliable matching or clinical use.",
     "approved_by": null,
-    "resource_type": "Patient",
+    "difficulty": "easy",
     "expected_action": "review_needed",
+    "expected_nik_valid": null,
     "expected_score_range": [
       0,
       40
     ],
-    "expected_nik_valid": null
+    "fixture": "tests/fixtures/patients/only_name.json",
+    "rationale": "A name alone cannot support reliable matching or clinical use.",
+    "resource_type": "Patient",
+    "source": "unit"
   },
   {
-    "fixture": "tests/fixtures/patients/short_identifier.json",
-    "source": "unit",
-    "difficulty": "easy",
-    "rationale": "Demographics are complete, but the NIK value is only 5 digits; the NIK gate fails, so the record goes to review despite a high completeness score.",
     "approved_by": null,
-    "resource_type": "Patient",
+    "difficulty": "easy",
     "expected_action": "review_needed",
+    "expected_nik_valid": false,
     "expected_score_range": [
       70,
       90
     ],
-    "expected_nik_valid": false
+    "fixture": "tests/fixtures/patients/short_identifier.json",
+    "rationale": "Demographics are complete, but the NIK value is only 5 digits; the NIK gate fails, so the record goes to review despite a high completeness score.",
+    "resource_type": "Patient",
+    "source": "unit"
   },
   {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      70,
+      100
+    ],
     "fixture": "tests/fixtures/patients/two_names.json",
-    "source": "unit",
-    "difficulty": "easy",
     "rationale": "Multiple names are acceptable; core demographics and a valid NIK are present.",
-    "approved_by": null,
     "resource_type": "Patient",
-    "expected_action": "auto_accept",
-    "expected_score_range": [
-      70,
-      100
-    ],
-    "expected_nik_valid": true
+    "source": "unit"
   },
   {
-    "fixture": "tests/fixtures/patients/with_telecom.json",
-    "source": "unit",
-    "difficulty": "easy",
-    "rationale": "Complete demographic and contact information with a valid NIK supports automated intake.",
     "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "tests/fixtures/patients/with_telecom.json",
+    "rationale": "Complete demographic and contact information with a valid NIK supports automated intake.",
     "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
     "expected_action": "auto_accept",
     "expected_score_range": [
       70,
       100
     ],
-    "expected_nik_valid": true
+    "fixture": "tests/fixtures/observations/complete_lab_hb.json",
+    "rationale": "Observation case complete_lab_hb is manually labelled for clinical completeness.",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "tests/fixtures/observations/vital_heart_rate.json",
+    "rationale": "Observation case vital_heart_rate is manually labelled for clinical completeness.",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "tests/fixtures/observations/missing_value.json",
+    "rationale": "Observation case missing_value is manually labelled for clinical completeness.",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "tests/fixtures/observations/missing_code_system.json",
+    "rationale": "Observation case missing_code_system is manually labelled for clinical completeness.",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "tests/fixtures/observations/entered_in_error.json",
+    "rationale": "Observation case entered_in_error is manually labelled for clinical completeness.",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "tests/fixtures/observations/value_string.json",
+    "rationale": "Observation case value_string is manually labelled for clinical completeness.",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "tests/fixtures/observations/no_subject.json",
+    "rationale": "Observation case no_subject is manually labelled for clinical completeness.",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "tests/fixtures/observations/unusual_unit.json",
+    "rationale": "Observation case unusual_unit is manually labelled for clinical completeness.",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "tests/fixtures/observations/future_effective.json",
+    "rationale": "Observation case future_effective is manually labelled for clinical completeness.",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "tests/fixtures/observations/local_code_only.json",
+    "rationale": "Observation case local_code_only is manually labelled for clinical completeness.",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_action": "review_needed",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/hard/patients/nik_dotted.json",
+    "rationale": "Hard patient case requires semantic review beyond field presence.",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_action": "review_needed",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/hard/patients/nik_spaced.json",
+    "rationale": "Hard patient case requires semantic review beyond field presence.",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_action": "review_needed",
+    "expected_nik_valid": false,
+    "expected_score_range": [
+      0,
+      70
+    ],
+    "fixture": "benchmarks/dataset/hard/patients/nik_letters.json",
+    "rationale": "Hard patient case requires semantic review beyond field presence.",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_action": "review_needed",
+    "expected_nik_valid": false,
+    "expected_score_range": [
+      0,
+      70
+    ],
+    "fixture": "benchmarks/dataset/hard/patients/nik_all_zeros.json",
+    "rationale": "Hard patient case requires semantic review beyond field presence.",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_action": "review_needed",
+    "expected_nik_valid": false,
+    "expected_score_range": [
+      0,
+      70
+    ],
+    "fixture": "benchmarks/dataset/hard/patients/nik_wrong_system.json",
+    "rationale": "Hard patient case requires semantic review beyond field presence.",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_action": "review_needed",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/hard/patients/placeholder_name.json",
+    "rationale": "Hard patient case requires semantic review beyond field presence.",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_action": "review_needed",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/hard/patients/placeholder_address.json",
+    "rationale": "Hard patient case requires semantic review beyond field presence.",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_action": "review_needed",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/hard/patients/future_birthdate.json",
+    "rationale": "Hard patient case requires semantic review beyond field presence.",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_action": "review_needed",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/hard/patients/ancient_birthdate.json",
+    "rationale": "Hard patient case requires semantic review beyond field presence.",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/demo/patients/patient_complete_jakarta.json",
+    "rationale": "Synthetic polished demo patient preset.",
+    "resource_type": "Patient",
+    "source": "demo"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_action": "review_needed",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/demo/patients/patient_nik_dotted_jakarta.json",
+    "rationale": "Synthetic polished demo patient preset.",
+    "resource_type": "Patient",
+    "source": "demo"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_000.json",
+    "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_001.json",
+    "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_002.json",
+    "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_003.json",
+    "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_004.json",
+    "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_005.json",
+    "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_006.json",
+    "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_007.json",
+    "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": false,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_008.json",
+    "rationale": "Injected defects: malformed NIK with letters",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_009.json",
+    "rationale": "Injected defects: placeholder family name '-'",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_010.json",
+    "rationale": "Injected defects: future birthDate 2031-03-02",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": false,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_011.json",
+    "rationale": "Injected defects: malformed NIK with letters",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_012.json",
+    "rationale": "Injected defects: placeholder family name '-'",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_013.json",
+    "rationale": "Injected defects: future birthDate 2031-03-02",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": false,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_014.json",
+    "rationale": "Injected defects: malformed NIK with letters",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_015.json",
+    "rationale": "Injected defects: placeholder family name '-'",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_016.json",
+    "rationale": "Injected defects: future birthDate 2031-03-02",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": false,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_017.json",
+    "rationale": "Injected defects: malformed NIK with letters",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_018.json",
+    "rationale": "Injected defects: placeholder family name '-'",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/patients/generated_019.json",
+    "rationale": "Injected defects: future birthDate 2031-03-02",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/generated/observations/generated_000.json",
+    "rationale": "Synthetic complete laboratory Observation.",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/generated/observations/generated_001.json",
+    "rationale": "Synthetic complete laboratory Observation.",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/generated/observations/generated_002.json",
+    "rationale": "Synthetic complete laboratory Observation.",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "auto_accept",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "fixture": "benchmarks/dataset/generated/observations/generated_003.json",
+    "rationale": "Synthetic complete laboratory Observation.",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/observations/generated_004.json",
+    "rationale": "Injected defects: missing value",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/observations/generated_005.json",
+    "rationale": "Injected defects: missing code system",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/observations/generated_006.json",
+    "rationale": "Injected defects: status entered-in-error",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/observations/generated_007.json",
+    "rationale": "Injected defects: future effectiveDateTime",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/observations/generated_008.json",
+    "rationale": "Injected defects: missing value",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_action": "review_needed",
+    "expected_nik_valid": null,
+    "expected_score_range": [
+      0,
+      69
+    ],
+    "fixture": "benchmarks/dataset/generated/observations/generated_009.json",
+    "rationale": "Injected defects: missing code system",
+    "resource_type": "Observation",
+    "source": "generated"
   }
 ]

@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "city": "Bandung",
+      "country": "ID",
+      "postalCode": "73699",
+      "text": "Jl. Melati No. 62, Bandung"
+    }
+  ],
+  "birthDate": "1995-08-01",
+  "gender": "female",
+  "id": "generated-patient-014",
+  "identifier": [
+    {
+      "system": "nik",
+      "value": "31730101019000AB"
+    }
+  ],
+  "name": [
+    {
+      "family": "Suryani",
+      "given": [
+        "Indah"
+      ]
+    }
+  ],
+  "resourceType": "Patient",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+628162196678"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "city": "Medan",
+      "country": "ID",
+      "postalCode": "97841",
+      "text": "Jl. Melati No. 95, Denpasar"
+    }
+  ],
+  "birthDate": "1991-04-04",
+  "gender": "male",
+  "id": "generated-patient-005",
+  "identifier": [
+    {
+      "system": "nik",
+      "value": "1271010404914555"
+    }
+  ],
+  "name": [
+    {
+      "family": "Iskandar",
+      "given": [
+        "Rani"
+      ]
+    }
+  ],
+  "resourceType": "Patient",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+628274648506"
+    }
+  ]
+}

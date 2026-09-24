@@ -1,0 +1,77 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-64-2",
+      "resource": {
+        "id": "generated-dispense-642",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-64-0",
+      "resource": {
+        "id": "generated-dispense-640",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-64-4",
+      "resource": {
+        "id": "generated-dispense-644",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-64-1",
+      "resource": {
+        "id": "generated-dispense-641",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-64-3",
+      "resource": {
+        "id": "generated-dispense-643",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    }
+  ],
+  "id": "generated-bundle-064",
+  "resourceType": "Bundle",
+  "type": "collection"
+}

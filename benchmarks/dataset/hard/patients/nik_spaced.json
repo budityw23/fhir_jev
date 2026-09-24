@@ -1,0 +1,26 @@
+{
+  "resourceType": "Patient",
+  "id": "nik-spaced",
+  "identifier": [
+    {
+      "system": "https://fhir.kemkes.go.id/id/nik",
+      "value": "3173 0101 0190 0001"
+    }
+  ],
+  "name": [
+    {
+      "family": "Wijaya",
+      "given": [
+        "Sari"
+      ]
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1990-01-01",
+  "address": [
+    {
+      "text": "Jl. Merdeka 1",
+      "country": "ID"
+    }
+  ]
+}

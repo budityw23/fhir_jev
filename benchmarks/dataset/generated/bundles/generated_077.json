@@ -1,0 +1,271 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-77-6",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-772",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-77-9",
+      "request": {
+        "method": "POST",
+        "url": "MedicationDispense"
+      },
+      "resource": {
+        "id": "generated-dispense-771",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-77-0",
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      },
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "56888-1",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "id": "generated-observation-770",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 108
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-77-8",
+      "request": {
+        "method": "POST",
+        "url": "MedicationDispense"
+      },
+      "resource": {
+        "id": "generated-dispense-770",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-77-7",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-773",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-77-3",
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      },
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2160-0",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "id": "generated-observation-773",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 75
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-77-2",
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      },
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2160-0",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "id": "generated-observation-772",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 46
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-77-4",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-770",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-77-11",
+      "request": {
+        "method": "POST",
+        "url": "MedicationDispense"
+      },
+      "resource": {
+        "id": "generated-dispense-773",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-77-10",
+      "request": {
+        "method": "POST",
+        "url": "MedicationDispense"
+      },
+      "resource": {
+        "id": "generated-dispense-772",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-77-1",
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      },
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "718-7",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "id": "generated-observation-771",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 110
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-77-5",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-771",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    }
+  ],
+  "id": "generated-bundle-077",
+  "resourceType": "Bundle",
+  "type": "transaction"
+}

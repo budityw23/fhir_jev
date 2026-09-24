@@ -1,0 +1,46 @@
+{
+  "resourceType": "Bundle",
+  "id": "medication-transaction",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:medication-transaction-0",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "hard-patient",
+        "name": [
+          {
+            "family": "Santoso",
+            "given": [
+              "Rina"
+            ]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1994-03-12"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:medication-transaction-1",
+      "resource": {
+        "resourceType": "MedicationDispense",
+        "id": "hard-dispense",
+        "status": "completed",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "subject": {
+          "reference": "Patient/hard-patient"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "MedicationDispense"
+      }
+    }
+  ]
+}

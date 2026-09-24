@@ -518,36 +518,158 @@ make bench && make bench-full
 - Answer Open Questions 9 and 10.
 - Run `make bench-live-full` and commit the report.
 
-### Codex Evaluation Checklist
+### Codex Evaluation Checklist (re-evaluation after rework, Sep 24, 2026; final)
 
 ```
-☐ make lint / typecheck / test green; coverage ≥ 95%; test runtime ≤ 2× the D0 runtime (show both)
-☐ benchmarks/ground_truth/ deleted; labels/ has quality.json, bundle_routes.json, notifiable.json
-☐ ls tests/fixtures/observations | wc -l → 10; each validates under R4B
-☐ Hard set: ≥ 14 conditions, ≥ 9 patients, ≥ 5 bundles (ls counts); every file listed in Step 3 exists
-☐ Totals (python one-liner over labels): bundles ≥ 100; quality ≥ 50 (Patient + Observation); conditions ≥ 30
-☐ Each route category ≥ 15 labels, unknown ≥ 15
-☐ Every label: source, difficulty, rationale (≥ 10 chars); every fixture labelled exactly once
-☐ No label uses ICD-10 A02–A09 (grep)
-☐ python scripts/generate_dataset.py --check → exit 0; run twice → identical (git diff --exit-code)
-☐ grep generate_dataset.py for "field_completeness", "baselines", "MockJevClient" → no matches (labels not computed from logic under test)
-☐ Generator has no datetime.now / uuid4 / time.time calls (grep)
-☐ Spot-check 10 generated patients: synthetic names from built-in list, NIK well-formed, no real-looking PII
-☐ make bench-full → report has dataset=full, breakdown by source and difficulty, unapproved_labels count
-☐ In the mock full report, the rule baseline is wrong on tb_subcode_a15_0, malaria_subcode_b50_9, typhoid_subcode_a01_0, dengue_snomed_only, tb_snomed_only, dbd_text_only, tb_paru_text_only (cite rows)
-☐ make bench (unit) still works and is unchanged apart from observations now included in quality
+✅ make lint / typecheck / test green; coverage ≥ 95%; runtime ≤ 2× D0
+   → 340 passed, 97% coverage, 3.3 s (D0: 4.2 s). baselines/quality.py 100% (was 75%). scripts/ passes ruff + mypy --strict
+✅ benchmarks/ground_truth/ deleted; labels/ has quality.json, bundle_routes.json, notifiable.json
+✅ tests/fixtures/observations → 10 files, all valid
+✅ Hard set: 14 conditions, 9 patients, 5 bundles; content now matches Step 3:
+   realistic_lab_submission = Patient+Encounter+DiagnosticReport+6 Observations (each refs Patient + Encounter);
+   immunization_with_context = Patient+Encounter+Practitioner+2 Immunization; medication_transaction = transaction,
+   every entry has request + fullUrl; vitals_only = 4 vital-sign Observations (8867-4, 9279-1, 8310-5, 59408-5,
+   category vital-signs); genuinely_mixed = 3 Obs + 2 Imm + 1 Dispense; *_snomed_only use http://snomed.info/sct;
+   A91 has display "Dengue haemorrhagic fever"
+✅ Totals: bundles 102, quality 71 (51 Patient + 20 Observation), conditions 31
+✅ Route categories: lab 24, encounter 19, immunization 19, medication 19, unknown 21
+✅ Every label: source, difficulty, rationale ≥ 10; each fixture labelled once; 0 unlabelled
+✅ 204/204 files valid R4B AND valid against the official HL7 R4 4.0.1 JSON schema
+✅ No ICD-10 A02–A09
+✅ make dataset-check exit 0; two regenerations byte-identical and equal to committed generated/
+✅ Generator: no field_completeness / baselines / MockJevClient; no datetime.now / uuid4 / time.time
+✅ Generated patients: Indonesian names from lists (11 family / 17 given across 20), 8 cities, 16-digit NIKs consistent
+   with birthDate + gender (the 4 mismatches are exactly the injected future-birthDate defects — expected)
+✅ Generated quality: 12 clean + 18 with defects; rationales list the defect; invisible defects present
+   (placeholder name, future birthDate, NIK with letters, future effectiveDateTime)
+✅ Generated bundles: 24 collection / 26 transaction / 30 batch; 0–30 entries (22 with ≥ 10); transaction/batch
+   entries all have request + fullUrl; rationales state composition
+✅ make bench-full: JSON + Markdown both have per-module source/difficulty tables and the
+   "N labels not yet approved by a human" warning
+✅ Rule baseline wrong on realistic_lab_submission and on all 7 discriminating hard conditions
+✅ make bench (unit) works; router 0.733/0.933 and notifiable 1.000/1.000 unchanged
+✅ Validator restored to `upper >= 70`; 0 review labels with passing NIK reach 70
+✅ .gitignore no longer ignores benchmark reports
+✅ approved_by: 124 null (all unit/hard/demo/generated-quality), 80 "construction" (generated bundles only)
+✅ Demo presets realistic: Nadia Ayu Pratama (NIK consistent with 1990-03-02 female; dotted variant = same number),
+   9-entry lab submission, 6-entry referral across 6 types, conditions with onset/recorded/recorder
+✅ Demo condition_je_bali fixed (Sep 24, Claude Code): ICD-10 "A83" → "A83.0" ("Japanese encephalitis").
+   Rule and mock now flag it (rule_correct True). Regression test:
+   test_easy_notifiable_labels_are_caught_by_exact_code_rules — every easy confirmed_notifiable label must be
+   flagged by the exact-code rule; shown to fail on the old A83 fixture
+✅ Generated encounter_summary bundles fixed (Sep 24, Claude Code): generate_dataset.py condition() takes the Encounter
+   reference; every Condition now carries encounter.reference "Encounter/generated-encounter-NNN". Regenerated —
+   exactly the 18 encounter bundles changed, nothing else; make dataset-check exit 0. Generated router rule accuracy
+   0.725 → 0.950; the 4 remaining misses are genuine (ambiguous mixes the rule order sends to immunization_report).
+   Regression test: test_generated_encounter_bundles_link_conditions_to_their_encounter
 ☐ (manual, Budi) all hard + quality labels approved_by=budi; Open Questions 9, 10 answered
 ☐ (manual, Budi) live full report committed: mode=live_jev, dataset=full, unapproved_labels=0
+```
+
+**Minor issues (non-blocking):**
+
+```
+⚠️ Defects are assigned round-robin (letters → placeholder → future date, repeating), always exactly one per resource,
+   every future birthDate is 2031-03-02, and no Patient gets a missing-field defect (Step 4: 0–2 defects chosen by
+   the seeded RNG from all four kinds)
+⚠️ Generated patients with a valid NIK (clean + placeholder + future-date) have expected_nik_valid null instead of
+   true, so the benchmark skips the NIK check for them
+⚠️ Bundle fullUrls use "urn:uuid:generated-18-0"; FHIR requires urn:uuid values to be real UUIDs (schema accepts it)
 ```
 
 ### Evaluation Record
 
 ```
-Evaluated: <date> by <session>
-Counts:    bundles=<n> quality=<n> conditions=<n> hard=<n> generated=<n> demo=<n>
-Results:   <checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: Sep 24, 2026 by Claude Code (re-evaluation after Codex rework; the 2 remaining ❌ fixed in the same session)
+Counts:    bundles=102 quality=71 conditions=31 hard=28 generated=110 (80 bundles, 20 Patients, 10 Observations)
+           demo=6; generated quality 12 clean / 18 defective; bundle types 24/26/30; entries 0–30
+Checks:    make lint / typecheck clean; make test 342 passed, 97% coverage, 3.3 s; scripts/ ruff + mypy clean;
+           make dataset-check exit 0; 204/204 files valid R4B and valid against the HL7 R4 4.0.1 JSON schema
+Results:   all first-evaluation ❌ fixed; both re-evaluation ❌ fixed with regression tests; 3 minor ⚠️ remain
+Mock full: quality Jev 0.620 / rule 0.549; router 0.824 / 0.922 (generated 0.863 / 0.950);
+           notifiable 0.677 / 0.677; hard tiers: quality 0.222 / 0.222, router 0.600 / 0.600,
+           notifiable 0.357 / 0.357. All provisional: labels unapproved
+Verdict:   PASS (automated items). Manual items remain for Budi: approve the hard + quality labels, answer Open
+           Questions 9 and 10, commit a live full report.
 ```
+
+<details><summary>First evaluation (history)</summary>
+
+#### First evaluation (Sep 24, 2026): FAIL, superseded by the re-evaluation below
+
+```
+✅ make lint / typecheck / test green; coverage ≥ 95%; runtime ≤ 2× D0
+   → 337 passed, 96% coverage, 3.2 s (D0: 120 tests, 4.2 s). scripts/ also passes ruff + mypy --strict.
+   ⚠️ baselines/quality.py score_observation has no unit test (lines 22–32 uncovered, 75%)
+✅ benchmarks/ground_truth/ deleted; labels/ has quality.json, bundle_routes.json, notifiable.json
+✅ tests/fixtures/observations → 10 files, all valid R4B
+⚠️ Hard set counts met (14 conditions, 9 patients, 5 bundles) and every Step 3 filename exists — BUT content ≠ spec:
+   ❌ realistic_lab_submission = 3 Observations (spec: Patient+Encounter+DiagnosticReport+6 labs → the Encounter is the point)
+   ❌ immunization_with_context = 1 Immunization (spec: Patient+Encounter+Practitioner+2 Immunization)
+   ❌ medication_transaction = type collection, no request (spec: transaction with request entries)
+   ❌ vitals_only = Observation + Immunization (spec: 4 vital-sign Observations only)
+   ❌ genuinely_mixed = 1 Observation + 1 Immunization (spec: 3 labs + 2 immunizations + 1 dispense)
+   ❌ dengue_snomed_only / tb_snomed_only put SNOMED codes (38362002 / 56717001) under the ICD-10 system URL — invalid coding; must be http://snomed.info/sct
+   ⚠️ dengue_hemorrhagic_a91 lacks the display "Dengue haemorrhagic fever" from Step 3
+✅ Totals: bundles 102, quality 71 (51 Patient + 20 Observation), conditions 31
+✅ Route categories: lab 24, encounter 19, immunization 19, medication 19, unknown 21
+✅ Every label has source, difficulty, rationale ≥ 10 chars; every fixture labelled exactly once; 0 unlabelled; 204/204 files valid R4B
+✅ No ICD-10 A02–A09 in any label fixture
+✅ generate_dataset.py --check exit 0; two runs into temp dirs byte-identical and equal to committed generated/
+✅ Generator: no field_completeness / baselines / MockJevClient references
+✅ Generator: no datetime.now / uuid4 / time.time
+❌ Spot-check generated patients: names are "Generated000…019" with given name "Budi" (spec: 40+40 built-in list);
+   NIKs sequential 3173010101900000…019 (spec: region + DDMMYY(+40 female) + seq); address country only (spec: city);
+   NO injected defects — all 30 generated quality labels are auto_accept with one generic rationale
+   ("controlled completeness"), so the generated quality tier tests nothing (spec: 0–2 defects, rationale lists them)
+❌ Generated bundles: all 80 are type collection with 1–2 entries (spec: collection/transaction/batch, 1–30 entries,
+   shuffled order, optional Patient/Encounter/Practitioner, LOINC pool). Rules score 1.000 on them — near-copies of unit bundles
+⚠️ make bench-full → JSON has dataset=full, breakdown by source + difficulty, unapproved_labels ✅;
+   Markdown report has NO breakdown tables and NO unapproved-labels warning (Step 6 requires both) ❌
+✅ Rule baseline wrong on all 7 discriminating conditions (tb_subcode_a15_0, malaria_subcode_b50_9, typhoid_subcode_a01_0,
+   dengue_snomed_only, tb_snomed_only, dbd_text_only, tb_paru_text_only) — note the two *_snomed_only pass for a
+   malformed-coding reason (see above)
+✅ make bench (unit) works: quality now 30 (incl. Observations) Jev 0.900 / rule 0.767; router 0.733 / 0.933 and
+   notifiable 1.000 / 1.000 unchanged
+☐ (manual, Budi) all hard + quality labels approved_by=budi; Open Questions 9, 10 answered
+☐ (manual, Budi) live full report committed: mode=live_jev, dataset=full, unapproved_labels=0
+```
+
+First-evaluation issues outside the checklist:
+
+```
+❌ Label validator loosened: `upper >= 70` → `upper > 70` in QualityLabel._action_consistent, so review_needed
+   with a passing NIK may now end at exactly 70 — where a score of 70 means auto_accept. 14 labels depend on it
+   (7 unit Observations, 6 hard patients, 1 demo patient, all band [0, 70]). Fix: bands → [0, 69], restore `>=`.
+   (Partly this plan's fault: the Step 2 table suggested "30–70"/"20–70" review bands.)
+❌ .gitignore now ignores benchmarks/results/bench_*.{json,md}. This contradicts Step 9 / D0 Step 15
+   ("commit the live report") and D4 (Benchmarks screen shows committed reports). Existing 10 reports stay
+   tracked only because they were committed earlier. Fix: remove the rule (or force-add evidence reports).
+⚠️ 30 unit route/notifiable labels have approved_by "existing-unit-suite" — an agent-assigned approval, not a
+   human one. Recommend null so they show as unapproved until Budi reviews them.
+⚠️ Demo presets not "realistic-looking" (Step 5): both patients are the same "Sari Wijaya", address text only
+   (no city), no practitioner, conditions have no dates; bundle_lab_submission_9_entries has 3 entries.
+⚠️ `make dataset` runs `--check` only, so it can't regenerate the corpus (Step 4: `make dataset` generates).
+⚠️ score_observation treats a numeric value of 0 as missing (`bool(state["value"])`).
+ℹ️ labels.py still uses `__import__("json")` instead of `import json` (cosmetic).
+```
+
+First evaluation record:
+
+```
+Evaluated: Sep 24, 2026 by Claude Code (independent session review)
+Counts:    bundles=102 quality=71 conditions=31 hard=28 generated=110 demo=6 (204 labelled files, all valid R4B)
+Results:   11 ✅, 3 ⚠️, 3 ❌ on the checklist + 2 ❌ / 4 ⚠️ outside it (details above)
+What works: structure, label schema/migration, counts, determinism, R4B validity, per-source/difficulty
+            breakdown in JSON, and the core goal — rules fail all 7 discriminating hard conditions.
+What fails: the hard bundles (5/5) and SNOMED conditions don't match Step 3; the generator (Step 4) produces
+            trivial, defect-free data with placeholder names; the Markdown report lacks the breakdown; the
+            label validator was weakened; benchmark reports are git-ignored.
+Verdict:   FAIL — fix the ❌ items (hard bundles, SNOMED coding, generator realism + defects, MD breakdown,
+           validator + [0,69] bands, .gitignore), then re-evaluate. Manual items remain for Budi.
+```
+
+</details>
 
 ---
 

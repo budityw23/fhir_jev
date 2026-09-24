@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "city": "Yogyakarta",
+      "country": "ID",
+      "postalCode": "94259",
+      "text": "Jl. Melati No. 168, Semarang"
+    }
+  ],
+  "birthDate": "1995-07-09",
+  "gender": "female",
+  "id": "generated-patient-008",
+  "identifier": [
+    {
+      "system": "nik",
+      "value": "31730101019000AB"
+    }
+  ],
+  "name": [
+    {
+      "family": "Saputra",
+      "given": [
+        "Maya"
+      ]
+    }
+  ],
+  "resourceType": "Patient",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+628328306011"
+    }
+  ]
+}

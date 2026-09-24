@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "city": "Medan",
+      "country": "ID",
+      "postalCode": "18392",
+      "text": "Jl. Melati No. 31, Medan"
+    }
+  ],
+  "birthDate": "2031-03-02",
+  "gender": "female",
+  "id": "generated-patient-016",
+  "identifier": [
+    {
+      "system": "nik",
+      "value": "1271015012936119"
+    }
+  ],
+  "name": [
+    {
+      "family": "Hartono",
+      "given": [
+        "Yuni"
+      ]
+    }
+  ],
+  "resourceType": "Patient",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+628584779555"
+    }
+  ]
+}

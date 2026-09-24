@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "city": "Yogyakarta",
+      "country": "ID",
+      "postalCode": "14165",
+      "text": "Jl. Melati No. 27, Bandung"
+    }
+  ],
+  "birthDate": "1991-01-24",
+  "gender": "female",
+  "id": "generated-patient-000",
+  "identifier": [
+    {
+      "system": "nik",
+      "value": "3578016401914013"
+    }
+  ],
+  "name": [
+    {
+      "family": "Putri",
+      "given": [
+        "Citra"
+      ]
+    }
+  ],
+  "resourceType": "Patient",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+628890779946"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "resourceType": "Condition",
+  "id": "tb-snomed-only",
+  "subject": {
+    "reference": "Patient/demo"
+  },
+  "clinicalStatus": {
+    "coding": [
+      {
+        "code": "active"
+      }
+    ]
+  },
+  "verificationStatus": {
+    "coding": [
+      {
+        "code": "confirmed"
+      }
+    ]
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "56717001",
+        "display": "Tuberculosis (disorder)"
+      }
+    ]
+  }
+}

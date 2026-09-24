@@ -1,0 +1,140 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-49-6",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-496",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-49-1",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-491",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-49-5",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-495",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-49-0",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-490",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-49-4",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-494",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-49-2",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-492",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-49-3",
+      "request": {
+        "method": "POST",
+        "url": "Immunization"
+      },
+      "resource": {
+        "id": "generated-immunization-493",
+        "occurrenceDateTime": "2026-03-10",
+        "patient": {
+          "reference": "Patient/generated-patient-000"
+        },
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "Influenza vaccine"
+        }
+      }
+    }
+  ],
+  "id": "generated-bundle-049",
+  "resourceType": "Bundle",
+  "type": "transaction"
+}

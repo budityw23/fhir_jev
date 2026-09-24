@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "city": "Semarang",
+      "country": "ID",
+      "postalCode": "41850",
+      "text": "Jl. Melati No. 139, Surabaya"
+    }
+  ],
+  "birthDate": "1990-06-03",
+  "gender": "female",
+  "id": "generated-patient-018",
+  "identifier": [
+    {
+      "system": "nik",
+      "value": "5171014306903900"
+    }
+  ],
+  "name": [
+    {
+      "family": "-",
+      "given": [
+        "Wulan"
+      ]
+    }
+  ],
+  "resourceType": "Patient",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+628330035022"
+    }
+  ]
+}

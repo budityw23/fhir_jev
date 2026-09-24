@@ -1,0 +1,757 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-1-20",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "718-7",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-118",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 0
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-6",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2345-7",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-104",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 169
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-12",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2160-0",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-110",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 53
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-7",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "718-7",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-105",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 34
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-14",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "789-8",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-112",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 175
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-10",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2160-0",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-108",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 39
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-9",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "718-7",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-107",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 190
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-8",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2345-7",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-106",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 29
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-25",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2160-0",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-123",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 180
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-19",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "4548-4",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-117",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 70
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-15",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "56888-1",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-113",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 67
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-5",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "56888-1",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-103",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 141
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-16",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2160-0",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-114",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 125
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-26",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "4548-4",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-124",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 143
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-24",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "56888-1",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-122",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 113
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-13",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "56888-1",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-111",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 87
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-23",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2345-7",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-121",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 41
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-21",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2345-7",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-119",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 197
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-18",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "718-7",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-116",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 162
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-11",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2345-7",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-109",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 72
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-1",
+      "resource": {
+        "class": {
+          "code": "AMB",
+          "display": "ambulatory",
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+        },
+        "id": "generated-encounter-001",
+        "resourceType": "Encounter",
+        "status": "finished"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-17",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2345-7",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-115",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 13
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-4",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2160-0",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-102",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 2
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-22",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "789-8",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-120",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 163
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-2",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "56888-1",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-100",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 77
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-3",
+      "resource": {
+        "code": {
+          "coding": [
+            {
+              "code": "2160-0",
+              "display": "Laboratory test",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+        "encounter": {
+          "reference": "Encounter/generated-encounter-001"
+        },
+        "id": "generated-observation-101",
+        "resourceType": "Observation",
+        "status": "final",
+        "subject": {
+          "reference": "Patient/generated-patient-001"
+        },
+        "valueQuantity": {
+          "unit": "mg/dL",
+          "value": 167
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-1-0",
+      "resource": {
+        "address": [
+          {
+            "city": "Semarang",
+            "country": "ID",
+            "postalCode": "81200",
+            "text": "Jl. Melati No. 73, Surabaya"
+          }
+        ],
+        "birthDate": "1993-09-09",
+        "gender": "male",
+        "id": "generated-patient-001",
+        "identifier": [
+          {
+            "system": "nik",
+            "value": "3273010909935719"
+          }
+        ],
+        "name": [
+          {
+            "family": "Darmawan",
+            "given": [
+              "Indah"
+            ]
+          }
+        ],
+        "resourceType": "Patient",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+628496776692"
+          }
+        ]
+      }
+    }
+  ],
+  "id": "generated-bundle-001",
+  "resourceType": "Bundle",
+  "type": "collection"
+}

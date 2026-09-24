@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "city": "Surabaya",
+      "country": "ID",
+      "postalCode": "70589",
+      "text": "Jl. Melati No. 187, Medan"
+    }
+  ],
+  "birthDate": "1994-12-22",
+  "gender": "female",
+  "id": "generated-patient-006",
+  "identifier": [
+    {
+      "system": "nik",
+      "value": "3471016212941170"
+    }
+  ],
+  "name": [
+    {
+      "family": "Wardani",
+      "given": [
+        "Dimas"
+      ]
+    }
+  ],
+  "resourceType": "Patient",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+628673528321"
+    }
+  ]
+}

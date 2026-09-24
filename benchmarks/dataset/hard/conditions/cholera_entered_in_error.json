@@ -1,0 +1,29 @@
+{
+  "resourceType": "Condition",
+  "id": "cholera-entered-in-error",
+  "subject": {
+    "reference": "Patient/demo"
+  },
+  "clinicalStatus": {
+    "coding": [
+      {
+        "code": "active"
+      }
+    ]
+  },
+  "verificationStatus": {
+    "coding": [
+      {
+        "code": "entered-in-error"
+      }
+    ]
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "code": "A00"
+      }
+    ]
+  }
+}

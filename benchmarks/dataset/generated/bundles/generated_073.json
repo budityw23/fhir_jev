@@ -1,0 +1,48 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-73-0",
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      },
+      "resource": {
+        "address": [
+          {
+            "city": "Denpasar",
+            "country": "ID",
+            "postalCode": "27486",
+            "text": "Jl. Melati No. 169, Bandung"
+          }
+        ],
+        "birthDate": "1994-12-01",
+        "gender": "male",
+        "id": "generated-patient-073",
+        "identifier": [
+          {
+            "system": "nik",
+            "value": "3578010112941107"
+          }
+        ],
+        "name": [
+          {
+            "family": "Wijaya",
+            "given": [
+              "Indah"
+            ]
+          }
+        ],
+        "resourceType": "Patient",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+628886989426"
+          }
+        ]
+      }
+    }
+  ],
+  "id": "generated-bundle-073",
+  "resourceType": "Bundle",
+  "type": "transaction"
+}

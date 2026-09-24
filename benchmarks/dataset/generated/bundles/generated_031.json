@@ -1,0 +1,116 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-31-2",
+      "resource": {
+        "code": {
+          "text": "Follow-up condition"
+        },
+        "encounter": {
+          "reference": "Encounter/generated-encounter-031"
+        },
+        "id": "generated-condition-311",
+        "resourceType": "Condition",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-31-1",
+      "resource": {
+        "code": {
+          "text": "Follow-up condition"
+        },
+        "encounter": {
+          "reference": "Encounter/generated-encounter-031"
+        },
+        "id": "generated-condition-310",
+        "resourceType": "Condition",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-31-4",
+      "resource": {
+        "code": {
+          "text": "Follow-up condition"
+        },
+        "encounter": {
+          "reference": "Encounter/generated-encounter-031"
+        },
+        "id": "generated-condition-313",
+        "resourceType": "Condition",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-31-3",
+      "resource": {
+        "code": {
+          "text": "Follow-up condition"
+        },
+        "encounter": {
+          "reference": "Encounter/generated-encounter-031"
+        },
+        "id": "generated-condition-312",
+        "resourceType": "Condition",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-31-0",
+      "resource": {
+        "class": {
+          "code": "AMB",
+          "display": "ambulatory",
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+        },
+        "id": "generated-encounter-031",
+        "resourceType": "Encounter",
+        "status": "finished"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-31-5",
+      "resource": {
+        "code": {
+          "text": "Follow-up condition"
+        },
+        "encounter": {
+          "reference": "Encounter/generated-encounter-031"
+        },
+        "id": "generated-condition-314",
+        "resourceType": "Condition",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-31-6",
+      "resource": {
+        "code": {
+          "text": "Follow-up condition"
+        },
+        "encounter": {
+          "reference": "Encounter/generated-encounter-031"
+        },
+        "id": "generated-condition-315",
+        "resourceType": "Condition",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    }
+  ],
+  "id": "generated-bundle-031",
+  "resourceType": "Bundle",
+  "type": "collection"
+}

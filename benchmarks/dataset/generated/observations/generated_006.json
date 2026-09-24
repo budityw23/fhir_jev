@@ -1,0 +1,22 @@
+{
+  "code": {
+    "coding": [
+      {
+        "code": "4548-4",
+        "display": "Laboratory test",
+        "system": "http://loinc.org"
+      }
+    ]
+  },
+  "effectiveDateTime": "2026-03-10T08:00:00+07:00",
+  "id": "generated-observation-006",
+  "resourceType": "Observation",
+  "status": "entered-in-error",
+  "subject": {
+    "reference": "Patient/generated-patient-000"
+  },
+  "valueQuantity": {
+    "unit": "mg/dL",
+    "value": 35
+  }
+}

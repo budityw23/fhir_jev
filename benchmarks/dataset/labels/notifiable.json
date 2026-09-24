@@ -1,0 +1,250 @@
+[
+  {
+    "fixture": "tests/fixtures/conditions/asthma_j45.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "not_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/cholera_a00.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/common_cold_j06.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "not_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/dengue_a90.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/fracture_s72.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "not_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/hiv_b20.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/hypertension_i10.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "not_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/japanese_encephalitis_a83.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/leprosy_a30.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/malaria_b50.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/missing_coding_system.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/no_code.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "not_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/snomed_only.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "not_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/tuberculosis_a15.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "tests/fixtures/conditions/typhoid_a01.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Existing unit reporting expectation migrated into the labelled dataset.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/tb_subcode_a15_0.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/malaria_subcode_b50_9.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/typhoid_subcode_a01_0.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/dengue_hemorrhagic_a91.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/dengue_snomed_only.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/tb_snomed_only.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/dbd_text_only.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/tb_paru_text_only.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/dengue_refuted.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "not_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/cholera_entered_in_error.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "not_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/code_display_mismatch.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "review_needed"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/fever_unspecified_r50_9.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "review_needed"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/viral_infection_b34_9.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "not_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/hard/conditions/pneumonia_j18_9.json",
+    "source": "hard",
+    "difficulty": "hard",
+    "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules.",
+    "approved_by": null,
+    "expected_status": "not_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/demo/conditions/condition_je_bali.json",
+    "source": "demo",
+    "difficulty": "easy",
+    "rationale": "Synthetic demo disease preset.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  },
+  {
+    "fixture": "benchmarks/dataset/demo/conditions/condition_dbd_text_only.json",
+    "source": "demo",
+    "difficulty": "hard",
+    "rationale": "Synthetic demo disease preset.",
+    "approved_by": null,
+    "expected_status": "confirmed_notifiable"
+  }
+]

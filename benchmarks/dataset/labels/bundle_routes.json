@@ -1,0 +1,818 @@
+[
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "tests/fixtures/bundles/condition_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "tests/fixtures/bundles/empty_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "tests/fixtures/bundles/encounter_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "tests/fixtures/bundles/immunization_and_patient_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "tests/fixtures/bundles/immunization_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "tests/fixtures/bundles/lab_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "tests/fixtures/bundles/large_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "tests/fixtures/bundles/medication_and_condition_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "tests/fixtures/bundles/medication_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "tests/fixtures/bundles/mixed_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "tests/fixtures/bundles/multi_lab_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "tests/fixtures/bundles/nested_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "tests/fixtures/bundles/patient_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "tests/fixtures/bundles/single_observation_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "tests/fixtures/bundles/unknown_bundle.json",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset.",
+    "source": "unit"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/hard/bundles/realistic_lab_submission.json",
+    "rationale": "Bundle composition label is authored independently of the baseline.",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/hard/bundles/immunization_with_context.json",
+    "rationale": "Bundle composition label is authored independently of the baseline.",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/hard/bundles/medication_transaction.json",
+    "rationale": "Bundle composition label is authored independently of the baseline.",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/hard/bundles/vitals_only.json",
+    "rationale": "Bundle composition label is authored independently of the baseline.",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/hard/bundles/genuinely_mixed.json",
+    "rationale": "Bundle composition label is authored independently of the baseline.",
+    "source": "hard"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/demo/bundles/bundle_lab_submission_9_entries.json",
+    "rationale": "Bundle composition label is authored independently of the baseline.",
+    "source": "demo"
+  },
+  {
+    "approved_by": null,
+    "difficulty": "hard",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/demo/bundles/bundle_ambiguous_referral.json",
+    "rationale": "Bundle composition label is authored independently of the baseline.",
+    "source": "demo"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_000.json",
+    "rationale": "lab_result template: 27 entries (Encounter, Observation, Patient), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_001.json",
+    "rationale": "lab_result template: 27 entries (Encounter, Observation, Patient), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_002.json",
+    "rationale": "lab_result template: 15 entries (Encounter, Observation, Patient), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_003.json",
+    "rationale": "lab_result template: 28 entries (Encounter, Observation, Patient), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_004.json",
+    "rationale": "lab_result template: 23 entries (Encounter, Observation, Patient), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_005.json",
+    "rationale": "lab_result template: 17 entries (Encounter, Observation, Patient), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_006.json",
+    "rationale": "lab_result template: 13 entries (Encounter, Observation, Patient), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_007.json",
+    "rationale": "lab_result template: 13 entries (Encounter, Observation, Patient), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_008.json",
+    "rationale": "lab_result template: 27 entries (Encounter, Observation, Patient), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_009.json",
+    "rationale": "lab_result template: 14 entries (Encounter, Observation, Patient), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_010.json",
+    "rationale": "lab_result template: 30 entries (Encounter, Observation, Patient), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_011.json",
+    "rationale": "lab_result template: 24 entries (Encounter, Observation, Patient), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_012.json",
+    "rationale": "lab_result template: 20 entries (Encounter, Observation, Patient), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_013.json",
+    "rationale": "lab_result template: 15 entries (Encounter, Observation, Patient), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_014.json",
+    "rationale": "lab_result template: 25 entries (Encounter, Observation, Patient), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_015.json",
+    "rationale": "lab_result template: 19 entries (Encounter, Observation, Patient), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_016.json",
+    "rationale": "lab_result template: 27 entries (Encounter, Observation, Patient), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "lab_result",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_017.json",
+    "rationale": "lab_result template: 14 entries (Encounter, Observation, Patient), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_018.json",
+    "rationale": "encounter_summary template: 3 entries (Condition, Encounter), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_019.json",
+    "rationale": "encounter_summary template: 6 entries (Condition, Encounter), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_020.json",
+    "rationale": "encounter_summary template: 3 entries (Condition, Encounter), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_021.json",
+    "rationale": "encounter_summary template: 9 entries (Condition, Encounter), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_022.json",
+    "rationale": "encounter_summary template: 6 entries (Condition, Encounter), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_023.json",
+    "rationale": "encounter_summary template: 2 entries (Condition, Encounter), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_024.json",
+    "rationale": "encounter_summary template: 8 entries (Condition, Encounter), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_025.json",
+    "rationale": "encounter_summary template: 2 entries (Condition, Encounter), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_026.json",
+    "rationale": "encounter_summary template: 2 entries (Condition, Encounter), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_027.json",
+    "rationale": "encounter_summary template: 8 entries (Condition, Encounter), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_028.json",
+    "rationale": "encounter_summary template: 4 entries (Condition, Encounter), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_029.json",
+    "rationale": "encounter_summary template: 2 entries (Condition, Encounter), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_030.json",
+    "rationale": "encounter_summary template: 7 entries (Condition, Encounter), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_031.json",
+    "rationale": "encounter_summary template: 7 entries (Condition, Encounter), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_032.json",
+    "rationale": "encounter_summary template: 6 entries (Condition, Encounter), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_033.json",
+    "rationale": "encounter_summary template: 2 entries (Condition, Encounter), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_034.json",
+    "rationale": "encounter_summary template: 6 entries (Condition, Encounter), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "encounter_summary",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_035.json",
+    "rationale": "encounter_summary template: 7 entries (Condition, Encounter), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_036.json",
+    "rationale": "immunization_report template: 2 entries (Immunization), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_037.json",
+    "rationale": "immunization_report template: 6 entries (Immunization), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_038.json",
+    "rationale": "immunization_report template: 9 entries (Immunization), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_039.json",
+    "rationale": "immunization_report template: 4 entries (Immunization), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_040.json",
+    "rationale": "immunization_report template: 2 entries (Immunization), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_041.json",
+    "rationale": "immunization_report template: 8 entries (Immunization), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_042.json",
+    "rationale": "immunization_report template: 6 entries (Immunization), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_043.json",
+    "rationale": "immunization_report template: 5 entries (Immunization), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_044.json",
+    "rationale": "immunization_report template: 8 entries (Immunization), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_045.json",
+    "rationale": "immunization_report template: 9 entries (Immunization), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_046.json",
+    "rationale": "immunization_report template: 8 entries (Immunization), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_047.json",
+    "rationale": "immunization_report template: 3 entries (Immunization), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_048.json",
+    "rationale": "immunization_report template: 8 entries (Immunization), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_049.json",
+    "rationale": "immunization_report template: 7 entries (Immunization), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_050.json",
+    "rationale": "immunization_report template: 6 entries (Immunization), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "immunization_report",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_051.json",
+    "rationale": "immunization_report template: 3 entries (Immunization), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_052.json",
+    "rationale": "medication_dispense template: 3 entries (MedicationDispense), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_053.json",
+    "rationale": "medication_dispense template: 7 entries (MedicationDispense), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_054.json",
+    "rationale": "medication_dispense template: 6 entries (MedicationDispense), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_055.json",
+    "rationale": "medication_dispense template: 6 entries (MedicationDispense), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_056.json",
+    "rationale": "medication_dispense template: 8 entries (MedicationDispense), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_057.json",
+    "rationale": "medication_dispense template: 9 entries (MedicationDispense), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_058.json",
+    "rationale": "medication_dispense template: 3 entries (MedicationDispense), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_059.json",
+    "rationale": "medication_dispense template: 8 entries (MedicationDispense), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_060.json",
+    "rationale": "medication_dispense template: 8 entries (MedicationDispense), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_061.json",
+    "rationale": "medication_dispense template: 8 entries (MedicationDispense), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_062.json",
+    "rationale": "medication_dispense template: 3 entries (MedicationDispense), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_063.json",
+    "rationale": "medication_dispense template: 8 entries (MedicationDispense), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_064.json",
+    "rationale": "medication_dispense template: 5 entries (MedicationDispense), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_065.json",
+    "rationale": "medication_dispense template: 8 entries (MedicationDispense), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_066.json",
+    "rationale": "medication_dispense template: 7 entries (MedicationDispense), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "medication_dispense",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_067.json",
+    "rationale": "medication_dispense template: 6 entries (MedicationDispense), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_068.json",
+    "rationale": "unknown template: 14 entries (Immunization, MedicationDispense, Observation), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_069.json",
+    "rationale": "unknown template: 0 entries (empty), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_070.json",
+    "rationale": "unknown template: 1 entries (Patient), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_071.json",
+    "rationale": "unknown template: 10 entries (Immunization, MedicationDispense, Observation), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_072.json",
+    "rationale": "unknown template: 0 entries (empty), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_073.json",
+    "rationale": "unknown template: 1 entries (Patient), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_074.json",
+    "rationale": "unknown template: 21 entries (Immunization, MedicationDispense, Observation), collection.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_075.json",
+    "rationale": "unknown template: 0 entries (empty), batch.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_076.json",
+    "rationale": "unknown template: 1 entries (Patient), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_077.json",
+    "rationale": "unknown template: 12 entries (Immunization, MedicationDispense, Observation), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_078.json",
+    "rationale": "unknown template: 0 entries (empty), transaction.",
+    "source": "generated"
+  },
+  {
+    "approved_by": "construction",
+    "difficulty": "easy",
+    "expected_category": "unknown",
+    "fixture": "benchmarks/dataset/generated/bundles/generated_079.json",
+    "rationale": "unknown template: 1 entries (Patient), collection.",
+    "source": "generated"
+  }
+]

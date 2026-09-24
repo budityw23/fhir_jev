@@ -1,0 +1,24 @@
+{
+  "resourceType": "Condition",
+  "id": "dbd-text-only",
+  "subject": {
+    "reference": "Patient/demo"
+  },
+  "clinicalStatus": {
+    "coding": [
+      {
+        "code": "active"
+      }
+    ]
+  },
+  "verificationStatus": {
+    "coding": [
+      {
+        "code": "confirmed"
+      }
+    ]
+  },
+  "code": {
+    "text": "Demam berdarah dengue (DBD)"
+  }
+}

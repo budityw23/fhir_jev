@@ -1,0 +1,26 @@
+{
+  "resourceType": "Patient",
+  "id": "nik-all-zeros",
+  "identifier": [
+    {
+      "system": "https://fhir.kemkes.go.id/id/nik",
+      "value": "0000000000000000"
+    }
+  ],
+  "name": [
+    {
+      "family": "Wijaya",
+      "given": [
+        "Sari"
+      ]
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1990-01-01",
+  "address": [
+    {
+      "text": "Jl. Merdeka 1",
+      "country": "ID"
+    }
+  ]
+}

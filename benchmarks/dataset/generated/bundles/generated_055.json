@@ -1,0 +1,115 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-55-1",
+      "request": {
+        "method": "POST",
+        "url": "MedicationDispense"
+      },
+      "resource": {
+        "id": "generated-dispense-551",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-55-3",
+      "request": {
+        "method": "POST",
+        "url": "MedicationDispense"
+      },
+      "resource": {
+        "id": "generated-dispense-553",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-55-5",
+      "request": {
+        "method": "POST",
+        "url": "MedicationDispense"
+      },
+      "resource": {
+        "id": "generated-dispense-555",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-55-4",
+      "request": {
+        "method": "POST",
+        "url": "MedicationDispense"
+      },
+      "resource": {
+        "id": "generated-dispense-554",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-55-2",
+      "request": {
+        "method": "POST",
+        "url": "MedicationDispense"
+      },
+      "resource": {
+        "id": "generated-dispense-552",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:generated-55-0",
+      "request": {
+        "method": "POST",
+        "url": "MedicationDispense"
+      },
+      "resource": {
+        "id": "generated-dispense-550",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "resourceType": "MedicationDispense",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/generated-patient-000"
+        }
+      }
+    }
+  ],
+  "id": "generated-bundle-055",
+  "resourceType": "Bundle",
+  "type": "batch"
+}

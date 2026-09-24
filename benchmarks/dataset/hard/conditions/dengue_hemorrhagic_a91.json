@@ -1,0 +1,30 @@
+{
+  "resourceType": "Condition",
+  "id": "dengue-hemorrhagic-a91",
+  "subject": {
+    "reference": "Patient/demo"
+  },
+  "clinicalStatus": {
+    "coding": [
+      {
+        "code": "active"
+      }
+    ]
+  },
+  "verificationStatus": {
+    "coding": [
+      {
+        "code": "confirmed"
+      }
+    ]
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "code": "A91",
+        "display": "Dengue haemorrhagic fever"
+      }
+    ]
+  }
+}

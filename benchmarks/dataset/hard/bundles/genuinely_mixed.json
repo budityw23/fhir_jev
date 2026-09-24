@@ -1,0 +1,135 @@
+{
+  "resourceType": "Bundle",
+  "id": "genuinely-mixed",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:genuinely-mixed-0",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "hard-lab-0",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "718-7",
+              "display": "Laboratory test"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/hard-patient"
+        },
+        "encounter": {
+          "reference": "Encounter/hard-encounter"
+        },
+        "valueQuantity": {
+          "value": 10,
+          "unit": "mg/dL"
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:genuinely-mixed-1",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "hard-lab-1",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "718-7",
+              "display": "Laboratory test"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/hard-patient"
+        },
+        "encounter": {
+          "reference": "Encounter/hard-encounter"
+        },
+        "valueQuantity": {
+          "value": 10,
+          "unit": "mg/dL"
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:genuinely-mixed-2",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "hard-lab-2",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "718-7",
+              "display": "Laboratory test"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/hard-patient"
+        },
+        "encounter": {
+          "reference": "Encounter/hard-encounter"
+        },
+        "valueQuantity": {
+          "value": 10,
+          "unit": "mg/dL"
+        },
+        "effectiveDateTime": "2026-03-10T08:00:00+07:00"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:genuinely-mixed-3",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "hard-imm-1",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "COVID-19 vaccine"
+        },
+        "patient": {
+          "reference": "Patient/hard-patient"
+        },
+        "occurrenceDateTime": "2026-03-10"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:genuinely-mixed-4",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "hard-imm-2",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "COVID-19 vaccine"
+        },
+        "patient": {
+          "reference": "Patient/hard-patient"
+        },
+        "occurrenceDateTime": "2026-03-10"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:genuinely-mixed-5",
+      "resource": {
+        "resourceType": "MedicationDispense",
+        "id": "hard-dispense",
+        "status": "completed",
+        "medicationCodeableConcept": {
+          "text": "Paracetamol 500 mg"
+        },
+        "subject": {
+          "reference": "Patient/hard-patient"
+        }
+      }
+    }
+  ]
+}

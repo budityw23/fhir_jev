@@ -1,0 +1,44 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:generated-79-0",
+      "resource": {
+        "address": [
+          {
+            "city": "Jakarta",
+            "country": "ID",
+            "postalCode": "28714",
+            "text": "Jl. Melati No. 132, Surabaya"
+          }
+        ],
+        "birthDate": "1999-07-09",
+        "gender": "male",
+        "id": "generated-patient-079",
+        "identifier": [
+          {
+            "system": "nik",
+            "value": "3471010907990940"
+          }
+        ],
+        "name": [
+          {
+            "family": "Darmawan",
+            "given": [
+              "Rizky"
+            ]
+          }
+        ],
+        "resourceType": "Patient",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+628490102359"
+          }
+        ]
+      }
+    }
+  ],
+  "id": "generated-bundle-079",
+  "resourceType": "Bundle",
+  "type": "collection"
+}

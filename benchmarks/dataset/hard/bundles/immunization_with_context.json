@@ -1,0 +1,85 @@
+{
+  "resourceType": "Bundle",
+  "id": "immunization-with-context",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:immunization-with-context-0",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "hard-patient",
+        "name": [
+          {
+            "family": "Santoso",
+            "given": [
+              "Rina"
+            ]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1994-03-12"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:immunization-with-context-1",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "hard-encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "subject": {
+          "reference": "Patient/hard-patient"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:immunization-with-context-2",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "hard-practitioner",
+        "name": [
+          {
+            "family": "Putri",
+            "given": [
+              "Dewi"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:immunization-with-context-3",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "hard-imm-1",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "COVID-19 vaccine"
+        },
+        "patient": {
+          "reference": "Patient/hard-patient"
+        },
+        "occurrenceDateTime": "2026-03-10"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:immunization-with-context-4",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "hard-imm-2",
+        "status": "completed",
+        "vaccineCode": {
+          "text": "COVID-19 vaccine"
+        },
+        "patient": {
+          "reference": "Patient/hard-patient"
+        },
+        "occurrenceDateTime": "2026-03-10"
+      }
+    }
+  ]
+}
