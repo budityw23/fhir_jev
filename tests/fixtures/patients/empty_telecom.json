@@ -1,0 +1,1 @@
+{"resourceType":"Patient","id":"p-empty-telecom","identifier":[{"system":"nik","value":"3173010101900005"}],"name":[{"family":"Lestari"}],"birthDate":"1995-01-22","gender":"female","address":[{"country":"ID"}],"telecom":[]}

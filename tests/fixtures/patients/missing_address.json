@@ -1,0 +1,1 @@
+{"resourceType":"Patient","id":"p-missing-address","identifier":[{"system":"nik","value":"3173010101900002"}],"name":[{"family":"Santoso"}],"birthDate":"1985-02-03","gender":"male"}

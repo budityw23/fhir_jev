@@ -1,0 +1,1 @@
+{"resourceType":"Bundle","id":"single-observation","type":"collection","entry":[{"resource":{"resourceType":"Observation","id":"obs-single","status":"final","code":{"coding":[{"system":"http://loinc.org","code":"8867-4","display":"Heart rate"}]},"subject":{"reference":"Patient/12345"},"valueQuantity":{"value":72,"unit":"/min"}}}]}

@@ -1,0 +1,1 @@
+{"resourceType":"Bundle","id":"unknown-bundle","type":"collection","entry":[{"resource":{"resourceType":"DiagnosticReport","id":"report-1","status":"final","code":{"text":"Unknown report"}}}]}

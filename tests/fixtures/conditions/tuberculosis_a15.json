@@ -1,0 +1,1 @@
+{"resourceType":"Condition","id":"tb-a15","clinicalStatus":{"coding":[{"system":"http://terminology.hl7.org/CodeSystem/condition-clinical","code":"active"}]},"code":{"coding":[{"system":"http://hl7.org/fhir/sid/icd-10","code":"A15","display":"Respiratory tuberculosis"}]},"subject":{"reference":"Patient/12345"}}

@@ -1,0 +1,1 @@
+{"resourceType":"Patient","id":"p-missing-gender","identifier":[{"system":"nik","value":"3173010101900003"}],"name":[{"family":"Putri"}],"birthDate":"1992-04-12","address":[{"country":"ID"}]}

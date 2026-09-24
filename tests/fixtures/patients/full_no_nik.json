@@ -1,0 +1,1 @@
+{"resourceType":"Patient","id":"p-full-no-nik","identifier":[{"system":"mrn","value":"MRN-011"}],"name":[{"family":"Gunawan"}],"birthDate":"1982-11-14","gender":"male","address":[{"country":"ID"}]}

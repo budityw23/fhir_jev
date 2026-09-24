@@ -1,0 +1,1 @@
+{"resourceType":"Patient","id":"p-address-no-country","identifier":[{"system":"nik","value":"3173010101900009"}],"name":[{"family":"Utami"}],"birthDate":"1986-12-01","gender":"female","address":[{"city":"Jakarta"}]}

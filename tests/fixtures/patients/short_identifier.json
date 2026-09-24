@@ -1,0 +1,1 @@
+{"resourceType":"Patient","id":"p-short-id","identifier":[{"system":"nik","value":"12345"}],"name":[{"family":"Wati"}],"birthDate":"1996-06-06","gender":"female","address":[{"country":"ID"}]}

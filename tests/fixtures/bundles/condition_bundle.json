@@ -1,0 +1,1 @@
+{"resourceType":"Bundle","id":"condition-bundle","type":"collection","entry":[{"resource":{"resourceType":"Condition","id":"condition-a90","clinicalStatus":{"coding":[{"system":"http://terminology.hl7.org/CodeSystem/condition-clinical","code":"active"}]},"code":{"coding":[{"system":"http://hl7.org/fhir/sid/icd-10","code":"A90"}]},"subject":{"reference":"Patient/12345"}}}]}

@@ -1,0 +1,17 @@
+[
+  {"fixture":"conditions/asthma_j45.json","expected_notifiable":false},
+  {"fixture":"conditions/cholera_a00.json","expected_notifiable":true},
+  {"fixture":"conditions/common_cold_j06.json","expected_notifiable":false},
+  {"fixture":"conditions/dengue_a90.json","expected_notifiable":true},
+  {"fixture":"conditions/fracture_s72.json","expected_notifiable":false},
+  {"fixture":"conditions/hiv_b20.json","expected_notifiable":true},
+  {"fixture":"conditions/hypertension_i10.json","expected_notifiable":false},
+  {"fixture":"conditions/japanese_encephalitis_a83.json","expected_notifiable":true},
+  {"fixture":"conditions/leprosy_a30.json","expected_notifiable":true},
+  {"fixture":"conditions/malaria_b50.json","expected_notifiable":true},
+  {"fixture":"conditions/missing_coding_system.json","expected_notifiable":true},
+  {"fixture":"conditions/no_code.json","expected_notifiable":false},
+  {"fixture":"conditions/snomed_only.json","expected_notifiable":false},
+  {"fixture":"conditions/tuberculosis_a15.json","expected_notifiable":true},
+  {"fixture":"conditions/typhoid_a01.json","expected_notifiable":true}
+]

@@ -1,0 +1,1 @@
+{"resourceType":"Patient","id":"p-multiple-identifiers","identifier":[{"system":"nik","value":"3173010101900004"},{"system":"mrn","value":"MRN-004"}],"name":[{"family":"Hartono"}],"birthDate":"1978-07-19","gender":"male","address":[{"country":"ID"}]}

@@ -1,0 +1,1 @@
+{"resourceType":"Patient","id":"p-complete-two","identifier":[{"system":"nik","value":"3173010101900012"}],"name":[{"family":"Sutanto"}],"birthDate":"1975-02-20","gender":"male","address":[{"country":"ID"}]}

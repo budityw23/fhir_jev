@@ -1,0 +1,1 @@
+{"resourceType":"Patient","id":"p-two-names","identifier":[{"system":"nik","value":"3173010101900010"}],"name":[{"family":"Nugroho"},{"family":"Pratama"}],"birthDate":"1993-09-09","gender":"male","address":[{"country":"ID"}]}

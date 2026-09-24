@@ -1,0 +1,1 @@
+{"resourceType":"Patient","id":"p-missing-birthdate","identifier":[{"system":"nik","value":"3173010101900008"}],"name":[{"family":"Kurniawan"}],"gender":"male","address":[{"country":"ID"}]}

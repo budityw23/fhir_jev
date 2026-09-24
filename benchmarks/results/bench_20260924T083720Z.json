@@ -1,0 +1,559 @@
+{
+  "generated_at": "2026-09-24T08:37:20.351612+00:00",
+  "mode": "mock_jev",
+  "token_and_cost": {
+    "tokens_used": 0,
+    "estimated_cost_usd": 0.0,
+    "note": "mock client"
+  },
+  "modules": {
+    "quality_scorer": {
+      "fixture_count": 20,
+      "jev_accuracy": 1.0,
+      "rule_accuracy": 1.0,
+      "latency": {
+        "mean_ms": 43.303,
+        "p50_ms": 44.738,
+        "p95_ms": 53.68
+      },
+      "confidence_calibration": [
+        {
+          "bucket": "0.5-0.8",
+          "count": 12,
+          "mean_confidence": 0.714,
+          "observed_accuracy": 1.0
+        },
+        {
+          "bucket": "0.8-1.0",
+          "count": 8,
+          "mean_confidence": 0.876,
+          "observed_accuracy": 1.0
+        }
+      ],
+      "rows": [
+        {
+          "fixture": "patients/address_no_country.json",
+          "expected_score_range": [
+            80,
+            80
+          ],
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/complete_patient.json",
+          "expected_score_range": [
+            80,
+            80
+          ],
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/complete_patient_two.json",
+          "expected_score_range": [
+            80,
+            80
+          ],
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/empty_telecom.json",
+          "expected_score_range": [
+            80,
+            80
+          ],
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/full_no_nik.json",
+          "expected_score_range": [
+            80,
+            80
+          ],
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/invalid_nik.json",
+          "expected_score_range": [
+            80,
+            80
+          ],
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/minimal_patient.json",
+          "expected_score_range": [
+            0,
+            0
+          ],
+          "jev_score": 0,
+          "rule_score": 0,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/missing_address.json",
+          "expected_score_range": [
+            70,
+            70
+          ],
+          "jev_score": 70,
+          "rule_score": 70,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/missing_all_demographics.json",
+          "expected_score_range": [
+            0,
+            0
+          ],
+          "jev_score": 0,
+          "rule_score": 0,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/missing_birthdate.json",
+          "expected_score_range": [
+            70,
+            70
+          ],
+          "jev_score": 70,
+          "rule_score": 70,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/missing_gender.json",
+          "expected_score_range": [
+            70,
+            70
+          ],
+          "jev_score": 70,
+          "rule_score": 70,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/missing_identifier.json",
+          "expected_score_range": [
+            50,
+            50
+          ],
+          "jev_score": 50,
+          "rule_score": 50,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/missing_name.json",
+          "expected_score_range": [
+            60,
+            60
+          ],
+          "jev_score": 60,
+          "rule_score": 60,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/multiple_identifiers.json",
+          "expected_score_range": [
+            80,
+            80
+          ],
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/non_indonesian.json",
+          "expected_score_range": [
+            80,
+            80
+          ],
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/only_identifier.json",
+          "expected_score_range": [
+            30,
+            30
+          ],
+          "jev_score": 30,
+          "rule_score": 30,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/only_name.json",
+          "expected_score_range": [
+            20,
+            20
+          ],
+          "jev_score": 20,
+          "rule_score": 20,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/short_identifier.json",
+          "expected_score_range": [
+            80,
+            80
+          ],
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/two_names.json",
+          "expected_score_range": [
+            80,
+            80
+          ],
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "patients/with_telecom.json",
+          "expected_score_range": [
+            80,
+            80
+          ],
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true
+        }
+      ]
+    },
+    "bundle_router": {
+      "fixture_count": 15,
+      "jev_accuracy": 0.733,
+      "rule_accuracy": 0.933,
+      "latency": {
+        "mean_ms": 25.082,
+        "p50_ms": 25.869,
+        "p95_ms": 31.22
+      },
+      "confidence_calibration": [
+        {
+          "bucket": "0.5-0.8",
+          "count": 2,
+          "mean_confidence": 0.73,
+          "observed_accuracy": 0.5
+        },
+        {
+          "bucket": "0.8-1.0",
+          "count": 13,
+          "mean_confidence": 0.907,
+          "observed_accuracy": 0.769
+        }
+      ],
+      "rows": [
+        {
+          "fixture": "bundles/condition_bundle.json",
+          "expected_category": "unknown",
+          "jev_category": "unknown",
+          "rule_category": "unknown",
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/empty_bundle.json",
+          "expected_category": "unknown",
+          "jev_category": "medication_dispense",
+          "rule_category": "unknown",
+          "jev_correct": false,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/encounter_bundle.json",
+          "expected_category": "encounter_summary",
+          "jev_category": "encounter_summary",
+          "rule_category": "encounter_summary",
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/immunization_and_patient_bundle.json",
+          "expected_category": "immunization_report",
+          "jev_category": "immunization_report",
+          "rule_category": "immunization_report",
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/immunization_bundle.json",
+          "expected_category": "immunization_report",
+          "jev_category": "immunization_report",
+          "rule_category": "immunization_report",
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/lab_bundle.json",
+          "expected_category": "lab_result",
+          "jev_category": "lab_result",
+          "rule_category": "lab_result",
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/large_bundle.json",
+          "expected_category": "lab_result",
+          "jev_category": "lab_result",
+          "rule_category": "lab_result",
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/medication_and_condition_bundle.json",
+          "expected_category": "medication_dispense",
+          "jev_category": "medication_dispense",
+          "rule_category": "medication_dispense",
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/medication_bundle.json",
+          "expected_category": "medication_dispense",
+          "jev_category": "medication_dispense",
+          "rule_category": "medication_dispense",
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/mixed_bundle.json",
+          "expected_category": "unknown",
+          "jev_category": "lab_result",
+          "rule_category": "encounter_summary",
+          "jev_correct": false,
+          "rule_correct": false
+        },
+        {
+          "fixture": "bundles/multi_lab_bundle.json",
+          "expected_category": "lab_result",
+          "jev_category": "lab_result",
+          "rule_category": "lab_result",
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/nested_bundle.json",
+          "expected_category": "unknown",
+          "jev_category": "encounter_summary",
+          "rule_category": "unknown",
+          "jev_correct": false,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/patient_bundle.json",
+          "expected_category": "unknown",
+          "jev_category": "medication_dispense",
+          "rule_category": "unknown",
+          "jev_correct": false,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/single_observation_bundle.json",
+          "expected_category": "lab_result",
+          "jev_category": "lab_result",
+          "rule_category": "lab_result",
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "bundles/unknown_bundle.json",
+          "expected_category": "unknown",
+          "jev_category": "unknown",
+          "rule_category": "unknown",
+          "jev_correct": true,
+          "rule_correct": true
+        }
+      ]
+    },
+    "notifiable_detector": {
+      "fixture_count": 15,
+      "jev_accuracy": 1.0,
+      "rule_accuracy": 1.0,
+      "jev_precision_recall_f1": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "rule_precision_recall_f1": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "latency": {
+        "mean_ms": 20.653,
+        "p50_ms": 20.149,
+        "p95_ms": 29.642
+      },
+      "confidence_calibration": [
+        {
+          "bucket": "0.0-0.5",
+          "count": 6,
+          "mean_confidence": 0.1,
+          "observed_accuracy": 1.0
+        },
+        {
+          "bucket": "0.8-1.0",
+          "count": 9,
+          "mean_confidence": 0.95,
+          "observed_accuracy": 1.0
+        }
+      ],
+      "rows": [
+        {
+          "fixture": "conditions/asthma_j45.json",
+          "expected_notifiable": false,
+          "jev_notifiable": false,
+          "rule_notifiable": false,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/cholera_a00.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/common_cold_j06.json",
+          "expected_notifiable": false,
+          "jev_notifiable": false,
+          "rule_notifiable": false,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/dengue_a90.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/fracture_s72.json",
+          "expected_notifiable": false,
+          "jev_notifiable": false,
+          "rule_notifiable": false,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/hiv_b20.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/hypertension_i10.json",
+          "expected_notifiable": false,
+          "jev_notifiable": false,
+          "rule_notifiable": false,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/japanese_encephalitis_a83.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/leprosy_a30.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/malaria_b50.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/missing_coding_system.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/no_code.json",
+          "expected_notifiable": false,
+          "jev_notifiable": false,
+          "rule_notifiable": false,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/snomed_only.json",
+          "expected_notifiable": false,
+          "jev_notifiable": false,
+          "rule_notifiable": false,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/tuberculosis_a15.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true
+        },
+        {
+          "fixture": "conditions/typhoid_a01.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true
+        }
+      ]
+    }
+  }
+}

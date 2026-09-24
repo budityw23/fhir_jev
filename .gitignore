@@ -1,0 +1,28 @@
+# Secrets — real keys live only in .env (see .env.example)
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Test / lint / type caches
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Demo UI (web/)
+web/node_modules/
+web/dist/
+
+# Local tooling
+.claude/settings.local.json
+.DS_Store

@@ -1,0 +1,9 @@
+{
+  "resourceType": "Patient",
+  "id": "12345",
+  "identifier": [{"system": "nik", "value": "3173010101900001"}],
+  "name": [{"family": "Wijaya", "given": ["Budi"]}],
+  "birthDate": "1990-01-01",
+  "gender": "male",
+  "address": [{"country": "ID"}]
+}

@@ -1,0 +1,1 @@
+{"resourceType":"Patient","id":"p-non-id","identifier":[{"system":"passport","value":"US1234567"}],"name":[{"family":"Smith"}],"birthDate":"1980-10-11","gender":"female","address":[{"country":"US"}]}

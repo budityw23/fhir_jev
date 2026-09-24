@@ -1,0 +1,9 @@
+{
+  "resourceType": "Patient",
+  "id": "invalid-nik",
+  "identifier": [{"system": "nik", "value": "317301010190000"}],
+  "name": [{"family": "Wijaya"}],
+  "birthDate": "1990-01-01",
+  "gender": "male",
+  "address": [{"country": "ID"}]
+}

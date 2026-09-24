@@ -1,0 +1,12 @@
+{
+  "diseases": [
+    {"name": "Japanese encephalitis", "icd10_codes": ["A83.0"], "category": "vector_borne", "reporting_urgency": "24h"},
+    {"name": "Dengue", "icd10_codes": ["A90", "A91"], "category": "vector_borne", "reporting_urgency": "24h"},
+    {"name": "Tuberculosis", "icd10_codes": ["A15", "A16", "A17", "A18", "A19"], "category": "respiratory", "reporting_urgency": "24h"},
+    {"name": "Cholera", "icd10_codes": ["A00"], "category": "waterborne", "reporting_urgency": "24h"},
+    {"name": "Typhoid", "icd10_codes": ["A01"], "category": "waterborne", "reporting_urgency": "24h"},
+    {"name": "Leprosy", "icd10_codes": ["A30"], "category": "infectious", "reporting_urgency": "7d"},
+    {"name": "Malaria", "icd10_codes": ["B50", "B51", "B52", "B53", "B54"], "category": "vector_borne", "reporting_urgency": "24h"},
+    {"name": "HIV", "icd10_codes": ["B20"], "category": "infectious", "reporting_urgency": "7d"}
+  ]
+}
