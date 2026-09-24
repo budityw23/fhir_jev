@@ -678,7 +678,27 @@ Verdict:   FAIL — fix the ❌ items (hard bundles, SNOMED coding, generator re
 **Depends on:** D0.5 PASS (the catalog is built from `labels/`).
 **Requirement refs:** DEMO-API-1…7, DEMO-BE-2…11, Demo Plan §4.
 
-### Codex Implementation
+### How D1 Is Organised
+
+D1 is specified once and built in five small, sequential sub-phases:
+
+- **D1 Contract (source of truth):** Steps 1–10b below are the unchanged D1 specification: schemas, signatures, lane-policy strings, security rules, route table, SSE wire format, pipeline behaviour, static serving, test requirements and Step 10b. Sub-phases only decide **when** each part is built. If a sub-phase description and the contract ever disagree, **the contract wins**.
+- **Sub-phases D1a → D1e:** each is implemented and evaluated separately (Codex implements, then a fresh session evaluates), in this order:
+
+```
+D1a Foundations → D1b Compare API → D1c Feed & Pipeline → D1d SSE → D1e Benchmarks, static, final regression
+```
+
+- **Rules for every sub-phase:**
+  - Tests use the mock Jev client only.
+  - Demo routes stay absent when `DEMO_ENABLED=false`.
+  - Don't change fixtures, labels, approvals, `.gitignore`, or D0/D0.5 behaviour.
+  - Don't start D2 or add frontend code.
+  - The existing `tests/test_api.py` must pass unchanged at the end of every sub-phase.
+  - Anything listed under "Deferred" must not be implemented early.
+- **Final state:** once D1e passes, the code must match the full contract exactly, and the final end-to-end checklist in D1e (the original D1 checklist) must pass.
+
+### D1 Contract (Source of Truth)
 
 **Goal:** everything the UI needs, as mock-testable HTTP endpoints under `/api/v1/demo`, mounted only when `DEMO_ENABLED=true`. No frontend yet.
 
@@ -828,7 +848,7 @@ For each call:
 3. Run the Jev module with those thresholds, run the rule baseline, and build `serialized_state` from the same serializer the module uses.
 4. `override_applied` (router): the top choice in `jev_raw[0].result` ≠ `unknown` and `response.category == "unknown"`.
 5. `ground_truth` and `verdict`: only when `fixture_id` is in the catalog. Quality compares `action` with `expected_action`; the router compares category; notifiable compares `status == confirmed_notifiable` with `expected_notifiable`.
-6. Rule decision vocabulary: quality → `auto_accept` if the rule score ≥ threshold, else `review_needed`; router → category; notifiable → `confirmed_notifiable` or `not_notifiable`.
+6. Rule decision vocabulary: quality → `auto_accept` if the rule score ≥ threshold **and** the rule's `nik_valid is not False` (the same NIK gate as `QualityScorer` and the benchmark), else `review_needed`. Use `baselines.quality.score_patient` for Patients and `score_observation` for Observations. Router → category; notifiable → `confirmed_notifiable` or `not_notifiable`. *(Updated after D0/D0.5: NIK gate and Observation baseline.)*
 7. Build the `audit_event` with `AuditEventBuilder` (timestamp `datetime.now(UTC)`), and assign the lane.
 
 `ValueError` from modules propagates, so the existing 400 handler applies.
@@ -976,6 +996,8 @@ def get_demo(request: Request) -> DemoServices: ...   # raises HTTP 404 if demo 
 - Compare quality on `complete_patient` → `jev_decision == "auto_accept"`, `rule.decision` present, `serialized_state.field_completeness` present, `jev_raw` has one `score` and one `noul`, `tokens_used > 0`, and the `audit_event` parses as R4B.
 - Compare router on `mixed_bundle` with `route_confidence_minimum=0.99` → `category == "unknown"`, `override_applied is True`, `lane == "review"`, and `lane_reason` starts with `"confidence"`.
 - Compare notifiable on `japanese_encephalitis_a83` → `lane == "flagged"`, `flag_resource` not None, `verdict.jev_correct is True`.
+- Compare quality on `invalid_nik` → `jev_decision == "review_needed"`, `rule.decision == "review_needed"`, `lane == "review"`, and `lane_reason` starts with `"NIK gate failed"`. The score passes, so the NIK gate is the cause.
+- Compare quality on an Observation fixture (`tests/fixtures/observations/missing_value.json`) → `rule.score` comes from `score_observation`, `jev_raw` has only a `score` call (no `noul`).
 - `ThresholdOverrides` with `notifiable_review > notifiable_confirmed` → 422.
 - `assign_lane`: one test per table row (8 tests).
 - Feed: `maxlen` cap at 500; `recent` is newest-first; `since` replay; a slow subscriber overflow drops the oldest for that subscriber only.
@@ -985,14 +1007,381 @@ def get_demo(request: Request) -> DemoServices: ...   # raises HTTP 404 if demo 
 - Static: with a temp `demo_web_dist` holding `index.html` and `assets/app.js`, `/demo/studio` → index.html, `/demo/assets/app.js` → the file, `/demo/../../pyproject.toml` → never served.
 - Phase 4 regression: existing `test_api.py` passes unchanged, and the Phase 4 response schemas in `/openapi.json` are unchanged (snapshot compare of the three response models).
 
-**Step 11 — Verify:**
+**Step 10b — Makefile:** change `serve` to `$(PYTHON) -m uvicorn jev_fhir.main:app --host 127.0.0.1 --port 8000`, matching the other targets, which use `.venv/bin/python` since D0.5.
+
+### D1 Implementation Sequence
+
+The pre-D1 baseline is **342 tests** (end of D0.5). Contract Step 10's test list is distributed across the sub-phases below; each contract test appears in exactly one of them.
+
+---
+
+#### Phase D1a — Foundations
+
+**1. Dependencies:** D0.5 PASS (it does, for automated items).
+
+**2. Scope and files:**
+- `src/jev_fhir/config.py`: all Step 1 settings (`demo_enabled`, `demo_pipeline_max_concurrency`, `demo_cors_origins`, `demo_results_dir`, `demo_web_dist`). Settings used by later sub-phases are added now so Settings changes only once.
+- `.env.example`: add `DEMO_ENABLED=true` (Step 1).
+- `src/jev_fhir/demo/__init__.py` (new).
+- `src/jev_fhir/demo/schemas.py` (new): every Step 2 model: `DemoModule`, `Lane`, `Thresholds` (with `_review_below_confirmed` and `from_settings`), `ThresholdOverrides.apply`, `DemoConfig`, `FixtureEntry`, `CompareRequest`, `RuleDecision`, `Verdict`, `CompareResponse`.
+- `src/jev_fhir/demo/catalog.py` (new): the Step 4 `FixtureCatalog`, loading all three label files from `settings.labels_dir` once. It's an allow-list, and `load_resource` raises `KeyError` for unknown ids.
+- `src/jev_fhir/routes/demo.py` (new): `router = APIRouter(tags=["demo"])` with **no endpoints yet**.
+- `src/jev_fhir/dependencies.py`: add `DemoServices` and `get_demo` (Step 9), plus `AppServices.demo: DemoServices | None`. In D1a, `DemoServices` holds only `catalog`; D1b adds `comparer`, and D1c adds `feed` and `pipeline`, reaching the exact Step 9 shape.
+- `src/jev_fhir/main.py`:
+  - In lifespan, build `DemoServices` only when `settings.demo_enabled`; otherwise `demo=None`.
+  - Include `routes.demo.router` at prefix `/api/v1/demo` **only when `demo_enabled`** (Step 9).
+
+**3. Acceptance criteria:**
+- With `demo_enabled=False`: `app.state.services.demo is None`, and no route path in `app.routes` or `/openapi.json` starts with `/api/v1/demo`.
+- With `demo_enabled=True`: `services.demo.catalog` is a `FixtureCatalog`.
+- `FixtureCatalog` entries match the label files: 204 entries, ids root-relative, `module` derived from the label file, `approved` equals `approved_by is not None`. The `module`, `source` and `difficulty` filters work.
+- `Thresholds` and `ThresholdOverrides` enforce the Step 2 bounds and `notifiable_review <= notifiable_confirmed`, including after `apply()` merges overrides.
+- Nothing from D1b–D1e exists yet.
+
+**4. Tests to add:**
+- `tests/test_demo_catalog.py`:
+  - contract test "Catalog totals match the label files; filters work; ids are root-relative."
+  - `get()` returns None for unknown ids
+  - `load_resource` raises `KeyError` for unknown ids, including `../../.env`-style ids, without touching the filesystem
+  - `FixtureEntry.label` is non-empty
+- Schema tests (in `test_demo_catalog.py` or a new `tests/test_demo_schemas.py`):
+  - `Thresholds` rejects `notifiable_review > notifiable_confirmed`
+  - `ThresholdOverrides.apply` merges and re-validates
+  - `Thresholds.from_settings` maps the four Settings fields
+- `tests/test_demo_api.py` (new), foundations:
+  - disabled → `services.demo is None` and no `/api/v1/demo` routes
+  - enabled → `DemoServices.catalog` present
+  - `tests/test_api.py` unchanged and passing
+
+**5. Verification:**
+
+```bash
+make lint && make typecheck && make test      # coverage ≥ 95%; demo/schemas.py and demo/catalog.py ≥ 90%
+.venv/bin/python -m pytest -q tests/test_demo_catalog.py tests/test_demo_api.py
+```
+
+**6. Deferred:**
+- to D1b: every endpoint, `Comparer`, `lanes.py`, and the HTTP-level "demo disabled → `/api/v1/demo/config` 404" contract test
+- to D1c: `feed.py`, `pipeline.py`, the `feed`/`pipeline` fields on `DemoServices`, and lifespan shutdown
+- to D1d: SSE
+- to D1e: CORS, static serving, benchmarks endpoints, Makefile Step 10b, and the OpenAPI snapshot
+
+**D1a evaluation checklist:**
+
+```
+☐ make lint / typecheck / test green; coverage ≥ 95%; demo/schemas.py and demo/catalog.py ≥ 90%
+☐ Step 1 settings present with the exact names and defaults; .env.example has DEMO_ENABLED=true
+☐ Step 2 models match the contract field-for-field (names, types, bounds, validators)
+☐ Disabled app: no route or OpenAPI path starts with /api/v1/demo; services.demo is None
+☐ Enabled app: services.demo.catalog present; catalog has 204 entries matching labels/
+☐ load_resource on an unknown or traversal-style id raises KeyError without filesystem access
+☐ grep catalog.py: no Path join / open() using a caller-supplied string
+☐ tests/test_api.py passes unchanged; no D1b–D1e code present
+```
+
+**D1a evaluation record:**
+
+```
+Evaluated: <date> by <session>
+Results:   <checklist with evidence>
+Verdict:   PASS | FAIL
+```
+
+---
+
+#### Phase D1b — Compare API
+
+**1. Dependencies:** D1a PASS.
+
+**2. Scope and files:**
+- `src/jev_fhir/demo/lanes.py` (new): `assign_lane` exactly per Step 3, with the exact `lane_reason` formats, including `NIK gate failed: P(valid) {p:.2f}`.
+- `src/jev_fhir/demo/compare.py` (new): the Step 5 `Comparer`:
+  - fresh `RecordingJevClient` and module instances per call
+  - effective thresholds from `apply()`
+  - rule decisions per Step 5.6: NIK gate, with `score_patient` / `score_observation`
+  - `serialized_state` built from the module's serializer
+  - `override_applied` per Step 5.4
+  - ground truth and verdict per Step 5.5
+  - an R4 `audit_event` from `AuditEventBuilder`
+  - lane assignment and `tokens_used`
+  - `ValueError` propagates to the existing 400 handler
+- `src/jev_fhir/dependencies.py`: `DemoServices` gains `comparer`.
+- `src/jev_fhir/main.py`: build the `Comparer` in lifespan when demo is enabled.
+- `src/jev_fhir/routes/demo.py`, from the Step 8 table:
+  - `GET /config`
+  - `GET /fixtures?module=&source=&difficulty=`
+  - `GET /fixtures/{fixture_id:path}`: unknown id → 404 `not_found`
+  - `POST /compare/{module}`: in D1b it returns the `CompareResponse` **without** publishing to the feed, because the feed doesn't exist until D1c.
+
+**3. Acceptance criteria:**
+- `/config` returns `mode`, `jev_model`, 4 thresholds from Settings, the 5 `ROUTE_OPTIONS`, and the 4 question constants.
+- The fixture endpoints serve only catalog ids. Traversal attempts return 404 and never expose `.env` content.
+- Compare results match every Step 10 compare case.
+- Demo endpoints carry `X-Request-Id` and `X-Request-Duration-Ms`, from the existing middleware.
+- Invalid threshold combinations return 422.
+
+**4. Tests to add:**
+- `tests/test_demo_compare.py`:
+  - contract test "`assign_lane`: one test per table row (8 tests).". The table has **9 rows** since the NIK-gate row was added, so the "8 tests" count is stale. Test all 9. The `jev error:` reason is tested in D1c.
+  - `Comparer` unit tests: a fresh `RecordingJevClient` per call (two concurrent `compare()` calls don't mix `jev_raw`); `override_applied` logic; the rule NIK gate.
+- `tests/test_demo_api.py`, contract tests:
+  - "Demo disabled → `/api/v1/demo/config` returns 404 (the route doesn't exist)."
+  - "`GET /fixtures/../../.env` and `/fixtures/%2e%2e/.env` → 404; `.env` content is never returned."
+  - "Compare quality on `complete_patient` → `jev_decision == "auto_accept"`, `rule.decision` present, `serialized_state.field_completeness` present, `jev_raw` has one `score` and one `noul`, `tokens_used > 0`, and the `audit_event` parses as R4B."
+  - "Compare router on `mixed_bundle` with `route_confidence_minimum=0.99` → `category == "unknown"`, `override_applied is True`, `lane == "review"`, and `lane_reason` starts with `"confidence"`."
+  - "Compare notifiable on `japanese_encephalitis_a83` → `lane == "flagged"`, `flag_resource` not None, `verdict.jev_correct is True`."
+  - "Compare quality on `invalid_nik` → `jev_decision == "review_needed"`, `rule.decision == "review_needed"`, `lane == "review"`, and `lane_reason` starts with `"NIK gate failed"`. The score passes, so the NIK gate is the cause."
+  - "Compare quality on an Observation fixture (`tests/fixtures/observations/missing_value.json`) → `rule.score` comes from `score_observation`, `jev_raw` has only a `score` call (no `noul`)."
+  - "`ThresholdOverrides` with `notifiable_review > notifiable_confirmed` → 422."
+- `tests/test_demo_api.py`, additional:
+  - `/config` shape
+  - `/fixtures` filters
+  - fixture load by a valid id
+  - headers present on the demo endpoints
+
+**5. Verification:**
+
+```bash
+make lint && make typecheck && make test      # coverage ≥ 95%; demo/lanes.py and demo/compare.py ≥ 90%
+DEMO_ENABLED=true MOCK_JEV=true .venv/bin/python -m uvicorn jev_fhir.main:app --port 8000   # then:
+curl -s localhost:8000/api/v1/demo/config
+curl -s "localhost:8000/api/v1/demo/fixtures?source=hard" | .venv/bin/python -c "import json,sys;print(len(json.load(sys.stdin)))"
+curl -s --path-as-is -o /dev/null -w "%{http_code}\n" "localhost:8000/api/v1/demo/fixtures/../../.env"
+```
+
+**6. Deferred:**
+- to D1c: publishing a `DecisionEvent` from `POST /compare`, the `jev error:` lane reason (pipeline only), `/decisions`, and `/pipeline/*`
+- to D1d: SSE
+- to D1e: benchmarks, static serving, CORS, Step 10b, and the OpenAPI snapshot
+
+**D1b evaluation checklist:**
+
+```
+☐ make lint / typecheck / test green; coverage ≥ 95%; demo/lanes.py and demo/compare.py ≥ 90%
+☐ lane_reason strings match the Step 3 table exactly (9 row tests)
+☐ curl /api/v1/demo/config → mode=mock, 4 thresholds, 5 route_options, 4 questions
+☐ curl "/api/v1/demo/fixtures?source=hard" → ≥ 25 entries
+☐ curl "/api/v1/demo/fixtures/tests/fixtures/patients/complete_patient.json" → Patient JSON
+☐ curl --path-as-is "/api/v1/demo/fixtures/../../.env" → 404, body has no JEV_API_KEY
+☐ POST /compare/router mixed_bundle with {"thresholds":{"route_confidence_minimum":0.99}} → override_applied true, lane review
+☐ POST /compare/notifiable JE fixture → lane flagged, audit_event.type present, no audit_event.code
+☐ POST /compare/quality invalid_nik → review, lane_reason starts "NIK gate failed"
+☐ Two concurrent compare() calls return disjoint jev_raw lists (test name)
+☐ Demo endpoint responses include X-Request-Id and X-Request-Duration-Ms
+☐ Demo disabled → /api/v1/demo/config 404
+☐ tests/test_api.py passes unchanged; no feed / pipeline / SSE / benchmarks / static code present
+```
+
+**D1b evaluation record:**
+
+```
+Evaluated: <date> by <session>
+Results:   <checklist with evidence>
+Verdict:   PASS | FAIL
+```
+
+---
+
+#### Phase D1c — Feed and Pipeline
+
+**1. Dependencies:** D1b PASS.
+
+**2. Scope and files:**
+- `src/jev_fhir/demo/feed.py` (new): the Step 6 `DecisionEvent`, `RunEvent` and `DecisionFeed`:
+  - `publish` assigns `seq`
+  - `recent` is newest-first and decisions-only
+  - `since` supports replay
+  - `subscribe` returns an async context manager and iterator, with a per-subscriber `asyncio.Queue(maxsize=1000)` that drops the oldest item on overflow
+  - the ring buffer is a `deque(maxlen)` of `(seq, event)` for both event kinds
+- `src/jev_fhir/demo/pipeline.py` (new): the Step 7 `PipelineRunRequest`, `PipelineRunResponse` and `PipelineRunner`:
+  - one active run at a time; a new `start()` stops the previous run and publishes `stopped`
+  - deterministic catalog-order launch
+  - pacing plus a `Semaphore(max_concurrency)`
+  - `JevClientError` produces a review-lane event with `jev error: {error_code}` and the run continues
+  - `started` → decisions → `finished` / `stopped` run events
+  - the `create_task` reference is kept and cancelled in `stop()` and `shutdown()`
+- `src/jev_fhir/dependencies.py`: `DemoServices` gains `feed` and `pipeline`, reaching the **exact Step 9 shape**.
+- `src/jev_fhir/main.py`: build the feed and runner in lifespan (`max_concurrency=settings.demo_pipeline_max_concurrency`); on exit, `await pipeline.shutdown()` (Step 9).
+- `src/jev_fhir/routes/demo.py`, from the Step 8 table:
+  - `GET /decisions?limit=50` (1–500): the recent-decisions history
+  - `POST /pipeline/run`
+  - `POST /pipeline/{run_id}/stop`: unknown → 404
+  - `POST /compare/{module}` now also publishes a `DecisionEvent` with `run_id=None`, completing the Step 8 row.
+
+**3. Acceptance criteria:**
+- Every Step 6 and Step 7 behaviour listed above holds.
+- `/decisions` respects `limit` bounds (1–500), with `seq` strictly decreasing.
+- A pipeline run over `source="unit"` with `rate_per_s=None` emits exactly `total` decision events, plus `started` and `finished`.
+- Lifespan shutdown cancels an in-flight run.
+
+**4. Tests to add:**
+- `tests/test_demo_feed.py`, contract test "Feed: `maxlen` cap at 500; `recent` is newest-first; `since` replay; a slow subscriber overflow drops the oldest for that subscriber only.", plus `publish` returning increasing `seq` values.
+- `tests/test_demo_pipeline.py`, contract tests:
+  - "Pipeline: `rate_per_s=None` over `source="unit"` → exactly `total` decision events plus `started` and `finished` run events. A second `start` stops the first (`stopped` event). An injected `JevTimeoutError` on one item → that event has `lane == "review"` and `error == "jev_timeout"`, and the run still finishes."
+  - Also test: lifespan shutdown cancels an in-flight pipeline; pacing respects `rate_per_s` (assert a lower bound on elapsed time for a small run); in-flight items never exceed `max_concurrency`.
+- `tests/test_demo_api.py`:
+  - `POST /compare` publishes one event, visible in `/decisions`
+  - `GET /decisions?limit=3` → 3 items with `seq` strictly decreasing
+  - `limit` of 0 or 501 → 422
+  - stopping an unknown run → 404
+
+Decision events from a concurrent run may complete out of launch order. Tests must not assume completion order, only counts and the run-event sequence.
+
+**5. Verification:**
+
+```bash
+make lint && make typecheck && make test      # coverage ≥ 95%; demo/feed.py and demo/pipeline.py ≥ 90%
+DEMO_ENABLED=true MOCK_JEV=true .venv/bin/python -m uvicorn jev_fhir.main:app --port 8000   # then:
+curl -s -X POST localhost:8000/api/v1/demo/pipeline/run -H 'content-type: application/json' -d '{"source":"unit","rate_per_s":null}'
+curl -s "localhost:8000/api/v1/demo/decisions?limit=3"
+```
+
+**6. Deferred:**
+- to D1d: `GET /decisions/stream`, the SSE wire format, `Last-Event-ID`, ping and `?limit=`. `DecisionFeed.subscribe()` and `since()` are built and unit-tested here, but have no HTTP consumer until D1d.
+- to D1e: benchmarks, static serving, CORS, Step 10b, and the OpenAPI snapshot
+
+**D1c evaluation checklist:**
+
+```
+☐ make lint / typecheck / test green; coverage ≥ 95%; demo/feed.py and demo/pipeline.py ≥ 90%
+☐ DemoServices matches the Step 9 shape exactly (catalog, comparer, feed, pipeline)
+☐ POST /pipeline/run {"source":"unit","rate_per_s":null} → run completes; decision count == total
+☐ GET /decisions?limit=3 → 3 items, seq strictly decreasing
+☐ POST /compare publishes one DecisionEvent (run_id null) visible in /decisions
+☐ Injected JevTimeoutError → review lane, lane_reason "jev error: jev_timeout", run finishes (test name)
+☐ Second start → first run gets a "stopped" RunEvent (test name)
+☐ Lifespan shutdown cancels an in-flight pipeline (test name)
+☐ Concurrency never exceeds demo_pipeline_max_concurrency (test name)
+☐ tests/test_api.py passes unchanged; no SSE / benchmarks / static / CORS code present
+```
+
+**D1c evaluation record:**
+
+```
+Evaluated: <date> by <session>
+Results:   <checklist with evidence>
+Verdict:   PASS | FAIL
+```
+
+---
+
+#### Phase D1d — SSE
+
+**1. Dependencies:** D1c PASS.
+
+**2. Scope and files:**
+- `src/jev_fhir/routes/demo.py`: `GET /decisions/stream?limit=` using `StreamingResponse` (no new dependency), in the exact SSE wire format from the contract:
+  - `id: <seq>`, then `event: decision|run`, then `data: <json>`, then a blank line
+  - on connect, if `Last-Event-ID` is present, replay `feed.since(id)` first
+  - a `: ping` comment every 15 s
+  - stop on `request.is_disconnected()`, or after `limit` events when `?limit=` is given
+  - headers `Cache-Control: no-cache` and `X-Accel-Buffering: no`
+- The 15 s ping interval is a module-level constant (e.g. `SSE_PING_INTERVAL_S = 15.0`), so tests can shorten it with monkeypatch. The production value stays 15 s.
+
+**3. Acceptance criteria:**
+- The wire format matches the contract byte for byte: field order and a blank-line separator. Pings are comments and don't count towards `limit`.
+- `Last-Event-ID: N` replays only events with `seq > N`, then continues live.
+- The stream closes after `limit` events.
+- The disconnect check ends the generator: no orphaned subscriber stays registered in the feed.
+
+**4. Tests to add (`tests/test_demo_api.py`):**
+- contract test "SSE endpoint: `GET /decisions/stream?limit=3` after a pipeline run → the body has 3 `event:` blocks in the wire format, with `id:` lines."
+- `Last-Event-ID` replay returns only newer events
+- `run` events use `event: run`
+- the headers are present
+- a ping appears when the interval is monkeypatched short
+- the subscriber count returns to 0 after the stream ends
+
+**5. Verification:**
+
+```bash
+make lint && make typecheck && make test      # coverage ≥ 95%
+DEMO_ENABLED=true MOCK_JEV=true .venv/bin/python -m uvicorn jev_fhir.main:app --port 8000   # then:
+curl -s -X POST localhost:8000/api/v1/demo/pipeline/run -H 'content-type: application/json' -d '{"source":"unit","rate_per_s":null}'
+curl -sN "localhost:8000/api/v1/demo/decisions/stream?limit=5"
+curl -sN -H "Last-Event-ID: 3" "localhost:8000/api/v1/demo/decisions/stream?limit=2"
+```
+
+**6. Deferred:** to D1e: benchmarks, static serving, CORS, Step 10b, the OpenAPI snapshot, and the final end-to-end checklist.
+
+**D1d evaluation checklist:**
+
+```
+☐ make lint / typecheck / test green; coverage ≥ 95%
+☐ POST /pipeline/run {"source":"unit","rate_per_s":null} then curl "/decisions/stream?limit=5" → 5 SSE blocks with id/event/data
+☐ Last-Event-ID: N replays only seq > N (curl + test name)
+☐ Response headers: Content-Type text/event-stream, Cache-Control no-cache, X-Accel-Buffering no
+☐ ": ping" comment emitted (test with a monkeypatched interval); production constant is 15 s
+☐ No subscriber leak after the stream ends (test name)
+☐ No new runtime dependency; tests/test_api.py passes unchanged; no benchmarks / static / CORS code present
+```
+
+**D1d evaluation record:**
+
+```
+Evaluated: <date> by <session>
+Results:   <checklist with evidence>
+Verdict:   PASS | FAIL
+```
+
+---
+
+#### Phase D1e — Benchmarks, Static Serving, and Final Regression
+
+**1. Dependencies:** D1d PASS.
+
+**2. Scope and files:**
+- `src/jev_fhir/routes/demo.py`, from the Step 8 table:
+  - `GET /benchmarks`: list `bench_*.json` in `demo_results_dir`, newest first
+  - `GET /benchmarks/{name}`: `name` must match `^bench_[0-9]{8}T[0-9]{6}Z$`, else 404
+  - `BenchmarkSummary`, with `dataset` falling back to `"unit"` and `jev_model` to `None` for older reports
+  - `POST /benchmarks/run` stays out of scope
+- `src/jev_fhir/demo/static.py` (new), per Step 9:
+  - when `demo_enabled` and `demo_web_dist/index.html` exist, `GET /demo` and `GET /demo/{path:path}` serve the file if it resolves inside `demo_web_dist`, otherwise `index.html` (SPA fallback)
+  - `GET /` → 307 redirect to `/demo`
+  - when `web/dist` is missing, `/demo` returns 503 `{"error":"ui_not_built","detail":"run make web-build"}`
+- `src/jev_fhir/main.py`: when `demo_enabled`, add `CORSMiddleware(allow_origins=settings.demo_cors_origins, allow_methods=["GET","POST"], allow_headers=["*"], expose_headers=["X-Request-Id","X-Request-Duration-Ms"])`, and register the static routes.
+- `Makefile`: Step 10b, changing `serve` to `$(PYTHON) -m uvicorn jev_fhir.main:app --host 127.0.0.1 --port 8000`.
+- An OpenAPI snapshot test: the Phase 4 response schemas (`QualityScoreResponse`, `BundleRouteResponse`, `NotifiableDetectionResponse`) in `/openapi.json` are unchanged.
+
+**3. Acceptance criteria:**
+- Benchmarks endpoints behave per Step 8, and a report name can never resolve outside `demo_results_dir`.
+- Static serving follows Step 9 exactly, including path containment and the 503 when the UI isn't built.
+- CORS is active only when demo is enabled.
+- `make serve` works. The Phase 4 schemas are unchanged.
+- The code now matches the full D1 contract.
+
+**4. Tests to add (`tests/test_demo_api.py`):**
+- contract test "Benchmarks: list is sorted newest-first; a bad name → 404; a pre-D0.5 report without `dataset` → `"unit"`.", using a temporary `demo_results_dir` with two copied reports
+- contract test "Static: with a temp `demo_web_dist` holding `index.html` and `assets/app.js`, `/demo/studio` → index.html, `/demo/assets/app.js` → the file, `/demo/../../pyproject.toml` → never served."
+- contract test "Phase 4 regression: existing `test_api.py` passes unchanged, and the Phase 4 response schemas in `/openapi.json` are unchanged (snapshot compare of the three response models)."
+- Additional:
+  - `/demo` → 503 `ui_not_built` when `demo_web_dist` is missing
+  - a CORS preflight from `http://localhost:5173` is allowed when enabled and absent when disabled
+  - `GET /` → 307 to `/demo`
+
+**5. Verification:**
 
 ```bash
 make lint && make typecheck && make test
-DEMO_ENABLED=true MOCK_JEV=true make serve   # then the curl smoke in the checklist
+MOCK_JEV=true make serve                      # demo disabled
+DEMO_ENABLED=true MOCK_JEV=true make serve    # then run the full final checklist below
 ```
 
-### Codex Evaluation Checklist
+**6. Deferred:** nothing inside D1. Frontend work (`web/`) starts in D2.
+
+**D1e checks (sub-phase):**
+
+```
+☐ GET /benchmarks → newest first; GET /benchmarks/nope → 404; old report without dataset → "unit"
+☐ GET /demo without web/dist → 503 ui_not_built
+☐ Static tests: SPA fallback, asset served, traversal never served (test names)
+☐ CORS preflight allowed only when demo enabled (test name)
+☐ make serve uses $(PYTHON) -m uvicorn (Step 10b)
+☐ OpenAPI snapshot test for the three Phase 4 response models passes
+```
+
+**Final D1 end-to-end checklist (the original D1 checklist, run after D1e):**
 
 ```
 ☐ make lint / typecheck / test green; coverage ≥ 95%; each new demo/*.py ≥ 90%
@@ -1014,13 +1403,15 @@ DEMO_ENABLED=true MOCK_JEV=true make serve   # then the curl smoke in the checkl
 ☐ Phase 4 schemas unchanged: openapi snapshot test passes
 ☐ No new runtime dependency in pyproject.toml
 ☐ Lifespan shutdown cancels an in-flight pipeline (test name)
+☐ Final code matches the full D1 contract (Steps 1–10b): DemoServices shape, route table, lane strings, SSE format
 ```
 
-### Evaluation Record
+**D1e / final D1 evaluation record:**
 
 ```
 Evaluated: <date> by <session>
-Results:   <checklist with evidence>
+Tests:     before D1 = 342 → after D1e = <n>
+Results:   <sub-phase checks + final checklist with evidence>
 Verdict:   PASS | FAIL
 ```
 
