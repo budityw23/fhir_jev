@@ -81,8 +81,11 @@ latency and makes no network calls. Tests and `make bench` always use it.
 
 3. `make serve`, then check `curl http://127.0.0.1:8000/health` reports `"jev_client": "live"`.
 
-The live client uses the official `typesafe-sdk` (`AsyncTypeSafeClient.system_one`) with the
-`jev-latest` model.
+The live client uses the official `typesafe-sdk` (`AsyncTypeSafeClient.system_one`), with a
+5 s request timeout and at most 2 retries within a 12 s budget (all configurable, see below).
+
+To check a key without starting the server, run `make smoke-live`. It makes one real call per
+module and prints the decision, latency and tokens. It refuses to run with a placeholder key.
 
 ## Configuration
 
@@ -92,7 +95,15 @@ Environment variables (loaded from `.env`):
 | --- | --- | --- |
 | `JEV_API_KEY` | `mock-key` | TypeSafe API key (live mode only) |
 | `JEV_BASE_URL` | `https://api.typesafe.ai` | SDK base URL; a legacy `/v1/` suffix is accepted |
+| `JEV_MODEL` | `jev-latest` | Jev model id (pin a version for reproducible runs) |
+| `JEV_TIMEOUT_S` | `5.0` | Per-request timeout, seconds |
+| `JEV_MAX_RETRIES` | `2` | Retries on retryable SDK errors |
+| `JEV_RETRY_BUDGET_S` | `12.0` | Total time budget across retries, seconds |
 | `MOCK_JEV` | `false` | `true` uses the offline mock client |
+| `QUALITY_THRESHOLD_DEFAULT` | `70` | Quality threshold when a request doesn't send one |
+| `ROUTE_CONFIDENCE_MINIMUM` | `0.5` | Router confidence floor; below it the category becomes `unknown` |
+| `NOTIFIABLE_CONFIDENCE_MINIMUM` | `0.8` | P(notifiable) at or above this → `confirmed_notifiable` + Flag |
+| `NOTIFIABLE_REVIEW_MINIMUM` | `0.5` | P(notifiable) from this up to the confirmed threshold → `review_needed` |
 | `LOG_LEVEL` | `INFO` | Log level |
 
 ## API
@@ -101,8 +112,12 @@ All examples below are real responses from mock mode. Live values will differ.
 
 ### `POST /api/v1/quality-score`
 
-Scores a `Patient` or `Observation`. Patients also get a NIK validity check.
-`threshold` (0–100, default 70): `score >= threshold` → `auto_accept`.
+Scores a `Patient` or `Observation`. Patients also get a NIK validity check, which acts as a
+**gate**. The result is `auto_accept` only when `score >= threshold` **and** the NIK is not
+judged invalid. A Patient with a missing, malformed or non-NIK identifier goes to
+`review_needed` even with a high score. `threshold` is 0–100 and optional; without it,
+`QUALITY_THRESHOLD_DEFAULT` (70) applies. `nik_confidence` is the probability that the NIK is
+valid.
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/quality-score \
@@ -117,7 +132,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/quality-score \
   "level": "review_needed",
   "missing_fields": ["identifier", "name", "birthDate", "gender", "address", "telecom"],
   "nik_valid": false,
-  "nik_confidence": 0.92,
+  "nik_confidence": 0.08,
   "resource_reference": "Patient/example",
   "latency_ms": 33.586,
   "action": "review_needed"
@@ -201,7 +216,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/detect-notifiable \
 ### `GET /health`
 
 ```json
-{"status": "ok", "jev_client": "mock", "version": "0.1.0"}
+{"status": "ok", "jev_client": "mock", "jev_model": null, "version": "0.1.0"}
 ```
 
 ### `GET /api/v1/metrics`
@@ -233,7 +248,10 @@ header:
 | --- | --- | --- |
 | 400 | `invalid_request` | Wrong resource type for the endpoint, or `resource_type` mismatch |
 | 422 | `validation_error` | Malformed request body or invalid FHIR R4 resource |
-| 502 | `jev_error` | Live Jev SDK call failed (network, auth, rate limit, timeout) |
+| 429 | `jev_rate_limited` | TypeSafe rate-limited the live Jev call |
+| 502 | `jev_auth` | Live Jev rejected the API key or it lacks permission |
+| 502 | `jev_error` | Any other live Jev SDK failure (e.g. connection error); `detail` names the SDK error |
+| 504 | `jev_timeout` | Live Jev call exceeded the timeout budget |
 
 Every response also carries `X-Request-Duration-Ms`.
 
@@ -249,34 +267,45 @@ Every response also carries `X-Request-Duration-Ms`.
 ## Benchmarks
 
 ```bash
-make bench
+make bench                 # mock Jev, offline (default)
+make bench-live            # live Jev; needs JEV_API_KEY in .env, costs tokens
+python -m benchmarks.bench_runner --live --limit 3   # cheap partial live run
 ```
 
-Runs all 50 hand-labelled fixtures (20 Patients, 15 Conditions, 15 Bundles) through both the
-Jev modules and rule-based baselines ([`benchmarks/baselines/`](benchmarks/baselines/)), then
-writes `benchmarks/results/bench_<timestamp>.{json,md}` with accuracy, precision/recall/F1,
-latency (mean/p50/p95), and confidence calibration.
+Runs all 50 labelled fixtures (20 Patients, 15 Conditions, 15 Bundles) through both the
+Jev modules and rule-based baselines ([`src/jev_fhir/baselines/`](src/jev_fhir/baselines/)), then
+writes `benchmarks/results/bench_<timestamp>.{json,md}`. Each report records the mode
+(`mock_jev` / `live_jev`), model, tokens and estimated cost, plus accuracy,
+precision/recall/F1, latency (mean/p50/p95) and confidence calibration.
+
+Quality labels ([`benchmarks/dataset/labels/quality.json`](benchmarks/dataset/labels/quality.json))
+are **score bands plus an expected action**, each with a written rationale. Quality accuracy is
+**action agreement** (auto-accept vs review at threshold 70, including the NIK gate);
+score-in-band is reported alongside it. A validator rejects labels whose band, action and
+NIK expectation contradict each other.
 
 Latest report (mock Jev, Sep 24, 2026):
 
 | Module | Fixtures | Jev accuracy | Rule accuracy | P50 ms | P95 ms |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Quality Scorer | 20 | 1.000 | 1.000 | 44.7 | 53.1 |
-| Bundle Router | 15 | 0.733 | 0.933 | 28.4 | 40.6 |
-| Notifiable Detector | 15 | 1.000 | 1.000 | 19.7 | 29.8 |
+| Quality Scorer | 20 | 1.000 | 1.000 | 45.8 | 55.0 |
+| Bundle Router | 15 | 0.733 | 0.933 | 31.6 | 76.6 |
+| Notifiable Detector | 15 | 1.000 | 1.000 | 20.2 | 30.4 |
 
 **How to read this:** these numbers come from the **mock** client, which uses rule-like
 logic, so they validate the harness, not Jev. The mock misroutes four ambiguous bundles
 (empty, patient-only, nested, mixed) because its fallback confidence never drops below the
-0.5 `unknown` floor. A live-Jev benchmark is planned (see *Known limitations*).
+0.5 `unknown` floor. Run `make bench-live` for Jev's real numbers.
 
 ## Development
 
 ```bash
 make lint        # ruff check + format check
 make typecheck   # mypy --strict
-make test        # pytest with coverage (98 tests incl. R4 validity of every fixture, ~97% coverage)
+make test        # pytest with coverage (120 tests incl. R4 validity of every fixture, ~96% coverage)
 make bench       # mock benchmark report
+make bench-live  # live benchmark report (real key, costs tokens)
+make smoke-live  # one real Jev call per module
 make serve       # uvicorn on 127.0.0.1:8000
 ```
 
@@ -291,14 +320,17 @@ src/jev_fhir/
 ├── dependencies.py      dependency injection (AppServices)
 ├── logger.py            structured decision logging
 ├── metrics.py           Prometheus counters and histograms
-├── jev_client/          JevClient interface, live SDK client, deterministic mock
+├── jev_client/          JevClient interface, live SDK client, mock, RecordingJevClient
 ├── serializer/          FHIR R4 → flat decision state (Patient, Observation, Condition, Bundle)
 ├── modules/             quality_scorer, bundle_router, notifiable_detector
+├── baselines/           rule-based baselines the benchmark compares against
+├── dataset/             validated label models (bands, provenance, rationale)
 ├── fhir_helpers/        Flag and AuditEvent builders
 └── routes/              API endpoints
 tests/                   unit + API tests; fixtures/ holds 50 synthetic FHIR R4 resources
 data/                    Indonesian notifiable-disease reference list (ICD-10)
-benchmarks/              ground truth, rule baselines, runner, generated reports
+benchmarks/              runner, labels (dataset/labels, ground_truth), generated reports
+scripts/                 smoke_live.py (live key check)
 docs/                    idea, PRD, technical plan, phase plan, demo plan
 ```
 
@@ -313,19 +345,19 @@ with anything other than synthetic data.
 ## Known limitations
 
 - **Mock ≠ Jev.** Mock decisions mirror rule logic; the benchmark above is not evidence
-  of Jev's accuracy.
-- **Benchmarks are mock-only.** `bench_runner.py` does not yet accept a live client.
-- **Quality ground truth is point-valued** (e.g. exactly 80) and matches the mock's formula;
-  it needs banded labels before a live benchmark is meaningful.
-- **Noul probability semantics** differ between the mock NIK check (confidence in the answer)
-  and the live client (probability the statement is true).
-- **Live error handling** maps all SDK failures to `502 jev_error`; the SDK's default timeout
-  (10 s, with retries) is used.
-- **Thresholds** for routing and notifiable detection are not yet exposed as request
-  parameters.
-
-Fixes for all of these are planned in Phase D0 of the
-[Demo Plan](docs/Jev%20×%20FHIR%20—%20Demo%20Plan%20Requirement.md).
+  of Jev's accuracy. Use `make bench-live` for that.
+- **Small, easy dataset.** 50 fixtures, below the PRD's evaluation sizes (50 quality
+  resources, 100 bundles). There are no Observation fixtures yet, and there are no hard cases
+  where exact-code rules should fail (ICD-10 sub-codes, SNOMED-only or text-only diagnoses).
+  Phase D0.5 of the [Demo Technical Implementation Plan](docs/Jev%20×%20FHIR%20—%20Demo%20Technical%20Implementation%20Plan.md)
+  adds these.
+- **Labels awaiting review.** Quality labels carry `approved_by: null` until a human
+  reviews them.
+- **Live latency.** An early live smoke run reported ~0.3 s per router/notifiable call and
+  ~1.2 s for quality (two calls), well above the PRD's 100 ms p95 target. This hasn't been
+  benchmarked yet.
+- **Thresholds** for routing and notifiable detection come from configuration; they are not
+  per-request parameters.
 
 ## Documentation
 
