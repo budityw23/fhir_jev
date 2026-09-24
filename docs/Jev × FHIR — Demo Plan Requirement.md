@@ -137,7 +137,7 @@ Each scene is a **preset** in the UI (§3.7). The presenter presses `→` and th
 
 **Scene 1 — Quality gate** (`patients/complete_patient.json` → `invalid_nik.json` → `minimal_patient.json`)
 1. Load `complete_patient`. Show the raw FHIR on the left and the **"What Jev sees"** flat state in the middle (`has_identifier: true`, `identifier_value_length: 16`, `field_completeness: 8/10`, …). Decision: **auto-accept, NIK valid**. The score is 80 in mock mode; in live mode, show whatever Jev returns, plus the 10-level score distribution (F8).
-2. Switch to `invalid_nik` (15-digit NIK). The NIK gate flips to **false**. *"A yes/no primitive used as a validation gate."* Rev 3: then load the D0.5 **dotted NIK** (`3173.0101.0190.0001`), which a length rule rejects even though it's a real ID written differently. Show Jev's answer against the rule's.
+2. Switch to `invalid_nik` (15-digit NIK). The NIK gate flips to **false**, and the action drops to **review needed** even though the completeness score still passes. *"A yes/no primitive used as a validation gate."* Rev 3: then load the D0.5 **dotted NIK** (`3173.0101.0190.0001`), which a length rule rejects even though it's a real ID written differently. Show Jev's answer against the rule's.
 3. Switch to `minimal_patient`. Low score, **review needed**, missing fields listed.
 4. **The control knob:** reload `complete_patient` and drag the threshold 70 → 85. The same resource flips to **review needed**. *"The confidence threshold is the product decision: lower means more automation, higher means more human review."*
 

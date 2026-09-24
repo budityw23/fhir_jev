@@ -141,7 +141,11 @@ async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict
                 raise TypeError("rule quality baseline must return an integer score")
             lower, upper = label.expected_score_range
             jev_correct = result.action == label.expected_action
-            rule_action = "auto_accept" if baseline_score >= 70 else "review_needed"
+            rule_action = (
+                "auto_accept"
+                if baseline_score >= 70 and baseline["nik_valid"] is not False
+                else "review_needed"
+            )
             rule_correct = rule_action == label.expected_action
             calls = recording.drain()
             row_tokens = sum(call.result.tokens_used for call in calls)

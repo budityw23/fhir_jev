@@ -12,6 +12,7 @@ from jev_fhir.config import PROJECT_ROOT
 Source = Literal["unit", "hard", "generated", "demo"]
 Difficulty = Literal["easy", "hard"]
 L = TypeVar("L", bound="LabelBase")
+QUALITY_LABEL_THRESHOLD = 70
 
 
 class LabelBase(BaseModel):
@@ -37,6 +38,19 @@ class QualityLabel(LabelBase):
         lower, upper = self.expected_score_range
         if not 0 <= lower < upper <= 100 or upper - lower < 20:
             raise ValueError("expected_score_range must be a 0–100 band at least 20 points wide")
+        return self
+
+    @model_validator(mode="after")
+    def _action_consistent(self) -> QualityLabel:
+        """Keep the action, score band and NIK gate telling the same story at threshold 70."""
+        lower, upper = self.expected_score_range
+        if self.expected_action == "auto_accept":
+            if lower < QUALITY_LABEL_THRESHOLD:
+                raise ValueError("auto_accept requires a score band entirely >= 70")
+            if self.expected_nik_valid is False:
+                raise ValueError("auto_accept is impossible when the NIK gate fails")
+        elif upper >= QUALITY_LABEL_THRESHOLD and self.expected_nik_valid is not False:
+            raise ValueError("review_needed with a passing NIK requires a score band entirely < 70")
         return self
 
 

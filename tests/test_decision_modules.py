@@ -87,6 +87,33 @@ async def test_quality_scorer_returns_patient_response_shape() -> None:
 
 
 @pytest.mark.asyncio
+async def test_quality_scorer_nik_gate_blocks_auto_accept_despite_high_score() -> None:
+    client = StubJevClient(
+        score_result=ScoreResult(score=95, confidence=0.9, latency_ms=12, tokens_used=10),
+        noul_result=NoulResult(answer=False, probability=0.08, latency_ms=12, tokens_used=10),
+    )
+    response = await QualityScorer(client).score(
+        load_fixture("patients/invalid_nik.json"), "Patient", threshold=70
+    )
+
+    assert response.score == 95
+    assert response.nik_valid is False
+    assert response.action == "review_needed"
+    assert response.level == "review_needed"
+
+
+@pytest.mark.asyncio
+async def test_quality_scorer_nik_gate_with_mock_client_on_invalid_nik_fixture() -> None:
+    response = await QualityScorer(MockJevClient()).score(
+        load_fixture("patients/invalid_nik.json"), "Patient"
+    )
+
+    assert response.score >= 70
+    assert response.nik_valid is False
+    assert response.action == "review_needed"
+
+
+@pytest.mark.asyncio
 async def test_quality_scorer_skips_noul_for_observation() -> None:
     client = StubJevClient(
         score_result=ScoreResult(score=20, confidence=0.8, latency_ms=12, tokens_used=10)

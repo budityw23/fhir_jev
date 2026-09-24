@@ -64,7 +64,14 @@ class QualityScorer:
             nik_valid = nik_result.answer
             nik_confidence = nik_result.probability
 
-        action = "auto_accept" if score_result.score >= threshold else "review_needed"
+        # The NIK check is a gate: a Patient whose NIK is judged invalid (or absent) goes to
+        # review even when the completeness score passes the threshold.
+        passes_nik_gate = nik_valid is not False
+        action = (
+            "auto_accept"
+            if score_result.score >= threshold and passes_nik_gate
+            else "review_needed"
+        )
         response = QualityScoreResponse(
             score=score_result.score,
             confidence=score_result.confidence,

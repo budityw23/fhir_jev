@@ -255,6 +255,12 @@ def fixture_path(label: LabelBase) -> Path: ...  # PROJECT_ROOT / label.fixture,
 - Write each `rationale` from reading the fixture (e.g. *"All demographics present, valid 16-digit NIK, no telecom → usable, auto-accept"*).
 - Delete `benchmarks/ground_truth/quality_scores.json`.
 
+**Step 10b — NIK gate and label consistency (added after the D0 review, done Sep 24, 2026):**
+- `QualityScorer` auto-accepts a Patient only when `score >= threshold` **and** `nik_valid is not False` (Budi's decision: the NIK check is a gate, not just information). The rule baseline in the benchmark applies the same gate.
+- `QualityLabel` has a second validator: `auto_accept` needs a band entirely ≥ 70 and a NIK that isn't expected to be invalid; `review_needed` with a passing NIK needs a band entirely < 70. `review_needed` with a failing NIK may have a high band.
+- Relabelled 11 unit labels: 7 band fixes, plus `full_no_nik`, `invalid_nik`, `short_identifier` and `non_indonesian` moved to `review_needed`.
+- **Carry forward to D0.5:** generated and hard quality labels must pass this validator. Any Patient with a failing NIK is `review_needed`.
+
 **Step 11 — Benchmark runner goes live (F2):**
 - CLI: `--live` (use `LiveJevClient` from Settings; default mock), `--limit N` (first N items per module, for cheap runs), `--output-dir`.
 - Wrap the client in `RecordingJevClient`; call `drain()` after each item to attach `tokens_used` and `jev_latency_ms` to the row.
@@ -660,7 +666,8 @@ def assign_lane(module: DemoModule, response: BaseModel, thresholds: Thresholds,
 | Module | Condition | Lane | `lane_reason` (exact format) |
 | --- | --- | --- | --- |
 | quality | `action == auto_accept` | `auto_accepted` | `score {s} ≥ threshold {t}` |
-| quality | else | `review` | `score {s} < threshold {t}` |
+| quality | `score < threshold` | `review` | `score {s} < threshold {t}` |
+| quality | score passes, NIK gate fails (`nik_valid is False`) | `review` | `NIK gate failed: P(valid) {p:.2f}` |
 | router | category ≠ unknown | `routed` | `{category} @ {confidence:.2f}` |
 | router | unknown, `override_applied` | `review` | `confidence {c:.2f} < floor {f:.2f}` |
 | router | unknown, not overridden | `review` | `model chose unknown` |

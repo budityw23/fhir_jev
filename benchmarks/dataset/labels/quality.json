@@ -8,7 +8,7 @@
     "resource_type": "Patient",
     "expected_action": "auto_accept",
     "expected_score_range": [
-      65,
+      70,
       100
     ],
     "expected_nik_valid": true
@@ -50,7 +50,7 @@
     "resource_type": "Patient",
     "expected_action": "auto_accept",
     "expected_score_range": [
-      65,
+      70,
       100
     ],
     "expected_nik_valid": true
@@ -59,12 +59,12 @@
     "fixture": "tests/fixtures/patients/full_no_nik.json",
     "source": "unit",
     "difficulty": "easy",
-    "rationale": "The patient record is otherwise complete but has no Indonesian NIK, so the NIK validation gate is false.",
+    "rationale": "Demographics are complete, but the only identifier is a local MRN with no Indonesian NIK; the NIK gate fails, so a human must confirm identity before acceptance.",
     "approved_by": null,
     "resource_type": "Patient",
-    "expected_action": "auto_accept",
+    "expected_action": "review_needed",
     "expected_score_range": [
-      65,
+      70,
       100
     ],
     "expected_nik_valid": false
@@ -73,12 +73,12 @@
     "fixture": "tests/fixtures/patients/invalid_nik.json",
     "source": "unit",
     "difficulty": "easy",
-    "rationale": "The clinical demographics are complete, but the supplied NIK is not valid and requires a separate gate decision.",
+    "rationale": "Demographics are complete, but the NIK has 15 digits instead of 16; the NIK gate fails, so the record goes to review despite a high completeness score.",
     "approved_by": null,
     "resource_type": "Patient",
-    "expected_action": "auto_accept",
+    "expected_action": "review_needed",
     "expected_score_range": [
-      65,
+      70,
       100
     ],
     "expected_nik_valid": false
@@ -106,7 +106,7 @@
     "resource_type": "Patient",
     "expected_action": "auto_accept",
     "expected_score_range": [
-      60,
+      70,
       90
     ],
     "expected_nik_valid": true
@@ -134,7 +134,7 @@
     "resource_type": "Patient",
     "expected_action": "auto_accept",
     "expected_score_range": [
-      60,
+      70,
       90
     ],
     "expected_nik_valid": true
@@ -148,7 +148,7 @@
     "resource_type": "Patient",
     "expected_action": "auto_accept",
     "expected_score_range": [
-      60,
+      70,
       90
     ],
     "expected_nik_valid": true
@@ -190,7 +190,7 @@
     "resource_type": "Patient",
     "expected_action": "auto_accept",
     "expected_score_range": [
-      65,
+      70,
       100
     ],
     "expected_nik_valid": true
@@ -199,12 +199,12 @@
     "fixture": "tests/fixtures/patients/non_indonesian.json",
     "source": "unit",
     "difficulty": "easy",
-    "rationale": "The record is complete for a non-Indonesian patient; an Indonesian NIK is not expected.",
+    "rationale": "Complete record for a foreign patient identified by passport only; with no Indonesian NIK the gate fails, so identity needs manual confirmation.",
     "approved_by": null,
     "resource_type": "Patient",
-    "expected_action": "auto_accept",
+    "expected_action": "review_needed",
     "expected_score_range": [
-      65,
+      70,
       100
     ],
     "expected_nik_valid": false
@@ -241,12 +241,12 @@
     "fixture": "tests/fixtures/patients/short_identifier.json",
     "source": "unit",
     "difficulty": "easy",
-    "rationale": "The record is otherwise complete but the identifier is too short to pass the NIK validation gate.",
+    "rationale": "Demographics are complete, but the NIK value is only 5 digits; the NIK gate fails, so the record goes to review despite a high completeness score.",
     "approved_by": null,
     "resource_type": "Patient",
-    "expected_action": "auto_accept",
+    "expected_action": "review_needed",
     "expected_score_range": [
-      60,
+      70,
       90
     ],
     "expected_nik_valid": false
@@ -260,7 +260,7 @@
     "resource_type": "Patient",
     "expected_action": "auto_accept",
     "expected_score_range": [
-      65,
+      70,
       100
     ],
     "expected_nik_valid": true

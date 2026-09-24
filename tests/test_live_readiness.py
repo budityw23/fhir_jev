@@ -115,6 +115,45 @@ def test_quality_label_rejects_non_banded_ranges(score_range: tuple[int, int]) -
         )
 
 
+@pytest.mark.parametrize(
+    ("action", "score_range", "nik_valid"),
+    [
+        ("auto_accept", (60, 90), True),  # band dips below the threshold
+        ("auto_accept", (70, 100), False),  # NIK gate fails, so auto-accept is impossible
+        ("review_needed", (50, 90), True),  # passing NIK, band reaches the threshold
+    ],
+)
+def test_quality_label_rejects_action_band_contradictions(
+    action: str, score_range: tuple[int, int], nik_valid: bool
+) -> None:
+    with pytest.raises(ValueError):
+        QualityLabel(
+            fixture="tests/fixtures/patients/complete_patient.json",
+            source="unit",
+            difficulty="easy",
+            rationale="This deliberately tests contradictory labels.",
+            resource_type="Patient",
+            expected_action=action,  # type: ignore[arg-type]
+            expected_score_range=score_range,
+            expected_nik_valid=nik_valid,
+        )
+
+
+def test_quality_label_allows_high_score_review_when_nik_gate_fails() -> None:
+    label = QualityLabel(
+        fixture="tests/fixtures/patients/invalid_nik.json",
+        source="unit",
+        difficulty="easy",
+        rationale="Complete demographics but the NIK gate fails.",
+        resource_type="Patient",
+        expected_action="review_needed",
+        expected_score_range=(70, 100),
+        expected_nik_valid=False,
+    )
+
+    assert label.expected_action == "review_needed"
+
+
 def test_health_includes_model_and_route_defaults_use_settings() -> None:
     app = create_app(Settings(mock_jev=True, quality_threshold_default=90))
     with TestClient(app) as client:
