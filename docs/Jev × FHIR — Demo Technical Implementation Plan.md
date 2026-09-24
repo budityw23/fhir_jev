@@ -1144,12 +1144,18 @@ Verdict:   PASS. D1b can start. Settle the get_demo 404 body format in D1b.
   - `GET /fixtures/{fixture_id:path}`: unknown id → 404 `not_found`
   - `POST /compare/{module}`: in D1b it returns the `CompareResponse` **without** publishing to the feed, because the feed doesn't exist until D1c.
 
+- **404 body format (decided Sep 25, 2026, after D1a):** demo "not found" responses use the project's standard error body, not FastAPI's default `{"detail": ...}`. The contract's "unknown id → 404 `not_found`" is realised as:
+  - a `DemoNotFoundError(LookupError)` exception in `src/jev_fhir/demo/__init__.py`, raised by the `/fixtures/{fixture_id:path}` handler (for `KeyError` from `load_resource`) and by `get_demo` (in place of its current `HTTPException`)
+  - a handler in `main.py` returning `_error_response(request, 404, "not_found", str(exc))`, so the body is `ErrorResponse` with `error == "not_found"` and a `request_id` matching `X-Request-Id`
+  - **no** global `HTTPException` / `StarletteHTTPException` handler: unknown routes, including every `/api/v1/demo/*` path while demo is disabled, keep FastAPI's default 404 body (Phase 4 behaviour is unchanged)
+
 **3. Acceptance criteria:**
 - `/config` returns `mode`, `jev_model`, 4 thresholds from Settings, the 5 `ROUTE_OPTIONS`, and the 4 question constants.
 - The fixture endpoints serve only catalog ids. Traversal attempts return 404 and never expose `.env` content.
 - Compare results match every Step 10 compare case.
 - Demo endpoints carry `X-Request-Id` and `X-Request-Duration-Ms`, from the existing middleware.
 - Invalid threshold combinations return 422.
+- Unknown fixture ids return 404 with the `ErrorResponse` body (`error == "not_found"`, `request_id` equal to the `X-Request-Id` header); unknown routes keep FastAPI's default 404.
 
 **4. Tests to add:**
 - `tests/test_demo_compare.py`:
@@ -1169,6 +1175,8 @@ Verdict:   PASS. D1b can start. Settle the get_demo 404 body format in D1b.
   - `/fixtures` filters
   - fixture load by a valid id
   - headers present on the demo endpoints
+  - unknown fixture id → 404 `ErrorResponse` with `error == "not_found"` and `request_id` matching `X-Request-Id`
+  - a non-demo unknown route (e.g. `/api/v1/nope`) still returns FastAPI's default `{"detail": "Not Found"}`
 
 **5. Verification:**
 
@@ -1200,6 +1208,7 @@ curl -s --path-as-is -o /dev/null -w "%{http_code}\n" "localhost:8000/api/v1/dem
 ☐ Two concurrent compare() calls return disjoint jev_raw lists (test name)
 ☐ Demo endpoint responses include X-Request-Id and X-Request-Duration-Ms
 ☐ Demo disabled → /api/v1/demo/config 404
+☐ Unknown fixture id → 404 ErrorResponse {error: "not_found", request_id == X-Request-Id}; unknown non-demo route keeps the default 404 body
 ☐ tests/test_api.py passes unchanged; no feed / pipeline / SSE / benchmarks / static code present
 ```
 
