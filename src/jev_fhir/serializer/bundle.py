@@ -4,7 +4,7 @@ from collections import Counter
 from collections.abc import Mapping
 from typing import Any
 
-from fhir.resources.bundle import Bundle
+from fhir.resources.R4B.bundle import Bundle
 
 from jev_fhir.serializer.base import FHIRSerializer
 

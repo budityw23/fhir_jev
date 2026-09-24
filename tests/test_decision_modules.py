@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
-from fhir.resources.auditevent import AuditEvent
-from fhir.resources.flag import Flag
+from fhir.resources.R4B.auditevent import AuditEvent
+from fhir.resources.R4B.flag import Flag
 from pydantic import ValidationError
 from pydantic.v1 import ValidationError as PydanticV1ValidationError
 
@@ -209,3 +209,17 @@ def test_audit_event_builder_returns_valid_fhir_resource() -> None:
 
     AuditEvent.parse_obj(event)
     assert "Patient/12345" in json.dumps(event)
+    # R4 shape: `type` is a Coding and entity.detail.type is a string (R5 uses `code` and a
+    # CodeableConcept, which R4 servers reject).
+    assert "code" not in event
+    assert event["type"] == {
+        "system": "http://terminology.hl7.org/CodeSystem/audit-event-type",
+        "code": "rest",
+        "display": "RESTful Operation",
+    }
+    assert event["entity"] == [
+        {
+            "what": {"reference": "Patient/12345"},
+            "detail": [{"type": "decision", "valueString": "auto_accept"}],
+        }
+    ]

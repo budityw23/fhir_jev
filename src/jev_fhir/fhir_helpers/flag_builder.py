@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from fhir.resources.flag import Flag
+from fhir.resources.R4B.flag import Flag
 
 
 class FlagBuilder:

@@ -41,6 +41,11 @@ FHIR serializers ──► flat decision state ──► Jev client (mock or liv
                                                + Prometheus metrics
 ```
 
+**FHIR version:** R4 (4.0.1). Resources are validated with the `fhir.resources.R4B` models;
+R4B is the closest release the library ships, and it's identical to R4 for every resource
+used here (Patient, Observation, Condition, Bundle, Flag, AuditEvent). All fixtures and
+generated Flags/AuditEvents were also checked against the official HL7 R4 4.0.1 JSON schema.
+
 Jev never sees raw FHIR: serializers flatten each resource into a small key/value state
 (`has_identifier`, `identifier_value_length`, `code_value`, `dominant_resource_type`, …).
 Confidence thresholds decide what is automated and what goes to a human.
@@ -154,7 +159,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/route-bundle \
 Checks a `Condition` against Indonesian notifiable diseases
 ([`data/notifiable_diseases.json`](data/notifiable_diseases.json): cholera, typhoid, TB,
 leprosy, Japanese encephalitis, dengue, malaria, HIV). The Condition must be valid FHIR R4
-(`clinicalStatus` and `subject` included).
+(`subject` is required; `clinicalStatus` is optional).
 
 | Probability | Status | Flag |
 | --- | --- | --- |
@@ -270,7 +275,7 @@ logic, so they validate the harness, not Jev. The mock misroutes four ambiguous 
 ```bash
 make lint        # ruff check + format check
 make typecheck   # mypy --strict
-make test        # pytest with coverage (48 tests, ~97% coverage)
+make test        # pytest with coverage (98 tests incl. R4 validity of every fixture, ~97% coverage)
 make bench       # mock benchmark report
 make serve       # uvicorn on 127.0.0.1:8000
 ```

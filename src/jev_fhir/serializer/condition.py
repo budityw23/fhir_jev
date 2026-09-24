@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from fhir.resources.condition import Condition
+from fhir.resources.R4B.condition import Condition
 
 from jev_fhir.serializer.base import FHIRSerializer, first_coding_code, first_coding_value
 

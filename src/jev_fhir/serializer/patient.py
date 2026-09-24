@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from fhir.resources.patient import Patient
+from fhir.resources.R4B.patient import Patient
 
 from jev_fhir.serializer.base import FHIRSerializer, first_mapping
 

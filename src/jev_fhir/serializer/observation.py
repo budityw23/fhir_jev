@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from fhir.resources.observation import Observation
+from fhir.resources.R4B.observation import Observation
 
 from jev_fhir.serializer.base import FHIRSerializer, first_coding_code, first_coding_value
 

@@ -5,9 +5,10 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
-from fhir.resources.bundle import Bundle
-from fhir.resources.condition import Condition
-from fhir.resources.patient import Patient
+from fhir.resources.R4B import get_fhir_model_class
+from fhir.resources.R4B.bundle import Bundle
+from fhir.resources.R4B.condition import Condition
+from fhir.resources.R4B.patient import Patient
 from pydantic import ValidationError
 from pydantic.v1 import ValidationError as PydanticV1ValidationError
 
@@ -34,6 +35,17 @@ def test_all_phase_two_fixtures_are_valid_fhir_r4() -> None:
     Condition.parse_obj(load_fixture("conditions/common_cold_j06.json"))
     Bundle.parse_obj(load_fixture("bundles/lab_bundle.json"))
     Bundle.parse_obj(load_fixture("bundles/mixed_bundle.json"))
+
+
+@pytest.mark.parametrize(
+    "fixture_path",
+    sorted(FIXTURES.rglob("*.json")),
+    ids=lambda path: str(path.relative_to(FIXTURES)),
+)
+def test_every_fixture_is_valid_fhir_r4(fixture_path: Path) -> None:
+    resource = json.loads(fixture_path.read_text())
+
+    get_fhir_model_class(resource["resourceType"]).parse_obj(resource)
 
 
 def test_patient_complete_shape_matches_phase_spec() -> None:

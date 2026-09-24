@@ -1,1 +1,1 @@
-{"resourceType":"Bundle","id":"medication-bundle","type":"collection","entry":[{"resource":{"resourceType":"MedicationDispense","id":"dispense-1","status":"completed","medication":{"concept":{"text":"Paracetamol"}},"subject":{"reference":"Patient/12345"}}}]}
+{"resourceType":"Bundle","id":"medication-bundle","type":"collection","entry":[{"resource":{"resourceType":"MedicationDispense","id":"dispense-1","status":"completed","medicationCodeableConcept":{"text":"Paracetamol"},"subject":{"reference":"Patient/12345"}}}]}
