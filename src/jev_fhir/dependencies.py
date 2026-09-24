@@ -1,9 +1,11 @@
-"""FastAPI dependency providers for application-scoped decision modules."""
+"""FastAPI dependency providers for application-scoped services."""
 
 from dataclasses import dataclass
 
 from fastapi import Request
 
+from jev_fhir.config import Settings
+from jev_fhir.jev_client.client import JevClient
 from jev_fhir.modules.bundle_router import BundleRouter
 from jev_fhir.modules.notifiable_detector import NotifiableDiseaseDetector
 from jev_fhir.modules.quality_scorer import QualityScorer
@@ -17,23 +19,28 @@ class AppServices:
     bundle_router: BundleRouter
     notifiable_detector: NotifiableDiseaseDetector
     jev_client_kind: str
+    settings: Settings
+    jev_client: JevClient
+    jev_model: str | None
 
 
 def get_services(request: Request) -> AppServices:
-    """Get the initialized services from the current application instance."""
+    """Get initialized services from application state."""
     return request.app.state.services  # type: ignore[no-any-return]
 
 
+def get_settings_dep(request: Request) -> Settings:
+    """Inject the active application settings."""
+    return get_services(request).settings
+
+
 def get_quality_scorer(request: Request) -> QualityScorer:
-    """Inject the QualityScorer without module-level mutable state."""
     return get_services(request).quality_scorer
 
 
 def get_bundle_router(request: Request) -> BundleRouter:
-    """Inject the BundleRouter without module-level mutable state."""
     return get_services(request).bundle_router
 
 
 def get_notifiable_detector(request: Request) -> NotifiableDiseaseDetector:
-    """Inject the NotifiableDiseaseDetector without module-level mutable state."""
     return get_services(request).notifiable_detector

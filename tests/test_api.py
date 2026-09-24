@@ -110,7 +110,12 @@ def test_health_reports_mock_client(api_client: TestClient) -> None:
     response = api_client.get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "jev_client": "mock", "version": "0.1.0"}
+    assert response.json() == {
+        "status": "ok",
+        "jev_client": "mock",
+        "jev_model": None,
+        "version": "0.1.0",
+    }
     assert_request_headers(response)
 
 

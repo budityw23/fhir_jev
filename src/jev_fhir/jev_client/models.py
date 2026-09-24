@@ -24,7 +24,7 @@ class ScoreResult(BaseModel):
 
 
 class NoulResult(BaseModel):
-    """Result of a Jev Noul (boolean) decision."""
+    """Result of a Jev Noul decision; probability is P(statement is true)."""
 
     answer: bool
     probability: float = Field(ge=0.0, le=1.0)

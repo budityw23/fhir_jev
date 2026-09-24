@@ -85,7 +85,7 @@ class MockJevClient(JevClient):
         digest = self._digest("noul", state, statement)
         if "16-digit Indonesian NIK" in statement:
             answer = state.get("identifier_value_length") == 16
-            probability = 0.94 if answer else 0.92
+            probability = 0.94 if answer else 0.08
         elif "notifiable disease" in statement.lower():
             code = state.get("code_value")
             notifiable_codes = {

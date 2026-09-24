@@ -1,4 +1,4 @@
-"""Run Jev decision modules and rule baselines against labeled synthetic fixtures."""
+"""Run Jev decision modules and rule baselines against labelled fixtures."""
 
 from __future__ import annotations
 
@@ -8,51 +8,47 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 from statistics import fmean
-from typing import Any, cast
+from typing import Any, TypeVar, cast
 
-from benchmarks.baselines.rule_bundle_router import route_bundle as rule_route_bundle
-from benchmarks.baselines.rule_notifiable_detector import is_notifiable as rule_is_notifiable
-from benchmarks.baselines.rule_quality_scorer import score_patient as rule_score_patient
-from jev_fhir.jev_client.mock import MockJevClient
+from jev_fhir.baselines.bundle_router import route_bundle as rule_route_bundle
+from jev_fhir.baselines.notifiable import is_notifiable as rule_is_notifiable
+from jev_fhir.baselines.quality import score_patient as rule_score_patient
+from jev_fhir.config import PROJECT_ROOT, Settings
+from jev_fhir.dataset.labels import QualityLabel, load_labels
+from jev_fhir.jev_client import JevClient, LiveJevClient, MockJevClient, RecordingJevClient
 from jev_fhir.modules.bundle_router import BundleRouter
 from jev_fhir.modules.notifiable_detector import NotifiableDiseaseDetector
 from jev_fhir.modules.quality_scorer import QualityScorer
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = PROJECT_ROOT
 FIXTURES = ROOT / "tests" / "fixtures"
 GROUND_TRUTH = ROOT / "benchmarks" / "ground_truth"
 DISEASE_DATA = ROOT / "data" / "notifiable_diseases.json"
+PRICE_PER_BILLION_TOKENS_USD = 42.0
 
 
 def load_json(path: Path) -> Any:
-    """Load a JSON document from a known local benchmark path."""
-    with path.open(encoding="utf-8") as input_file:
-        return json.load(input_file)
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def percentile(values: list[float], percentile_value: float) -> float:
-    """Return a nearest-rank percentile for a non-empty latency collection."""
     if not values:
         return 0.0
     ordered = sorted(values)
-    index = min(len(ordered) - 1, round((len(ordered) - 1) * percentile_value))
-    return round(ordered[index], 3)
+    return round(ordered[min(len(ordered) - 1, round((len(ordered) - 1) * percentile_value))], 3)
 
 
 def latency_metrics(values: list[float]) -> dict[str, float]:
-    """Compute the latency summary used in the JSON and Markdown reports."""
     return {
         "mean_ms": round(fmean(values), 3) if values else 0.0,
-        "p50_ms": percentile(values, 0.50),
+        "p50_ms": percentile(values, 0.5),
         "p95_ms": percentile(values, 0.95),
     }
 
 
 def calibration(decisions: list[tuple[float, bool]]) -> list[dict[str, float | int | str]]:
-    """Compare stated confidence with observed correctness in fixed confidence buckets."""
-    buckets = [(0.0, 0.5), (0.5, 0.8), (0.8, 1.01)]
     report: list[dict[str, float | int | str]] = []
-    for lower, upper in buckets:
+    for lower, upper in ((0.0, 0.5), (0.5, 0.8), (0.8, 1.01)):
         members = [
             (confidence, correct)
             for confidence, correct in decisions
@@ -71,7 +67,6 @@ def calibration(decisions: list[tuple[float, bool]]) -> list[dict[str, float | i
 
 
 def binary_metrics(predictions: list[bool], expected: list[bool]) -> dict[str, float]:
-    """Compute precision, recall, and F1 for positive notifiable-disease cases."""
     true_positive = sum(
         prediction and label for prediction, label in zip(predictions, expected, strict=True)
     )
@@ -91,155 +86,213 @@ def binary_metrics(predictions: list[bool], expected: list[bool]) -> dict[str, f
     return {"precision": round(precision, 3), "recall": round(recall, 3), "f1": round(f1, 3)}
 
 
-async def run_benchmark() -> dict[str, Any]:
-    """Run every labeled fixture through Jev's mock modules and the rule baselines."""
-    quality_labels = cast(list[dict[str, Any]], load_json(GROUND_TRUTH / "quality_scores.json"))
-    route_labels = cast(list[dict[str, Any]], load_json(GROUND_TRUTH / "bundle_routes.json"))
-    disease_labels = cast(
-        list[dict[str, Any]], load_json(GROUND_TRUTH / "notifiable_diseases.json")
+def accuracy(rows: list[dict[str, Any]], field: str) -> float:
+    return round(fmean(float(bool(row[field])) for row in rows), 3) if rows else 0.0
+
+
+T = TypeVar("T")
+
+
+def limited(items: list[T], limit: int | None) -> list[T]:
+    return items if limit is None else items[:limit]
+
+
+def make_client(live: bool, settings: Settings) -> tuple[JevClient, str, str | None]:
+    if not live:
+        return MockJevClient(), "mock_jev", None
+    return (
+        LiveJevClient(
+            settings.jev_api_key,
+            settings.jev_base_url,
+            model=settings.jev_model,
+            timeout_s=settings.jev_timeout_s,
+            max_retries=settings.jev_max_retries,
+            retry_budget_s=settings.jev_retry_budget_s,
+        ),
+        "live_jev",
+        settings.jev_model,
     )
 
-    mock_client = MockJevClient()
-    quality_scorer = QualityScorer(mock_client)
-    bundle_router = BundleRouter(mock_client)
-    detector = NotifiableDiseaseDetector(mock_client)
 
-    quality_rows: list[dict[str, Any]] = []
-    quality_latencies: list[float] = []
-    quality_confidence: list[tuple[float, bool]] = []
-    for label in quality_labels:
-        fixture = str(label["fixture"])
-        resource = cast(dict[str, Any], load_json(FIXTURES / fixture))
-        quality_jev_result = await quality_scorer.score(resource, "Patient")
-        baseline_result = rule_score_patient(resource)
-        baseline_score = baseline_result["score"]
-        if not isinstance(baseline_score, int):
-            raise TypeError("rule quality baseline must return an integer score")
-        lower, upper = cast(list[int], label["expected_score_range"])
-        expected_nik = label["expected_nik_valid"]
-        jev_correct = lower <= quality_jev_result.score <= upper and (
-            expected_nik is None or quality_jev_result.nik_valid == expected_nik
-        )
-        baseline_correct = lower <= baseline_score <= upper and (
-            expected_nik is None or baseline_result["nik_valid"] == expected_nik
-        )
-        quality_rows.append(
-            {
-                "fixture": fixture,
-                "expected_score_range": [lower, upper],
-                "jev_score": quality_jev_result.score,
-                "rule_score": baseline_score,
-                "jev_correct": jev_correct,
-                "rule_correct": baseline_correct,
-            }
-        )
-        quality_latencies.append(quality_jev_result.latency_ms)
-        quality_confidence.append((quality_jev_result.confidence, jev_correct))
+async def run_benchmark(*, live: bool = False, limit: int | None = None) -> dict[str, Any]:
+    """Run the unit dataset using mock mode by default and live Jev on demand."""
+    settings = Settings()
+    inner_client, mode, model = make_client(live, settings)
+    quality_labels = limited(load_labels(settings.labels_dir / "quality.json", QualityLabel), limit)
+    route_labels = limited(
+        cast(list[dict[str, Any]], load_json(GROUND_TRUTH / "bundle_routes.json")), limit
+    )
+    disease_labels = limited(
+        cast(list[dict[str, Any]], load_json(GROUND_TRUTH / "notifiable_diseases.json")), limit
+    )
+    all_tokens = 0
+    try:
+        quality_rows: list[dict[str, Any]] = []
+        quality_latencies: list[float] = []
+        quality_confidence: list[tuple[float, bool]] = []
+        score_in_band: list[bool] = []
+        for label in quality_labels:
+            resource = cast(dict[str, Any], load_json(ROOT / label.fixture))
+            recording = RecordingJevClient(inner_client)
+            result = await QualityScorer(recording).score(resource, label.resource_type)
+            baseline = rule_score_patient(resource)
+            baseline_score = baseline["score"]
+            if not isinstance(baseline_score, int):
+                raise TypeError("rule quality baseline must return an integer score")
+            lower, upper = label.expected_score_range
+            jev_correct = result.action == label.expected_action
+            rule_action = "auto_accept" if baseline_score >= 70 else "review_needed"
+            rule_correct = rule_action == label.expected_action
+            calls = recording.drain()
+            row_tokens = sum(call.result.tokens_used for call in calls)
+            all_tokens += row_tokens
+            quality_rows.append(
+                {
+                    "fixture": label.fixture,
+                    "expected_action": label.expected_action,
+                    "expected_score_range": [lower, upper],
+                    "jev_action": result.action,
+                    "rule_action": rule_action,
+                    "jev_score": result.score,
+                    "rule_score": baseline_score,
+                    "jev_correct": jev_correct,
+                    "rule_correct": rule_correct,
+                    "jev_score_in_band": lower <= result.score <= upper,
+                    "rule_score_in_band": lower <= baseline_score <= upper,
+                    "tokens_used": row_tokens,
+                    "jev_latency_ms": round(sum(call.result.latency_ms for call in calls), 3),
+                    "jev_confidence": result.confidence,
+                }
+            )
+            quality_latencies.append(result.latency_ms)
+            quality_confidence.append((result.confidence, jev_correct))
+            score_in_band.append(lower <= result.score <= upper)
 
-    route_rows: list[dict[str, Any]] = []
-    route_latencies: list[float] = []
-    route_confidence: list[tuple[float, bool]] = []
-    for label in route_labels:
-        fixture = str(label["fixture"])
-        bundle = cast(dict[str, Any], load_json(FIXTURES / fixture))
-        route_jev_result = await bundle_router.route(bundle)
-        rule_result = rule_route_bundle(bundle)
-        expected = str(label["expected_category"])
-        jev_correct = route_jev_result.category == expected
-        baseline_correct = rule_result == expected
-        route_rows.append(
-            {
-                "fixture": fixture,
-                "expected_category": expected,
-                "jev_category": route_jev_result.category,
-                "rule_category": rule_result,
-                "jev_correct": jev_correct,
-                "rule_correct": baseline_correct,
-            }
-        )
-        route_latencies.append(route_jev_result.latency_ms)
-        route_confidence.append((route_jev_result.confidence, jev_correct))
+        route_rows: list[dict[str, Any]] = []
+        route_latencies: list[float] = []
+        route_confidence: list[tuple[float, bool]] = []
+        for route_label in route_labels:
+            fixture = str(route_label["fixture"])
+            bundle = cast(dict[str, Any], load_json(FIXTURES / fixture))
+            recording = RecordingJevClient(inner_client)
+            route_result = await BundleRouter(recording).route(bundle)
+            expected_category = str(route_label["expected_category"])
+            calls = recording.drain()
+            row_tokens = sum(call.result.tokens_used for call in calls)
+            all_tokens += row_tokens
+            rule_category = rule_route_bundle(bundle)
+            jev_correct = route_result.category == expected_category
+            route_rows.append(
+                {
+                    "fixture": fixture,
+                    "expected_category": expected_category,
+                    "jev_category": route_result.category,
+                    "rule_category": rule_category,
+                    "jev_correct": jev_correct,
+                    "rule_correct": rule_category == expected_category,
+                    "tokens_used": row_tokens,
+                    "jev_latency_ms": round(sum(call.result.latency_ms for call in calls), 3),
+                    "jev_confidence": route_result.confidence,
+                }
+            )
+            route_latencies.append(route_result.latency_ms)
+            route_confidence.append((route_result.confidence, jev_correct))
 
-    disease_rows: list[dict[str, Any]] = []
-    disease_latencies: list[float] = []
-    disease_confidence: list[tuple[float, bool]] = []
-    disease_jev_predictions: list[bool] = []
-    disease_rule_predictions: list[bool] = []
-    disease_expected: list[bool] = []
-    for label in disease_labels:
-        fixture = str(label["fixture"])
-        condition = cast(dict[str, Any], load_json(FIXTURES / fixture))
-        disease_jev_result = await detector.detect(condition)
-        disease_rule_result = rule_is_notifiable(condition, DISEASE_DATA)
-        disease_expected_value = bool(label["expected_notifiable"])
-        jev_correct = disease_jev_result.is_notifiable == disease_expected_value
-        baseline_correct = disease_rule_result == disease_expected_value
-        disease_rows.append(
-            {
-                "fixture": fixture,
-                "expected_notifiable": disease_expected_value,
-                "jev_notifiable": disease_jev_result.is_notifiable,
-                "rule_notifiable": disease_rule_result,
-                "jev_correct": jev_correct,
-                "rule_correct": baseline_correct,
-            }
-        )
-        disease_latencies.append(disease_jev_result.latency_ms)
-        disease_confidence.append((disease_jev_result.probability, jev_correct))
-        disease_jev_predictions.append(disease_jev_result.is_notifiable)
-        disease_rule_predictions.append(disease_rule_result)
-        disease_expected.append(disease_expected_value)
+        disease_rows: list[dict[str, Any]] = []
+        disease_latencies: list[float] = []
+        disease_confidence: list[tuple[float, bool]] = []
+        disease_predictions: list[bool] = []
+        rule_predictions: list[bool] = []
+        disease_expected: list[bool] = []
+        for disease_label in disease_labels:
+            fixture = str(disease_label["fixture"])
+            condition = cast(dict[str, Any], load_json(FIXTURES / fixture))
+            recording = RecordingJevClient(inner_client)
+            disease_result = await NotifiableDiseaseDetector(recording).detect(condition)
+            expected_notifiable = bool(disease_label["expected_notifiable"])
+            rule_result = rule_is_notifiable(condition, DISEASE_DATA)
+            calls = recording.drain()
+            row_tokens = sum(call.result.tokens_used for call in calls)
+            all_tokens += row_tokens
+            jev_correct = disease_result.is_notifiable == expected_notifiable
+            disease_rows.append(
+                {
+                    "fixture": fixture,
+                    "expected_notifiable": expected_notifiable,
+                    "jev_notifiable": disease_result.is_notifiable,
+                    "rule_notifiable": rule_result,
+                    "jev_correct": jev_correct,
+                    "rule_correct": rule_result == expected_notifiable,
+                    "tokens_used": row_tokens,
+                    "jev_latency_ms": round(sum(call.result.latency_ms for call in calls), 3),
+                    "jev_confidence": disease_result.probability,
+                }
+            )
+            disease_latencies.append(disease_result.latency_ms)
+            disease_confidence.append((disease_result.probability, jev_correct))
+            disease_predictions.append(disease_result.is_notifiable)
+            rule_predictions.append(rule_result)
+            disease_expected.append(expected_notifiable)
 
-    def accuracy(rows: list[dict[str, Any]], field: str) -> float:
-        return round(fmean(float(bool(row[field])) for row in rows), 3)
-
-    return {
-        "generated_at": datetime.now(UTC).isoformat(),
-        "mode": "mock_jev",
-        "token_and_cost": {"tokens_used": 0, "estimated_cost_usd": 0.0, "note": "mock client"},
-        "modules": {
-            "quality_scorer": {
-                "fixture_count": len(quality_rows),
-                "jev_accuracy": accuracy(quality_rows, "jev_correct"),
-                "rule_accuracy": accuracy(quality_rows, "rule_correct"),
-                "latency": latency_metrics(quality_latencies),
-                "confidence_calibration": calibration(quality_confidence),
-                "rows": quality_rows,
-            },
-            "bundle_router": {
-                "fixture_count": len(route_rows),
-                "jev_accuracy": accuracy(route_rows, "jev_correct"),
-                "rule_accuracy": accuracy(route_rows, "rule_correct"),
-                "latency": latency_metrics(route_latencies),
-                "confidence_calibration": calibration(route_confidence),
-                "rows": route_rows,
-            },
-            "notifiable_detector": {
-                "fixture_count": len(disease_rows),
-                "jev_accuracy": accuracy(disease_rows, "jev_correct"),
-                "rule_accuracy": accuracy(disease_rows, "rule_correct"),
-                "jev_precision_recall_f1": binary_metrics(
-                    disease_jev_predictions, disease_expected
+        billed_tokens = all_tokens if live else 0
+        return {
+            "generated_at": datetime.now(UTC).isoformat(),
+            "mode": mode,
+            "jev_model": model,
+            "dataset": "unit",
+            "quality_labels_banded": True,
+            "token_and_cost": {
+                "tokens_used": billed_tokens,
+                "estimated_cost_usd": round(
+                    billed_tokens * PRICE_PER_BILLION_TOKENS_USD / 1_000_000_000, 8
                 ),
-                "rule_precision_recall_f1": binary_metrics(
-                    disease_rule_predictions, disease_expected
-                ),
-                "latency": latency_metrics(disease_latencies),
-                "confidence_calibration": calibration(disease_confidence),
-                "rows": disease_rows,
+                "pricing_note": "total tokens × $42 / 1e9",
             },
-        },
-    }
+            "modules": {
+                "quality_scorer": {
+                    "fixture_count": len(quality_rows),
+                    "jev_accuracy": accuracy(quality_rows, "jev_correct"),
+                    "rule_accuracy": accuracy(quality_rows, "rule_correct"),
+                    "jev_score_in_band": round(fmean(score_in_band), 3) if score_in_band else 0.0,
+                    "latency": latency_metrics(quality_latencies),
+                    "confidence_calibration": calibration(quality_confidence),
+                    "rows": quality_rows,
+                },
+                "bundle_router": {
+                    "fixture_count": len(route_rows),
+                    "jev_accuracy": accuracy(route_rows, "jev_correct"),
+                    "rule_accuracy": accuracy(route_rows, "rule_correct"),
+                    "latency": latency_metrics(route_latencies),
+                    "confidence_calibration": calibration(route_confidence),
+                    "rows": route_rows,
+                },
+                "notifiable_detector": {
+                    "fixture_count": len(disease_rows),
+                    "jev_accuracy": accuracy(disease_rows, "jev_correct"),
+                    "rule_accuracy": accuracy(disease_rows, "rule_correct"),
+                    "jev_precision_recall_f1": binary_metrics(
+                        disease_predictions, disease_expected
+                    ),
+                    "rule_precision_recall_f1": binary_metrics(rule_predictions, disease_expected),
+                    "latency": latency_metrics(disease_latencies),
+                    "confidence_calibration": calibration(disease_confidence),
+                    "rows": disease_rows,
+                },
+            },
+        }
+    finally:
+        if isinstance(inner_client, LiveJevClient):
+            await inner_client.aclose()
 
 
 def markdown_report(results: dict[str, Any]) -> str:
-    """Render a concise Jev-versus-rule benchmark summary."""
     modules = cast(dict[str, dict[str, Any]], results["modules"])
     lines = [
         "# Jev × FHIR Benchmark Report",
         "",
         f"Generated: {results['generated_at']}",
         f"Mode: {results['mode']}",
+        f"Dataset: {results['dataset']}",
         "",
         "| Module | Fixtures | Jev accuracy | Rule accuracy | Mean ms | P50 ms | P95 ms |",
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
@@ -251,23 +304,11 @@ def markdown_report(results: dict[str, Any]) -> str:
             f"{result['rule_accuracy']:.3f} | {latency['mean_ms']:.3f} | "
             f"{latency['p50_ms']:.3f} | {latency['p95_ms']:.3f} |"
         )
-    detection = modules["notifiable_detector"]
-    lines.extend(
-        [
-            "",
-            "## Notifiable Disease Detection",
-            "",
-            f"Jev precision/recall/F1: {detection['jev_precision_recall_f1']}",
-            f"Rule precision/recall/F1: {detection['rule_precision_recall_f1']}",
-            "",
-            f"Token/cost accounting: {results['token_and_cost']}",
-        ]
-    )
+    lines.extend(["", f"Token/cost accounting: {results['token_and_cost']}"])
     return "\n".join(lines) + "\n"
 
 
 def write_reports(results: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
-    """Write timestamped structured and Markdown benchmark outputs."""
     output_dir.mkdir(parents=True, exist_ok=True)
     suffix = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     json_path = output_dir / f"bench_{suffix}.json"
@@ -277,18 +318,23 @@ def write_reports(results: dict[str, Any], output_dir: Path) -> tuple[Path, Path
     return json_path, markdown_path
 
 
-async def async_main(output_dir: Path) -> tuple[Path, Path]:
-    """Run and persist the complete benchmark."""
-    results = await run_benchmark()
-    return write_reports(results, output_dir)
+async def async_main(
+    output_dir: Path, *, live: bool = False, limit: int | None = None
+) -> tuple[Path, Path]:
+    return write_reports(await run_benchmark(live=live, limit=limit), output_dir)
 
 
 def main() -> None:
-    """CLI entry point used by ``make bench``."""
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--live", action="store_true")
+    parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--output-dir", type=Path, default=ROOT / "benchmarks" / "results")
     args = parser.parse_args()
-    json_path, markdown_path = asyncio.run(async_main(args.output_dir))
+    if args.limit is not None and args.limit < 1:
+        parser.error("--limit must be positive")
+    json_path, markdown_path = asyncio.run(
+        async_main(args.output_dir, live=args.live, limit=args.limit)
+    )
     print(f"Wrote {json_path}")
     print(f"Wrote {markdown_path}")
 

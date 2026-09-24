@@ -61,6 +61,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             jev_client = LiveJevClient(
                 api_key=effective_settings.jev_api_key,
                 base_url=effective_settings.jev_base_url,
+                model=effective_settings.jev_model,
+                timeout_s=effective_settings.jev_timeout_s,
+                max_retries=effective_settings.jev_max_retries,
+                retry_budget_s=effective_settings.jev_retry_budget_s,
             )
             client_kind = "live"
 
@@ -69,6 +73,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             bundle_router=BundleRouter(jev_client),
             notifiable_detector=NotifiableDiseaseDetector(jev_client),
             jev_client_kind=client_kind,
+            settings=effective_settings,
+            jev_client=jev_client,
+            jev_model=None if effective_settings.mock_jev else effective_settings.jev_model,
         )
         yield
         if isinstance(jev_client, LiveJevClient):
@@ -120,7 +127,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.exception_handler(JevClientError)
     async def jev_error_handler(request: Request, exc: JevClientError) -> JSONResponse:
-        return _error_response(request, 502, "jev_error", str(exc))
+        return _error_response(request, exc.status_code, exc.error_code, str(exc))
 
     @app.exception_handler(ValueError)
     async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse:
@@ -132,10 +139,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(metrics.router, prefix="/api/v1")
 
     @app.get("/health", tags=["health"])
-    async def health(request: Request) -> dict[str, str]:
+    async def health(request: Request) -> dict[str, str | None]:
         """Report that the API has initialized its configured Jev client."""
         services: AppServices = request.app.state.services
-        return {"status": "ok", "jev_client": services.jev_client_kind, "version": "0.1.0"}
+        return {
+            "status": "ok",
+            "jev_client": services.jev_client_kind,
+            "jev_model": services.jev_model,
+            "version": "0.1.0",
+        }
 
     return app
 

@@ -1,0 +1,282 @@
+[
+  {
+    "fixture": "tests/fixtures/patients/address_no_country.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Demographics and a valid NIK are present; missing address country is a minor interoperability gap.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      65,
+      100
+    ],
+    "expected_nik_valid": true
+  },
+  {
+    "fixture": "tests/fixtures/patients/complete_patient.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "All core demographics and a valid 16-digit NIK are present; the record is usable for intake.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "expected_nik_valid": true
+  },
+  {
+    "fixture": "tests/fixtures/patients/complete_patient_two.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Complete demographic record with a valid NIK and sufficient contact context for routine processing.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "expected_nik_valid": true
+  },
+  {
+    "fixture": "tests/fixtures/patients/empty_telecom.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Core identity and demographics are complete; an empty telecom list is not a blocking quality defect.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      65,
+      100
+    ],
+    "expected_nik_valid": true
+  },
+  {
+    "fixture": "tests/fixtures/patients/full_no_nik.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "The patient record is otherwise complete but has no Indonesian NIK, so the NIK validation gate is false.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      65,
+      100
+    ],
+    "expected_nik_valid": false
+  },
+  {
+    "fixture": "tests/fixtures/patients/invalid_nik.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "The clinical demographics are complete, but the supplied NIK is not valid and requires a separate gate decision.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      65,
+      100
+    ],
+    "expected_nik_valid": false
+  },
+  {
+    "fixture": "tests/fixtures/patients/minimal_patient.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Only resource identity is present; essential demographic and identifier fields are absent.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      0,
+      35
+    ],
+    "expected_nik_valid": null
+  },
+  {
+    "fixture": "tests/fixtures/patients/missing_address.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Identity and clinical demographics are usable with a valid NIK; address can be completed later.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      60,
+      90
+    ],
+    "expected_nik_valid": true
+  },
+  {
+    "fixture": "tests/fixtures/patients/missing_all_demographics.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "The record has no usable demographic content beyond the FHIR resource shell.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      0,
+      30
+    ],
+    "expected_nik_valid": null
+  },
+  {
+    "fixture": "tests/fixtures/patients/missing_birthdate.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "A valid NIK and other core demographics are present; birth date is an important but recoverable gap.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      60,
+      90
+    ],
+    "expected_nik_valid": true
+  },
+  {
+    "fixture": "tests/fixtures/patients/missing_gender.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Identity, NIK, and most demographics are present; gender should be reviewed but does not block intake.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      60,
+      90
+    ],
+    "expected_nik_valid": true
+  },
+  {
+    "fixture": "tests/fixtures/patients/missing_identifier.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "The record cannot be reliably matched without an identifier, despite some demographic fields being present.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      20,
+      65
+    ],
+    "expected_nik_valid": null
+  },
+  {
+    "fixture": "tests/fixtures/patients/missing_name.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "A valid NIK is present but no patient name is available for safe operational review.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      20,
+      65
+    ],
+    "expected_nik_valid": true
+  },
+  {
+    "fixture": "tests/fixtures/patients/multiple_identifiers.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Multiple identifiers include a valid NIK and the remaining demographic fields are complete.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      65,
+      100
+    ],
+    "expected_nik_valid": true
+  },
+  {
+    "fixture": "tests/fixtures/patients/non_indonesian.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "The record is complete for a non-Indonesian patient; an Indonesian NIK is not expected.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      65,
+      100
+    ],
+    "expected_nik_valid": false
+  },
+  {
+    "fixture": "tests/fixtures/patients/only_identifier.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "A valid NIK alone is insufficient because demographic, contact, and address data are absent.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      0,
+      45
+    ],
+    "expected_nik_valid": true
+  },
+  {
+    "fixture": "tests/fixtures/patients/only_name.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "A name alone cannot support reliable matching or clinical use.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "review_needed",
+    "expected_score_range": [
+      0,
+      40
+    ],
+    "expected_nik_valid": null
+  },
+  {
+    "fixture": "tests/fixtures/patients/short_identifier.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "The record is otherwise complete but the identifier is too short to pass the NIK validation gate.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      60,
+      90
+    ],
+    "expected_nik_valid": false
+  },
+  {
+    "fixture": "tests/fixtures/patients/two_names.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Multiple names are acceptable; core demographics and a valid NIK are present.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      65,
+      100
+    ],
+    "expected_nik_valid": true
+  },
+  {
+    "fixture": "tests/fixtures/patients/with_telecom.json",
+    "source": "unit",
+    "difficulty": "easy",
+    "rationale": "Complete demographic and contact information with a valid NIK supports automated intake.",
+    "approved_by": null,
+    "resource_type": "Patient",
+    "expected_action": "auto_accept",
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "expected_nik_valid": true
+  }
+]

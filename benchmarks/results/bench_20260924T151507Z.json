@@ -1,0 +1,813 @@
+{
+  "generated_at": "2026-09-24T15:15:07.545552+00:00",
+  "mode": "mock_jev",
+  "jev_model": null,
+  "dataset": "unit",
+  "quality_labels_banded": true,
+  "token_and_cost": {
+    "tokens_used": 0,
+    "estimated_cost_usd": 0.0,
+    "pricing_note": "total tokens \u00d7 $42 / 1e9"
+  },
+  "modules": {
+    "quality_scorer": {
+      "fixture_count": 20,
+      "jev_accuracy": 1.0,
+      "rule_accuracy": 1.0,
+      "jev_score_in_band": 1.0,
+      "latency": {
+        "mean_ms": 44.929,
+        "p50_ms": 46.148,
+        "p95_ms": 57.006
+      },
+      "confidence_calibration": [
+        {
+          "bucket": "0.5-0.8",
+          "count": 12,
+          "mean_confidence": 0.714,
+          "observed_accuracy": 1.0
+        },
+        {
+          "bucket": "0.8-1.0",
+          "count": 8,
+          "mean_confidence": 0.876,
+          "observed_accuracy": 1.0
+        }
+      ],
+      "rows": [
+        {
+          "fixture": "tests/fixtures/patients/address_no_country.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            65,
+            100
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 38,
+          "jev_latency_ms": 37.0,
+          "jev_confidence": 0.71
+        },
+        {
+          "fixture": "tests/fixtures/patients/complete_patient.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            70,
+            100
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 49,
+          "jev_latency_ms": 40.0,
+          "jev_confidence": 0.71
+        },
+        {
+          "fixture": "tests/fixtures/patients/complete_patient_two.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            70,
+            100
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 37,
+          "jev_latency_ms": 50.0,
+          "jev_confidence": 0.84
+        },
+        {
+          "fixture": "tests/fixtures/patients/empty_telecom.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            65,
+            100
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 54,
+          "jev_latency_ms": 46.0,
+          "jev_confidence": 0.88
+        },
+        {
+          "fixture": "tests/fixtures/patients/full_no_nik.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            65,
+            100
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 59,
+          "jev_latency_ms": 37.0,
+          "jev_confidence": 0.68
+        },
+        {
+          "fixture": "tests/fixtures/patients/invalid_nik.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            65,
+            100
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 73,
+          "jev_latency_ms": 42.0,
+          "jev_confidence": 0.62
+        },
+        {
+          "fixture": "tests/fixtures/patients/minimal_patient.json",
+          "expected_action": "review_needed",
+          "expected_score_range": [
+            0,
+            35
+          ],
+          "jev_action": "review_needed",
+          "rule_action": "review_needed",
+          "jev_score": 0,
+          "rule_score": 0,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 61,
+          "jev_latency_ms": 33.0,
+          "jev_confidence": 0.88
+        },
+        {
+          "fixture": "tests/fixtures/patients/missing_address.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            60,
+            90
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 70,
+          "rule_score": 70,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 28,
+          "jev_latency_ms": 32.0,
+          "jev_confidence": 0.83
+        },
+        {
+          "fixture": "tests/fixtures/patients/missing_all_demographics.json",
+          "expected_action": "review_needed",
+          "expected_score_range": [
+            0,
+            30
+          ],
+          "jev_action": "review_needed",
+          "rule_action": "review_needed",
+          "jev_score": 0,
+          "rule_score": 0,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 61,
+          "jev_latency_ms": 33.0,
+          "jev_confidence": 0.88
+        },
+        {
+          "fixture": "tests/fixtures/patients/missing_birthdate.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            60,
+            90
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 70,
+          "rule_score": 70,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 39,
+          "jev_latency_ms": 48.0,
+          "jev_confidence": 0.8
+        },
+        {
+          "fixture": "tests/fixtures/patients/missing_gender.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            60,
+            90
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 70,
+          "rule_score": 70,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 68,
+          "jev_latency_ms": 49.0,
+          "jev_confidence": 0.72
+        },
+        {
+          "fixture": "tests/fixtures/patients/missing_identifier.json",
+          "expected_action": "review_needed",
+          "expected_score_range": [
+            20,
+            65
+          ],
+          "jev_action": "review_needed",
+          "rule_action": "review_needed",
+          "jev_score": 50,
+          "rule_score": 50,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 69,
+          "jev_latency_ms": 53.0,
+          "jev_confidence": 0.75
+        },
+        {
+          "fixture": "tests/fixtures/patients/missing_name.json",
+          "expected_action": "review_needed",
+          "expected_score_range": [
+            20,
+            65
+          ],
+          "jev_action": "review_needed",
+          "rule_action": "review_needed",
+          "jev_score": 60,
+          "rule_score": 60,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 68,
+          "jev_latency_ms": 43.0,
+          "jev_confidence": 0.7
+        },
+        {
+          "fixture": "tests/fixtures/patients/multiple_identifiers.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            65,
+            100
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 42,
+          "jev_latency_ms": 51.0,
+          "jev_confidence": 0.79
+        },
+        {
+          "fixture": "tests/fixtures/patients/non_indonesian.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            65,
+            100
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 51,
+          "jev_latency_ms": 41.0,
+          "jev_confidence": 0.71
+        },
+        {
+          "fixture": "tests/fixtures/patients/only_identifier.json",
+          "expected_action": "review_needed",
+          "expected_score_range": [
+            0,
+            45
+          ],
+          "jev_action": "review_needed",
+          "rule_action": "review_needed",
+          "jev_score": 30,
+          "rule_score": 30,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 64,
+          "jev_latency_ms": 30.0,
+          "jev_confidence": 0.7
+        },
+        {
+          "fixture": "tests/fixtures/patients/only_name.json",
+          "expected_action": "review_needed",
+          "expected_score_range": [
+            0,
+            40
+          ],
+          "jev_action": "review_needed",
+          "rule_action": "review_needed",
+          "jev_score": 20,
+          "rule_score": 20,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 42,
+          "jev_latency_ms": 45.0,
+          "jev_confidence": 0.95
+        },
+        {
+          "fixture": "tests/fixtures/patients/short_identifier.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            60,
+            90
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 58,
+          "jev_latency_ms": 41.0,
+          "jev_confidence": 0.77
+        },
+        {
+          "fixture": "tests/fixtures/patients/two_names.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            65,
+            100
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 48,
+          "jev_latency_ms": 28.0,
+          "jev_confidence": 0.71
+        },
+        {
+          "fixture": "tests/fixtures/patients/with_telecom.json",
+          "expected_action": "auto_accept",
+          "expected_score_range": [
+            70,
+            100
+          ],
+          "jev_action": "auto_accept",
+          "rule_action": "auto_accept",
+          "jev_score": 80,
+          "rule_score": 80,
+          "jev_correct": true,
+          "rule_correct": true,
+          "jev_score_in_band": true,
+          "rule_score_in_band": true,
+          "tokens_used": 42,
+          "jev_latency_ms": 50.0,
+          "jev_confidence": 0.95
+        }
+      ]
+    },
+    "bundle_router": {
+      "fixture_count": 15,
+      "jev_accuracy": 0.733,
+      "rule_accuracy": 0.933,
+      "latency": {
+        "mean_ms": 34.315,
+        "p50_ms": 29.192,
+        "p95_ms": 73.837
+      },
+      "confidence_calibration": [
+        {
+          "bucket": "0.5-0.8",
+          "count": 2,
+          "mean_confidence": 0.73,
+          "observed_accuracy": 0.5
+        },
+        {
+          "bucket": "0.8-1.0",
+          "count": 13,
+          "mean_confidence": 0.907,
+          "observed_accuracy": 0.769
+        }
+      ],
+      "rows": [
+        {
+          "fixture": "bundles/condition_bundle.json",
+          "expected_category": "unknown",
+          "jev_category": "unknown",
+          "rule_category": "unknown",
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 39,
+          "jev_latency_ms": 21.0,
+          "jev_confidence": 0.94
+        },
+        {
+          "fixture": "bundles/empty_bundle.json",
+          "expected_category": "unknown",
+          "jev_category": "medication_dispense",
+          "rule_category": "unknown",
+          "jev_correct": false,
+          "rule_correct": true,
+          "tokens_used": 40,
+          "jev_latency_ms": 28.0,
+          "jev_confidence": 0.83
+        },
+        {
+          "fixture": "bundles/encounter_bundle.json",
+          "expected_category": "encounter_summary",
+          "jev_category": "encounter_summary",
+          "rule_category": "encounter_summary",
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 18,
+          "jev_latency_ms": 27.0,
+          "jev_confidence": 0.92
+        },
+        {
+          "fixture": "bundles/immunization_and_patient_bundle.json",
+          "expected_category": "immunization_report",
+          "jev_category": "immunization_report",
+          "rule_category": "immunization_report",
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 22,
+          "jev_latency_ms": 13.0,
+          "jev_confidence": 0.92
+        },
+        {
+          "fixture": "bundles/immunization_bundle.json",
+          "expected_category": "immunization_report",
+          "jev_category": "immunization_report",
+          "rule_category": "immunization_report",
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 38,
+          "jev_latency_ms": 23.0,
+          "jev_confidence": 0.92
+        },
+        {
+          "fixture": "bundles/lab_bundle.json",
+          "expected_category": "lab_result",
+          "jev_category": "lab_result",
+          "rule_category": "lab_result",
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 33,
+          "jev_latency_ms": 22.0,
+          "jev_confidence": 0.92
+        },
+        {
+          "fixture": "bundles/large_bundle.json",
+          "expected_category": "lab_result",
+          "jev_category": "lab_result",
+          "rule_category": "lab_result",
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 34,
+          "jev_latency_ms": 24.0,
+          "jev_confidence": 0.92
+        },
+        {
+          "fixture": "bundles/medication_and_condition_bundle.json",
+          "expected_category": "medication_dispense",
+          "jev_category": "medication_dispense",
+          "rule_category": "medication_dispense",
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 20,
+          "jev_latency_ms": 21.0,
+          "jev_confidence": 0.92
+        },
+        {
+          "fixture": "bundles/medication_bundle.json",
+          "expected_category": "medication_dispense",
+          "jev_category": "medication_dispense",
+          "rule_category": "medication_dispense",
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 28,
+          "jev_latency_ms": 10.0,
+          "jev_confidence": 0.92
+        },
+        {
+          "fixture": "bundles/mixed_bundle.json",
+          "expected_category": "unknown",
+          "jev_category": "lab_result",
+          "rule_category": "encounter_summary",
+          "jev_correct": false,
+          "rule_correct": false,
+          "tokens_used": 40,
+          "jev_latency_ms": 30.0,
+          "jev_confidence": 0.92
+        },
+        {
+          "fixture": "bundles/multi_lab_bundle.json",
+          "expected_category": "lab_result",
+          "jev_category": "lab_result",
+          "rule_category": "lab_result",
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 12,
+          "jev_latency_ms": 17.0,
+          "jev_confidence": 0.92
+        },
+        {
+          "fixture": "bundles/nested_bundle.json",
+          "expected_category": "unknown",
+          "jev_category": "encounter_summary",
+          "rule_category": "unknown",
+          "jev_correct": false,
+          "rule_correct": true,
+          "tokens_used": 12,
+          "jev_latency_ms": 22.0,
+          "jev_confidence": 0.82
+        },
+        {
+          "fixture": "bundles/patient_bundle.json",
+          "expected_category": "unknown",
+          "jev_category": "medication_dispense",
+          "rule_category": "unknown",
+          "jev_correct": false,
+          "rule_correct": true,
+          "tokens_used": 40,
+          "jev_latency_ms": 22.0,
+          "jev_confidence": 0.7
+        },
+        {
+          "fixture": "bundles/single_observation_bundle.json",
+          "expected_category": "lab_result",
+          "jev_category": "lab_result",
+          "rule_category": "lab_result",
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 39,
+          "jev_latency_ms": 13.0,
+          "jev_confidence": 0.92
+        },
+        {
+          "fixture": "bundles/unknown_bundle.json",
+          "expected_category": "unknown",
+          "jev_category": "unknown",
+          "rule_category": "unknown",
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 35,
+          "jev_latency_ms": 16.0,
+          "jev_confidence": 0.76
+        }
+      ]
+    },
+    "notifiable_detector": {
+      "fixture_count": 15,
+      "jev_accuracy": 1.0,
+      "rule_accuracy": 1.0,
+      "jev_precision_recall_f1": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "rule_precision_recall_f1": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "latency": {
+        "mean_ms": 21.345,
+        "p50_ms": 21.513,
+        "p95_ms": 30.064
+      },
+      "confidence_calibration": [
+        {
+          "bucket": "0.0-0.5",
+          "count": 6,
+          "mean_confidence": 0.1,
+          "observed_accuracy": 1.0
+        },
+        {
+          "bucket": "0.8-1.0",
+          "count": 9,
+          "mean_confidence": 0.95,
+          "observed_accuracy": 1.0
+        }
+      ],
+      "rows": [
+        {
+          "fixture": "conditions/asthma_j45.json",
+          "expected_notifiable": false,
+          "jev_notifiable": false,
+          "rule_notifiable": false,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 10,
+          "jev_latency_ms": 29.0,
+          "jev_confidence": 0.1
+        },
+        {
+          "fixture": "conditions/cholera_a00.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 30,
+          "jev_latency_ms": 21.0,
+          "jev_confidence": 0.95
+        },
+        {
+          "fixture": "conditions/common_cold_j06.json",
+          "expected_notifiable": false,
+          "jev_notifiable": false,
+          "rule_notifiable": false,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 23,
+          "jev_latency_ms": 17.0,
+          "jev_confidence": 0.1
+        },
+        {
+          "fixture": "conditions/dengue_a90.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 31,
+          "jev_latency_ms": 10.0,
+          "jev_confidence": 0.95
+        },
+        {
+          "fixture": "conditions/fracture_s72.json",
+          "expected_notifiable": false,
+          "jev_notifiable": false,
+          "rule_notifiable": false,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 40,
+          "jev_latency_ms": 30.0,
+          "jev_confidence": 0.1
+        },
+        {
+          "fixture": "conditions/hiv_b20.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 10,
+          "jev_latency_ms": 22.0,
+          "jev_confidence": 0.95
+        },
+        {
+          "fixture": "conditions/hypertension_i10.json",
+          "expected_notifiable": false,
+          "jev_notifiable": false,
+          "rule_notifiable": false,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 22,
+          "jev_latency_ms": 13.0,
+          "jev_confidence": 0.1
+        },
+        {
+          "fixture": "conditions/japanese_encephalitis_a83.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 12,
+          "jev_latency_ms": 24.0,
+          "jev_confidence": 0.95
+        },
+        {
+          "fixture": "conditions/leprosy_a30.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 32,
+          "jev_latency_ms": 13.0,
+          "jev_confidence": 0.95
+        },
+        {
+          "fixture": "conditions/malaria_b50.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 15,
+          "jev_latency_ms": 28.0,
+          "jev_confidence": 0.95
+        },
+        {
+          "fixture": "conditions/missing_coding_system.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 37,
+          "jev_latency_ms": 21.0,
+          "jev_confidence": 0.95
+        },
+        {
+          "fixture": "conditions/no_code.json",
+          "expected_notifiable": false,
+          "jev_notifiable": false,
+          "rule_notifiable": false,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 23,
+          "jev_latency_ms": 18.0,
+          "jev_confidence": 0.1
+        },
+        {
+          "fixture": "conditions/snomed_only.json",
+          "expected_notifiable": false,
+          "jev_notifiable": false,
+          "rule_notifiable": false,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 12,
+          "jev_latency_ms": 13.0,
+          "jev_confidence": 0.1
+        },
+        {
+          "fixture": "conditions/tuberculosis_a15.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 35,
+          "jev_latency_ms": 19.0,
+          "jev_confidence": 0.95
+        },
+        {
+          "fixture": "conditions/typhoid_a01.json",
+          "expected_notifiable": true,
+          "jev_notifiable": true,
+          "rule_notifiable": true,
+          "jev_correct": true,
+          "rule_correct": true,
+          "tokens_used": 22,
+          "jev_latency_ms": 13.0,
+          "jev_confidence": 0.95
+        }
+      ]
+    }
+  }
+}
