@@ -1,6 +1,6 @@
 # Jev × FHIR — Demo Plan & UI Requirements
 
-Sep 24, 2026 · @budi · **Rev 2** (Sep 24, 2026): re-planned after a code evaluation; see §1 and the "Rev 2" notes in §4, §5 and §7
+Sep 24, 2026 · @budi · **Rev 2** (Sep 24, 2026): re-planned after a code evaluation; see §1 and the "Rev 2" notes in §4, §5 and §7 · **Rev 3** (Sep 24, 2026): added the benchmark dataset phase D0.5 (finding F10)
 
 ## Purpose
 
@@ -55,7 +55,18 @@ The doc has four parts:
 | F6 | 🟡 Low | **Model is hard-coded `jev-latest`** (`LiveJevClient._MODEL`). PRD NFR-5 asks for a pinned version. | The mode badge can't state which model produced a result, and results can drift between rehearsal and demo. |
 | F7 | 🟡 Low | **`quality_threshold_default`, `route_confidence_minimum`, `notifiable_confidence_minimum` in `config.py` are never read.** Routes and modules use their own literal defaults. | Demo sliders need one source of default thresholds. |
 | F8 | 🟡 Low | **Module responses drop Jev detail:** `tokens_used`, Score `level_probabilities` and the raw Noul probability are not in the API responses. | The cost card and the "score distribution" view need them. |
-| F9 | 🟡 Low (carried over) | README `detect-notifiable` curl still returns 422; `.env.example` still contains a real-looking API key (`apikey_2193…`). | Unchanged since Rev 1. |
+| F9 | ✅ Resolved Sep 24 | README `detect-notifiable` curl returned 422; `.env.example` held the real API key. | README rewritten with verified examples; key moved to git-ignored `.env`. Key rotation still pending (Budi). |
+| F11 | ✅ Resolved Sep 24 | Validation targeted **FHIR R5, not R4**: the `fhir.resources` 8.x top-level models are FHIR 5.0.0. | Switched to `fhir.resources.R4B` (identical to R4 for the resources used; cross-checked against the official HL7 R4 4.0.1 JSON schema). Fixed the R5-shaped AuditEvent and 3 R5-only bundle fixtures. All 50 fixtures and the generated Flag/AuditEvent are now valid R4. |
+| F10 | 🔴 High (added Rev 3) | **The fixture set is too small and too easy to tell Jev apart from rules.** Details below. | See the list after this table. |
+
+**F10 details:**
+- All 9 notifiable Conditions use the exact ICD-10 codes in `data/notifiable_diseases.json`, and the rule baseline is an exact-code lookup against that list. The one SNOMED fixture (22298006, myocardial infarction) isn't notifiable. Nothing is coded differently from the list, so on this data Jev can at best tie the rules.
+- Counts are below the PRD's own benchmark sizes: 20 quality resources against a target of 50, and 15 bundles against 100. Routing has 1–2 examples in some categories (`encounter_summary`: 1).
+- `tests/fixtures/observations/` is **empty**, so the Observation quality path has no data.
+- 13 of 15 bundles have 0–2 entries, and `large_bundle` is 50 copies of the same kind of Observation. None looks like a real clinic submission.
+- Patient cases only test *missing* fields. There are none with a field that is present but wrong (a NIK with dots, a placeholder name, a future birth date).
+
+The data is fine for unit tests, and it met the Phase 5 target. It can't produce meaningful benchmark evidence or demo presets. **Phase D0.5** fixes this.
 
 **Not verified:** no live call was made during this evaluation, so whether the key works and what real latency, accuracy and probabilities look like is still unknown. Phase D0 ends with a live smoke test for this reason.
 
@@ -89,7 +100,8 @@ The doc has four parts:
 - The mock client is effectively rule-driven (`mock.py` keys off `contains_lab_codes`, the ICD-10 code set, and NIK length). **In mock mode, "Jev vs rules" is not a real comparison.** The UI must say so.
 - Mock bundle routing scored **0.733 vs rules 0.933**. It misroutes `empty_bundle`, `patient_bundle`, `nested_bundle` and `mixed_bundle`, because the mock's fallback confidence (0.60–0.95) never drops below the 0.5 override. That misses both the PRD target (≥ 90%) and UC-2 ("ambiguous → `unknown`"). This is a **mock artefact**. The live result is unknown until D0's live benchmark runs.
 - Every expected value in the Rev 1 scene scripts (score 80, `lab_result` 0.92, probability 0.95) is a **mock value**. In live mode the scenes must be driven by what Jev actually returns. D0's live smoke test and D4's rehearsal decide which fixtures make the best presets.
-- Phase 5 left the README `detect-notifiable` curl returning 422 (missing `clinicalStatus` and `subject`). Every playground preset must use a valid fixture, never that example.
+- The README `detect-notifiable` curl was fixed on Sep 24 and verified to return 200.
+- Rev 3: scene presets and the Studio fixture picker will draw on the **D0.5 benchmark dataset**, not only the 50 unit-test fixtures (F10).
 
 ---
 
@@ -125,7 +137,7 @@ Each scene is a **preset** in the UI (§3.7). The presenter presses `→` and th
 
 **Scene 1 — Quality gate** (`patients/complete_patient.json` → `invalid_nik.json` → `minimal_patient.json`)
 1. Load `complete_patient`. Show the raw FHIR on the left and the **"What Jev sees"** flat state in the middle (`has_identifier: true`, `identifier_value_length: 16`, `field_completeness: 8/10`, …). Decision: **auto-accept, NIK valid**. The score is 80 in mock mode; in live mode, show whatever Jev returns, plus the 10-level score distribution (F8).
-2. Switch to `invalid_nik` (15-digit NIK). The NIK gate flips to **false**. *"A yes/no primitive used as a validation gate."*
+2. Switch to `invalid_nik` (15-digit NIK). The NIK gate flips to **false**. *"A yes/no primitive used as a validation gate."* Rev 3: then load the D0.5 **dotted NIK** (`3173.0101.0190.0001`), which a length rule rejects even though it's a real ID written differently. Show Jev's answer against the rule's.
 3. Switch to `minimal_patient`. Low score, **review needed**, missing fields listed.
 4. **The control knob:** reload `complete_patient` and drag the threshold 70 → 85. The same resource flips to **review needed**. *"The confidence threshold is the product decision: lower means more automation, higher means more human review."*
 
@@ -137,7 +149,7 @@ Each scene is a **preset** in the UI (§3.7). The presenter presses `→` and th
 **Scene 3 — Notifiable disease** (`japanese_encephalitis_a83` → `common_cold_j06` → `snomed_only`)
 1. JE A83.0 → **confirmed notifiable**, probability shown. A red "Report to Dinkes within 24h" card appears, and the **FHIR Flag** tab shows the generated resource (SNOMED 281269004, subject reference, period) plus the **AuditEvent**.
 2. Common cold J06.9 → not notifiable, no Flag.
-3. `snomed_only`: an edge case where exact ICD-10 lookup rules have nothing to match. This is where a learned model *should* help. Say honestly what the current mode does.
+3. Rev 3, the hard case: a **text-only "Demam berdarah dengue (DBD)"** Condition or a **SNOMED-coded dengue** Condition from the D0.5 hard set. The rules see no ICD-10 code and say "not notifiable"; show what Jev says, live. This is the case where a learned model *should* help. Report the result honestly either way. (Rev 1 used `snomed_only`, but that fixture is a myocardial infarction and correctly not notifiable, so it proved nothing.)
 
 **Scene 4 — Hub under load**
 1. Press **Start ingestion**. All 50 fixtures stream through their module at a watchable pace (e.g. 4/s).
@@ -302,7 +314,7 @@ All new endpoints live under `/api/v1/demo/*` in a new router `routes/demo.py`, 
 
 | ID | Endpoint | Purpose |
 | --- | --- | --- |
-| DEMO-API-1 | `GET /api/v1/demo/fixtures` | Catalog: `[{id: "patients/complete_patient.json", kind, module, label, ground_truth}]`, joining `tests/fixtures/` with `benchmarks/ground_truth/` |
+| DEMO-API-1 | `GET /api/v1/demo/fixtures` | Catalog: `[{id: "patients/complete_patient.json", source, kind, module, label, difficulty, ground_truth}]`. Rev 3: merges `tests/fixtures/` (source `unit`) with the D0.5 dataset `benchmarks/dataset/` (source `hard` / `generated` / `demo`), each joined to its ground truth. Supports `?source=` and `?difficulty=` filters |
 | DEMO-API-2 | `GET /api/v1/demo/fixtures/{kind}/{name}` | Raw fixture JSON. Path must resolve inside the fixtures dir (reject `..`) |
 | DEMO-API-3 | `POST /api/v1/demo/compare/{module}` | Body: `{resource, resource_type?, thresholds?}`. Returns `{jev: <existing response model>, rule: {...}, ground_truth: ... \| null, serialized_state, jev_question, audit_event, override_applied}` |
 | DEMO-API-4 | `GET /api/v1/demo/decisions?limit=50` | Last N decisions from an in-memory ring buffer (size 500) |
@@ -323,7 +335,7 @@ All new endpoints live under `/api/v1/demo/*` in a new router `routes/demo.py`, 
 - **DEMO-BE-6 AuditEvent:** build it with the existing `AuditEventBuilder` for every compare/pipeline decision; return it, never persist it.
 - **DEMO-BE-7 Static serving:** if `web/dist` exists, mount it at `/demo` with an SPA fallback to `index.html`. Redirect `/` → `/demo` when `DEMO_ENABLED`.
 - **DEMO-BE-8 Dev CORS:** allow `http://localhost:5173` only when `DEMO_ENABLED` (Vite dev server). Vite also proxies `/api` and `/health` → `:8000`, so CORS is a fallback.
-- **DEMO-BE-9 Settings:** `demo_enabled: bool = False`, `demo_fixtures_dir: Path = tests/fixtures`, `demo_ground_truth_dir: Path = benchmarks/ground_truth`, `demo_results_dir: Path = benchmarks/results`.
+- **DEMO-BE-9 Settings:** `demo_enabled: bool = False`, `demo_fixtures_dir: Path = tests/fixtures`, `demo_dataset_dir: Path = benchmarks/dataset` (Rev 3), `demo_ground_truth_dir: Path = benchmarks/ground_truth`, `demo_results_dir: Path = benchmarks/results`.
 - **DEMO-BE-10 `RecordingJevClient`** (Rev 2, F8): a thin `JevClient` decorator in `jev_client/recording.py` that forwards to the real client and keeps the raw `ChoiceResult` / `ScoreResult` / `NoulResult` of each call. The compare/pipeline endpoints and the benchmark runner wrap the client with it, and return or aggregate `tokens_used`, `level_probabilities` and raw Jev latency **without changing module response models**. The compare response gains `jev_raw: [{primitive, question, result}]`.
 - **DEMO-BE-11 Demo config endpoint** (Rev 2, F7): `GET /api/v1/demo/config` returns default thresholds from `Settings` (the three currently-unused fields), the mode and the model id. Sliders initialise from it.
 
@@ -364,17 +376,24 @@ make web-types     # regenerate src/api/schema.d.ts from /openapi.json
 make demo          # web-build + DEMO_ENABLED=true serve → open http://127.0.0.1:8000/demo
 make bench-live    # (Rev 2) MOCK_JEV=false python -m benchmarks.bench_runner --live
 make smoke-live    # (Rev 2) one real Jev call per module; prints decision, latency, tokens
+make dataset       # (Rev 3) python scripts/generate_dataset.py --seed 42
+make bench-full    # (Rev 3) mock benchmark over unit + hard + generated tiers
+make bench-live-full  # (Rev 3) live benchmark over the full dataset (manual, costs tokens)
 ```
 
 ---
 
 ## 5. Implementation Phases
 
-Same workflow as the Phases doc: **Codex builds → Claude Code evaluates → fix → next**. Each phase must pass before the next starts.
+> **The step-by-step build instructions, exact contracts and per-phase evaluation checklists live in the [Demo Technical Implementation Plan](Jev%20×%20FHIR%20—%20Demo%20Technical%20Implementation%20Plan.md).** This section is the summary. Where the two differ, the implementation plan wins.
+
+Same workflow as the Phases doc: **Codex builds → evaluate in a fresh session → fix → next**. Each phase must pass before the next starts.
 
 ```
-Phase D0 (live readiness) → D1 (demo API) → D2 (UI shell + Studio) → D3 (Live Pipeline) → D4 (Benchmarks, presenter mode, rehearsal)
+Phase D0 (live readiness) → D0.5 (benchmark dataset) → D1 (demo API) → D2 (UI shell + Studio) → D3 (Live Pipeline) → D4 (Benchmarks, presenter mode, rehearsal)
 ```
+
+**Rev 3 change:** D0.5 was added because the current fixtures can't produce meaningful evidence (F10). It comes before D1 because the demo API's fixture catalog and the scene presets are built from this dataset.
 
 **Rev 2 change:** D0 grew from a small cleanup into **live readiness**. The findings in §1.3 have to be fixed before any UI work, because the UI would otherwise present untrustworthy live numbers. D1–D4 are unchanged apart from the Rev 2 items marked below.
 
@@ -383,7 +402,7 @@ Phase D0 (live readiness) → D1 (demo API) → D2 (UI shell + Studio) → D3 (L
 **Codex instructions:**
 
 **Step 1 — Cleanup (F9):**
-- Fix the README `detect-notifiable` curl (add `clinicalStatus` and `subject`) so it returns 200.
+- ✅ *Done Sep 24:* README rewritten; the `detect-notifiable` curl was fixed and verified to return 200.
 - ✅ *Done Sep 24:* the real key moved from `.env.example` to `.env` (git-ignored, mode 600), and `.env.example` now holds `your-key-here`. Tests still pass (48/48).
 - Add `web/node_modules/` and `web/dist/` to `.gitignore`.
 
@@ -415,14 +434,14 @@ Phase D0 (live readiness) → D1 (demo API) → D2 (UI shell + Studio) → D3 (L
 
 **Step 8 — Live smoke (`make smoke-live`):** a small script that makes one real call per module on `complete_patient`, `lab_bundle` and `japanese_encephalitis_a83`, and prints decision, probability, latency and tokens. **Budi runs this by hand** with the real key; it is not part of `make test`.
 
-**Step 9 — First live benchmark:** Budi runs `make bench-live` and commits the report. It becomes the evidence for Scene 5 and decides which fixtures make the best scene presets.
+**Step 9 — First live benchmark (baseline):** Budi runs `make bench-live` on the current 50 fixtures and commits the report. Rev 3: this is a **baseline run** that proves the live path end to end. The evidence for Scene 5 and the choice of scene presets now come from the D0.5 dataset run.
 
 **Evaluation checklist:**
 
 ```
 ☐ make lint / typecheck / test all green; coverage stays ≥ 95%
 ☐ make bench (mock) still runs offline; router/notifiable numbers unchanged; quality now reported as action agreement
-☐ README detect-notifiable curl returns 200 against make serve
+✅ README detect-notifiable curl returns 200 against make serve (done Sep 24)
 ✅ .env.example contains no real credential (done Sep 24)
 ☐ Old key rotated in the TypeSafe dashboard (manual, Budi)
 ☐ LiveJevClient passes model / timeout / RetryPolicy from Settings (asserted in test via mocked SDK)
@@ -435,6 +454,82 @@ Phase D0 (live readiness) → D1 (demo API) → D2 (UI shell + Studio) → D3 (L
 ☐ Threshold settings are read (grep shows usages outside config.py)
 ☐ make smoke-live succeeds with the real key (manual, Budi) — record latency + tokens in the evaluation note
 ☐ benchmarks/results/ contains one mode=live_jev report (manual, Budi)
+```
+
+### Phase D0.5: Benchmark Dataset (Rev 3)
+
+**Depends on:** D0 complete (live bench runner, banded quality labels, the P(true) convention).
+
+**Goal:** a benchmark dataset that (a) reaches the PRD's evaluation sizes, (b) contains cases where rules and a learned model **should disagree**, and (c) provides realistic demo presets, while the unit-test fixtures stay small and fast.
+
+**Labelling rules (all tiers):**
+- Never derive a label from the logic being evaluated: not `field_completeness`, not the rule baselines, not `MockJevClient`. This is the F1 lesson.
+- **Hard-case and quality labels are written or approved by Budi.** Codex drafts them with a one-line `rationale` field for each; Budi signs off (Open Question 8).
+- Generated bundles may be labelled **by construction**, since the generator decides what clinical content a bundle carries. Genuinely ambiguous mixes are labelled `unknown`.
+- Every label records `source` (`unit` / `hard` / `generated` / `demo`), `difficulty` (`easy` / `hard`) and `rationale`.
+
+**Layout:**
+
+```
+tests/fixtures/                    # unchanged; unit tests only (50 files)
+benchmarks/dataset/
+├── hard/          {patients,observations,conditions,bundles}/   # hand-written edge cases
+├── generated/     {patients,observations,bundles}/              # seeded generator output (committed)
+├── demo/          …                                             # realistic presets for scenes
+└── labels/        quality.json · bundle_routes.json · notifiable.json   # one label file per module, all tiers
+scripts/generate_dataset.py         # seeded, deterministic; re-running gives byte-identical output
+```
+
+**Step 1 — Observation fixtures (new resource type, ~10):** complete lab result (LOINC, `valueQuantity`, subject, encounter, `effectiveDateTime`); vital sign (LOINC 8867-4 heart rate); missing value; missing code system; `status: entered-in-error`; `valueString` in place of quantity; no subject; a unit that doesn't fit the code (e.g. haemoglobin in `mmol/L` vs `g/dL`, legitimate but unusual); future `effectiveDateTime`; a local code only (no LOINC).
+
+**Step 2 — Hard cases (~25), where exact-code rules and field counting should struggle:**
+
+| Module | Case | Expected | Why it's hard for rules |
+| --- | --- | --- | --- |
+| Notifiable | ICD-10 sub-codes: `A15.0`, `B50.9`, `A01.0`, `A91` with display "Dengue haemorrhagic fever" | notifiable | Exact lookup has `A15`, not `A15.0` |
+| Notifiable | Dengue coded **SNOMED only** (38362002), TB SNOMED-only (56717001) | notifiable | No ICD-10 code to look up |
+| Notifiable | **Text-only** Condition: `code.text` = "Demam berdarah dengue (DBD)" / "TB paru" | notifiable | No coding at all; Indonesian text |
+| Notifiable | Notifiable code but `verificationStatus: refuted` or `entered-in-error` | **not** notifiable (or review) | Rule sees the code and flags it |
+| Notifiable | Code/display mismatch: code `J06.9`, display "Dengue fever" | review | Contradictory input |
+| Notifiable | Near-miss non-notifiable: `R50.9` fever unspecified, `B34.9` viral infection unspecified, `J18.9` pneumonia | not notifiable (R50.9 may be review) | Looks infectious or dengue-like; tests over-flagging. (A02–A09 avoided until Open Question 9 is settled.) |
+| Quality | NIK **formatted**: `3173.0101.0190.0001`, `3173 0101 0190 0001` | present but needs normalisation (review) | Length ≠ 16 but the ID is real |
+| Quality | NIK 16 chars with **letters**; NIK all zeros; NIK under a wrong `system` URL | NIK invalid | Length check passes |
+| Quality | Placeholder values: name `"-"`, `"unknown"`, `"test"`; address `"."` | review | Field present, so the count says complete |
+| Quality | `birthDate` in the future; `birthDate` 1850 | review | Field present and well-formed |
+| Router | **Realistic lab submission**: Patient + Encounter + DiagnosticReport + 6 Observations | `lab_result` | Has an Encounter, so the rule says `encounter_summary` |
+| Router | Immunization bundle that also carries Patient + Encounter + Practitioner | `immunization_report` | Encounter-first rule order |
+| Router | `transaction` bundle (with `request` entries) for a medication dispense | `medication_dispense` | Different bundle type, same content |
+| Router | Vital-sign-only Observations (no lab LOINC class) | `encounter_summary` or `unknown` (Budi decides) | Observation ≠ lab |
+| Router | Genuinely mixed: 3 labs + 2 immunizations + 1 dispense | `unknown` | No dominant category |
+
+**Step 3 — Generator (`scripts/generate_dataset.py`) to reach PRD sizes:**
+- Seeded (`--seed 42`) and deterministic; output is committed, so benchmarks don't depend on re-running it.
+- **Bundles → 100 total** (including the unit and hard sets): ~20 per real category plus ~20 `unknown`. Vary entry count (1–30), resource order, `collection` vs `transaction` vs `batch` type, whether Patient/Encounter/Practitioner are present, and a realistic LOINC pool (CBC, glucose, HbA1c, creatinine, dengue NS1 / IgM).
+- **Quality → 50+ total** across Patient and Observation: synthetic Indonesian names and addresses (province/city codes), valid and invalid NIKs, controlled defects (one or two per resource). The generator emits a *draft* label with the defects it injected; Budi approves the final band and action.
+- No real names or NIKs: NIK region/date parts are random but well-formed; names come from a small built-in list.
+- **Synthea** (mentioned in the PRD) is optional later. It is heavier to run, isn't Indonesia-specific, and would need a post-processing step for NIKs, so it's not worth it for this PoC.
+
+**Step 4 — Demo presets (~6, in `benchmarks/dataset/demo/`):** hand-polished, realistic-looking resources for each scene. A complete Indonesian patient; the same patient with a dotted NIK; a 9-entry lab submission; a JE Condition from a Bali clinic; a text-only DBD Condition; one genuinely ambiguous bundle. Final picks are made after the live run (Step 6).
+
+**Step 5 — Benchmark runner:** add `--dataset {unit,full}` (default `unit`, so `make bench` stays fast and unchanged). `full` loads every tier from `benchmarks/dataset/labels/`. The report breaks accuracy down **by `source` and `difficulty`**, so "easy" and "hard" results are never averaged together. Add `make bench-full` (mock) and `make bench-live-full`.
+
+**Step 6 — Live run on the full dataset (manual, Budi):** `make bench-live-full`. This report replaces the D0 baseline as the evidence for Scene 5 and decides the final demo presets. Record the cost from real `tokens_used`; roughly 200 calls is still well under the PRD's $0.01 budget.
+
+**Evaluation checklist:**
+
+```
+☐ make lint / typecheck / test all green; unit-test fixture count unchanged (50) and test time roughly unchanged
+☐ tests/fixtures/observations/ has ≥ 10 valid FHIR R4 Observations; quality scorer tests cover them
+☐ benchmarks/dataset/hard/ has ≥ 25 cases covering every row of the Step 2 table
+☐ Totals incl. unit set: ≥ 100 bundles, ≥ 50 quality resources (Patient + Observation), ≥ 30 conditions
+☐ Every routing category has ≥ 15 labelled bundles; unknown ≥ 15
+☐ All dataset files parse as valid FHIR R4 (fhir.resources) — one parametrised test over the dataset
+☐ Every label has source, difficulty, rationale; hard + quality labels marked approved_by: budi
+☐ No label is computed from field_completeness, rule baselines, or MockJevClient (reviewer greps generator + label files)
+☐ generate_dataset.py --seed 42 twice → identical output (test)
+☐ No real-looking PII: names from built-in list, NIKs synthetic (spot-check 10)
+☐ make bench-full (mock) report shows per-source and per-difficulty accuracy; rules visibly fail on the hard sub-code / SNOMED / text-only rows
+☐ benchmarks/results/ contains a mode=live_jev, dataset=full report (manual, Budi)
 ```
 
 ### Phase D1: Demo API
@@ -508,7 +603,8 @@ Phase D0 (live readiness) → D1 (demo API) → D2 (UI shell + Studio) → D3 (L
 ☐ Mock disclaimer visible for mock_jev reports; live reports show model id, tokens, cost
 ☐ Live vs mock side-by-side renders when both reports exist
 ☐ "Where Jev lost" rows come from the selected report; each opens Studio with that fixture
-☐ Scene presets chosen from the live benchmark (fixtures that show each point clearly), not from mock values
+☐ Scene presets chosen from the D0.5 full-dataset live report (fixtures that show each point clearly), not from mock values
+☐ Benchmarks screen shows accuracy split by source (unit / hard / generated) and difficulty; never one blended number
 ☐ Scenes 0–6 load via → with no manual input; R resets scene
 ☐ Full dry run of §2 in ≤ 13 minutes in LIVE mode from a cold `make demo`
 ☐ Full dry run in MOCK mode (fallback) — every scene still makes sense with mock values
@@ -539,3 +635,6 @@ Phase D0 (live readiness) → D1 (demo API) → D2 (UI shell + Studio) → D3 (L
 5. **Recording:** also produce a 3-minute screen recording of Scenes 1, 3 and 4 as a backup and for the dev.to write-up? Rev 2: record it in **live** mode after D4, so there is a live fallback even if the API is down on demo day.
 6. **(Rev 2) Quality ground truth:** approve relabelling `quality_scores.json` as bands + `expected_action` (D0 Step 6)? The labels are the benchmark's source of truth, so a human should write or approve them, not the agent that builds the scorer. Without this, no live quality accuracy number can be shown.
 7. **(Rev 2) Model pinning:** `jev-latest` can change between rehearsal and demo. If TypeSafe publishes versioned model ids, pin one in `JEV_MODEL` for the demo week.
+8. **(Rev 3) Label ownership for D0.5:** Codex drafts hard-case and quality labels with a rationale; you approve them (`approved_by: budi`). Roughly 75 labels to review. It's about an hour, and it's what makes the benchmark credible. Agreed?
+9. **(Rev 3) Notifiable scope conflict:** PRD FR-4.2 lists **A00–A09** (cholera, typhoid *and* other intestinal infections), but `data/notifiable_diseases.json` only has A00 and A01. Which is right for Indonesian reporting? Until this is settled, D0.5 avoids A02–A09 in hard cases so the labels don't depend on it.
+10. **(Rev 3) Router edge labels:** should a bundle with only vital-sign Observations be `encounter_summary` or `unknown`? One call from you, applied consistently.
