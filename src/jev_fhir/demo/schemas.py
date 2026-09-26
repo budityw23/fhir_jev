@@ -16,6 +16,8 @@ Lane = Literal["auto_accepted", "routed", "flagged", "review"]
 
 
 class Thresholds(BaseModel):
+    """Effective decision thresholds for one demo decision; review must not exceed confirmed."""
+
     quality_threshold: int = Field(ge=0, le=100)
     route_confidence_minimum: float = Field(ge=0.0, le=1.0)
     notifiable_confirmed: float = Field(ge=0.0, le=1.0)
@@ -38,6 +40,8 @@ class Thresholds(BaseModel):
 
 
 class ThresholdOverrides(BaseModel):
+    """Optional per-request threshold changes, merged onto the configured defaults."""
+
     quality_threshold: int | None = Field(default=None, ge=0, le=100)
     route_confidence_minimum: float | None = Field(default=None, ge=0.0, le=1.0)
     notifiable_confirmed: float | None = Field(default=None, ge=0.0, le=1.0)
@@ -50,6 +54,8 @@ class ThresholdOverrides(BaseModel):
 
 
 class DemoConfig(BaseModel):
+    """Demo mode, model, default thresholds, route options and the exact Jev questions."""
+
     mode: Literal["mock", "live"]
     jev_model: str | None
     thresholds: Thresholds
@@ -58,6 +64,8 @@ class DemoConfig(BaseModel):
 
 
 class FixtureEntry(BaseModel):
+    """One allow-listed fixture with its label, provenance and ground truth."""
+
     id: str
     name: str
     module: DemoModule
@@ -70,6 +78,8 @@ class FixtureEntry(BaseModel):
 
 
 class CompareRequest(BaseModel):
+    """A FHIR resource to decide, with an optional fixture id (for ground truth) and overrides."""
+
     resource: dict[str, Any]
     resource_type: Literal["Patient", "Observation"] | None = None
     fixture_id: str | None = None
@@ -77,17 +87,23 @@ class CompareRequest(BaseModel):
 
 
 class RuleDecision(BaseModel):
+    """The rule baseline's decision, in the same vocabulary as the Jev decision."""
+
     decision: str
     score: int | None = None
     nik_valid: bool | None = None
 
 
 class Verdict(BaseModel):
+    """Whether Jev and the rules matched ground truth; None when there is no ground truth."""
+
     jev_correct: bool | None
     rule_correct: bool | None
 
 
 class CompareResponse(BaseModel):
+    """A Jev decision side by side with the rules, ground truth, lane and audit trail."""
+
     module: DemoModule
     jev: QualityScoreResponse | BundleRouteResponse | NotifiableDetectionResponse
     jev_decision: str

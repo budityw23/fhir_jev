@@ -1102,10 +1102,10 @@ make lint && make typecheck && make test      # coverage ≥ 95%; demo/schemas.p
 ✅ FIXED ⚠️ new test_load_resource_returns_the_labelled_fixture covers the load_resource success path (catalog.py 100%);
    the difficulty filter is covered by the totals test
 ✅ FIXED ℹ️ DemoServices docstring no longer names a phase
-ℹ️ OPEN (D1b decision) get_demo raises HTTPException(404, "not_found"), so the body is FastAPI's default {"detail": ...},
+✅ RESOLVED in D1b ℹ️ get_demo raised HTTPException(404, "not_found"), so the body is FastAPI's default {"detail": ...},
    not the project's ErrorResponse. No route uses it yet; D1b's /fixtures 404 (`not_found`) should settle it.
    Recommendation: return the ErrorResponse shape for consistency with every other API error.
-ℹ️ OPEN (cosmetic) schema classes have no docstrings, unlike the rest of the codebase
+✅ FIXED ℹ️ schema classes now have one-line docstrings (Sep 27, during the D1b round)
 ```
 
 **D1a evaluation record:**
@@ -1114,7 +1114,7 @@ make lint && make typecheck && make test      # coverage ≥ 95%; demo/schemas.p
 Evaluated: Sep 25, 2026 by Claude Code (fresh-session review); fixes applied and re-checked in the same session
 Checks:    make lint / typecheck clean; make test 353 passed (342 → 353), 97% total; demo/catalog.py 100%,
            demo/schemas.py 100%; tests/test_api.py unchanged; real server starts cleanly with demo on and off
-Results:   8/8 checklist items ✅; both ❌ contract deviations fixed; all ⚠️ fixed; 2 ℹ️ open (above)
+Results:   8/8 checklist items ✅; both ❌ contract deviations fixed; all ⚠️ fixed; both ℹ️ since resolved (above)
 Verdict:   PASS. D1b can start. Settle the get_demo 404 body format in D1b.
 ```
 
@@ -1195,29 +1195,73 @@ curl -s --path-as-is -o /dev/null -w "%{http_code}\n" "localhost:8000/api/v1/dem
 
 **D1b evaluation checklist:**
 
+Evaluated against a real server (`DEMO_ENABLED=true MOCK_JEV=true uvicorn`), because the implementation report included no curl output.
+
 ```
-☐ make lint / typecheck / test green; coverage ≥ 95%; demo/lanes.py and demo/compare.py ≥ 90%
-☐ lane_reason strings match the Step 3 table exactly (9 row tests)
-☐ curl /api/v1/demo/config → mode=mock, 4 thresholds, 5 route_options, 4 questions
-☐ curl "/api/v1/demo/fixtures?source=hard" → ≥ 25 entries
-☐ curl "/api/v1/demo/fixtures/tests/fixtures/patients/complete_patient.json" → Patient JSON
-☐ curl --path-as-is "/api/v1/demo/fixtures/../../.env" → 404, body has no JEV_API_KEY
-☐ POST /compare/router mixed_bundle with {"thresholds":{"route_confidence_minimum":0.99}} → override_applied true, lane review
-☐ POST /compare/notifiable JE fixture → lane flagged, audit_event.type present, no audit_event.code
-☐ POST /compare/quality invalid_nik → review, lane_reason starts "NIK gate failed"
-☐ Two concurrent compare() calls return disjoint jev_raw lists (test name)
-☐ Demo endpoint responses include X-Request-Id and X-Request-Duration-Ms
-☐ Demo disabled → /api/v1/demo/config 404
-☐ Unknown fixture id → 404 ErrorResponse {error: "not_found", request_id == X-Request-Id}; unknown non-demo route keeps the default 404 body
-☐ tests/test_api.py passes unchanged; no feed / pipeline / SSE / benchmarks / static code present
+✅ make lint / typecheck / test green; coverage ≥ 95%; demo/lanes.py and demo/compare.py ≥ 90%
+   → 363 passed (353 → 363), 98% total; compare.py 100%, routes/demo.py 100%, lanes.py 91% (uncovered: the 3 TypeError guards)
+✅ lane_reason strings match the Step 3 table exactly: all 9 rows asserted with exact strings (grouped into 3 test functions)
+✅ curl /api/v1/demo/config → mode=mock, 4 thresholds (70 / 0.5 / 0.8 / 0.5), 5 route_options, 4 questions keyed by constant name
+✅ curl "/api/v1/demo/fixtures?source=hard" → 28 entries
+✅ curl "/api/v1/demo/fixtures/tests/fixtures/patients/complete_patient.json" → Patient JSON
+✅ curl --path-as-is traversal → 404 ErrorResponse, never .env content: ../../.env, %2e%2e/%2e%2e/.env, ..%2f..%2f.env,
+   tests/fixtures/../../.env, %2e%2e/%2e%2e/pyproject.toml → all 404 not_found; JEV_API_KEY found 0 times
+✅ POST /compare/router mixed_bundle {"thresholds":{"route_confidence_minimum":0.99}} → category unknown, override_applied true,
+   lane review, "confidence 0.92 < floor 0.99"
+✅ POST /compare/notifiable JE fixture → lane flagged ("P(notifiable) 0.95 ≥ 0.80"), flag_resource present, verdict true/true,
+   audit_event.type present, no audit_event.code
+✅ POST /compare/quality invalid_nik → score 80, jev review_needed, rule review_needed (nik_valid false),
+   lane review, "NIK gate failed: P(valid) 0.08"
+✅ (extra) complete_patient → auto_accept, jev_raw [score, noul], tokens 49, serialized_state has field_completeness;
+   observations/missing_value → jev_raw [score] only, rule.score from score_observation (86 → rule auto_accept,
+   a genuine rule miss: the label says review)
+✅ Two concurrent compare() calls return disjoint jev_raw lists (after test fix): each result is exactly [score, noul] with
+   tokens that add up; a planted shared recorder makes the test fail
+✅ Demo endpoint responses include X-Request-Id and X-Request-Duration-Ms (curl)
+✅ Demo disabled → /api/v1/demo/config 404 (test)
+✅ Unknown fixture id → 404 ErrorResponse {error: "not_found", request_id == X-Request-Id} (curl); unknown non-demo route
+   /api/v1/nope keeps {"detail":"Not Found"}
+✅ ThresholdOverrides with review > confirmed → 422 (curl + test)
+✅ tests/test_api.py unchanged; no feed / pipeline / SSE / benchmarks / static code present
+```
+
+**Issues found (all in the tests) and fixes (Sep 27, 2026, Claude Code; test files only, no production change):**
+
+```
+✅ FIXED ❌ Missing traversal contract test → test_fixture_traversal_returns_404_and_never_env_content. The HTTP client
+   normalises a literal "../" before sending, so that form never reaches the fixture route (asserted 404 + no .env);
+   the percent-encoded forms (%2e%2e/%2e%2e/.env, %2e%2e/.env, ..%2f..%2f.env) do reach it, and the test asserts the
+   request path is under /fixtures/, error == "not_found", and no JEV_API_KEY in the body
+✅ FIXED ❌ Missing Observation contract test → test_compare_quality_observation_uses_observation_baseline
+   (rule.score == score_observation(resource), rule.nik_valid null, jev_raw == [score])
+✅ FIXED ❌ Incomplete invalid_nik test → test_compare_quality_invalid_nik_is_gated (score ≥ threshold, nik_valid false,
+   jev and rule review_needed, lane review, lane_reason starts "NIK gate failed")
+✅ FIXED ⚠️ Incomplete compare tests, now one test per contract case:
+   - test_compare_quality_complete_patient: jev_decision, rule decision, serialized_state.field_completeness,
+     jev_raw == [score, noul], tokens_used sum, audit_event parses as R4B AuditEvent (type present, no code)
+   - test_compare_router_mixed_bundle_with_high_floor_is_overridden: category unknown, override_applied,
+     lane review, lane_reason "confidence…", effective floor 0.99
+   - test_compare_notifiable_japanese_encephalitis_is_flagged: sends fixture_id, so lane flagged, flag_resource and
+     verdict.jev_correct True are checked, and the audit_event parses as R4B
+✅ FIXED ⚠️ Vacuous concurrency test → asserts per-result [score, noul] and the tokens sum
+✅ FIXED ⚠️ Verdict test → asserts ground_truth equals the catalog entry and both verdicts are True for the easy fixtures
+✅ FIXED ⚠️ 404 test → asserts request_id == X-Request-Id and X-Request-Duration-Ms present
+✅ Mutation check: 3 planted bugs (shared recorder; NIK-gate reason dropped; load_resource reading the caller's path)
+   each make the corresponding new test fail; production files restored byte-identical afterwards
+✅ FIXED ℹ️ compare.py's runtime `assert isinstance(score, int)` is now `raise TypeError(...)`, so it survives
+   `python -O`. Test: test_non_integer_rule_score_raises_type_error (compare.py back to 100%)
 ```
 
 **D1b evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Results:   <checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: Sep 27, 2026 by Claude Code (fresh-session review, real-server curls); test fixes applied and re-checked
+           in the same session
+Checks:    make lint / typecheck clean; make test 368 passed (353 → 368), 98% total; compare.py and routes/demo.py 100%,
+           lanes.py 91% (type guards only); tests/test_api.py unchanged
+Results:   implementation matches the contract on every checked behaviour; all 3 ❌ and 4 ⚠️ test issues fixed and
+           mutation-checked; the ℹ️ runtime assert fixed too (369 tests after that fix)
+Verdict:   PASS. D1c can start.
 ```
 
 ---

@@ -2,10 +2,12 @@
 
 from dataclasses import dataclass
 
-from fastapi import HTTPException, Request
+from fastapi import Request
 
 from jev_fhir.config import Settings
+from jev_fhir.demo import DemoNotFoundError
 from jev_fhir.demo.catalog import FixtureCatalog
+from jev_fhir.demo.compare import Comparer
 from jev_fhir.jev_client.client import JevClient
 from jev_fhir.modules.bundle_router import BundleRouter
 from jev_fhir.modules.notifiable_detector import NotifiableDiseaseDetector
@@ -17,6 +19,7 @@ class DemoServices:
     """Services behind the optional demo API; built only when demo mode is enabled."""
 
     catalog: FixtureCatalog
+    comparer: Comparer
 
 
 @dataclass(frozen=True)
@@ -59,5 +62,5 @@ def get_demo(request: Request) -> DemoServices:
     """Get the optional demo service set, or report that its routes are unavailable."""
     demo = get_services(request).demo
     if demo is None:
-        raise HTTPException(status_code=404, detail="not_found")
+        raise DemoNotFoundError("demo is not enabled")
     return demo

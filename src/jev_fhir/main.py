@@ -12,8 +12,11 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ValidationError
 from pydantic.v1 import ValidationError as PydanticV1ValidationError
 
-from jev_fhir.config import Settings, get_settings
+from jev_fhir.config import PROJECT_ROOT, Settings, get_settings
+from jev_fhir.demo import DemoNotFoundError
 from jev_fhir.demo.catalog import FixtureCatalog
+from jev_fhir.demo.compare import Comparer
+from jev_fhir.demo.schemas import Thresholds
 from jev_fhir.dependencies import AppServices, DemoServices
 from jev_fhir.jev_client.client import JevClient, JevClientError, LiveJevClient
 from jev_fhir.jev_client.mock import MockJevClient
@@ -69,11 +72,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             )
             client_kind = "live"
 
-        demo_services = (
-            DemoServices(catalog=FixtureCatalog(effective_settings.labels_dir))
-            if effective_settings.demo_enabled
-            else None
-        )
+        demo_services = None
+        if effective_settings.demo_enabled:
+            catalog = FixtureCatalog(effective_settings.labels_dir)
+            demo_services = DemoServices(
+                catalog=catalog,
+                comparer=Comparer(
+                    jev_client,
+                    catalog,
+                    Thresholds.from_settings(effective_settings),
+                    PROJECT_ROOT / "data" / "notifiable_diseases.json",
+                ),
+            )
         app.state.services = AppServices(
             quality_scorer=QualityScorer(jev_client),
             bundle_router=BundleRouter(jev_client),
@@ -135,6 +145,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.exception_handler(JevClientError)
     async def jev_error_handler(request: Request, exc: JevClientError) -> JSONResponse:
         return _error_response(request, exc.status_code, exc.error_code, str(exc))
+
+    @app.exception_handler(DemoNotFoundError)
+    async def demo_not_found_handler(request: Request, exc: DemoNotFoundError) -> JSONResponse:
+        return _error_response(request, 404, "not_found", str(exc))
 
     @app.exception_handler(ValueError)
     async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse:
