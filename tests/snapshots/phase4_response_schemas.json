@@ -1,0 +1,47 @@
+{
+  "BundleRouteResponse": {
+    "description": "Structured result returned by the Bundle router.",
+    "properties": {
+      "bundle_id": {"title": "Bundle Id", "type": "string"},
+      "category": {"title": "Category", "type": "string"},
+      "confidence": {"title": "Confidence", "type": "number"},
+      "latency_ms": {"title": "Latency Ms", "type": "number"},
+      "probabilities": {"additionalProperties": {"type": "number"}, "title": "Probabilities", "type": "object"}
+    },
+    "required": ["category", "confidence", "probabilities", "bundle_id", "latency_ms"],
+    "title": "BundleRouteResponse",
+    "type": "object"
+  },
+  "NotifiableDetectionResponse": {
+    "description": "Structured result returned by the notifiable-disease detector.",
+    "properties": {
+      "condition_code": {"title": "Condition Code", "type": "string"},
+      "condition_display": {"title": "Condition Display", "type": "string"},
+      "flag_resource": {"anyOf": [{"additionalProperties": true, "type": "object"}, {"type": "null"}], "title": "Flag Resource"},
+      "is_notifiable": {"title": "Is Notifiable", "type": "boolean"},
+      "latency_ms": {"title": "Latency Ms", "type": "number"},
+      "probability": {"title": "Probability", "type": "number"},
+      "status": {"title": "Status", "type": "string"}
+    },
+    "required": ["is_notifiable", "probability", "status", "condition_code", "condition_display", "flag_resource", "latency_ms"],
+    "title": "NotifiableDetectionResponse",
+    "type": "object"
+  },
+  "QualityScoreResponse": {
+    "description": "Structured result returned by the quality-scoring module.",
+    "properties": {
+      "action": {"title": "Action", "type": "string"},
+      "confidence": {"title": "Confidence", "type": "number"},
+      "latency_ms": {"title": "Latency Ms", "type": "number"},
+      "level": {"title": "Level", "type": "string"},
+      "missing_fields": {"items": {"type": "string"}, "title": "Missing Fields", "type": "array"},
+      "nik_confidence": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Nik Confidence"},
+      "nik_valid": {"anyOf": [{"type": "boolean"}, {"type": "null"}], "title": "Nik Valid"},
+      "resource_reference": {"title": "Resource Reference", "type": "string"},
+      "score": {"title": "Score", "type": "integer"}
+    },
+    "required": ["score", "confidence", "level", "missing_fields", "nik_valid", "nik_confidence", "resource_reference", "latency_ms", "action"],
+    "title": "QualityScoreResponse",
+    "type": "object"
+  }
+}

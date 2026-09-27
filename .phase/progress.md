@@ -125,3 +125,29 @@ Test count after each phase is the `make test` total.
 - **Fix-up:** Codex had added a hidden HEAD route because the prompt used `curl -I`. Removed. **Lesson for future
   prompts:** check headers with `curl -D - -o /dev/null`, never `curl -I` (FastAPI doesn't add HEAD for GET routes).
 - Tests 389 → 400. Known gaps: `sse.py` lines 37–38 (disconnect during replay) untested (96% coverage).
+
+## D1e — Benchmarks, static serving, final D1 regression — PASS (Sep 27, 2026) — /phase-loop, 2 fix-up rounds (tests only)
+
+- **Built:**
+  - `demo/benchmarks.py`: `BenchmarkSummary`, `list_reports()` (only `bench_*Z.json`, newest first by filename, `dataset`
+    → "unit" and `jev_model` → null for old reports, malformed reports skipped with a warning, missing dir → `[]`),
+    `load_report()` (regex-validated before any file access → 404)
+  - `/benchmarks`, `/benchmarks/{name}`
+  - `demo/static.py`: `/demo`, `/demo/{path}`, `/` → 307 `/demo` (demo mode only); UI presence checked PER REQUEST
+    (503 `ui_not_built` until `web/dist/index.html` exists); files served only when the resolved path is inside the dist
+    folder, otherwise the `index.html` SPA fallback
+  - CORS (outermost, demo only); `make serve` via `$(PYTHON)`
+  - `tests/snapshots/phase4_response_schemas.json`, a snapshot of the three Phase 4 response models
+- **Choices beyond the contract:** the 503 uses the ErrorResponse shape (error + detail + request_id + timestamp); static
+  routes are hidden from OpenAPI; a traversal gets the SPA fallback (per the contract), not 404.
+- **Fix-ups:** two tests passed with their security check removed (static containment: targets didn't exist; name regex:
+  the directory was missing), so real secret files and a read_text patch were added. Round 2 restored 3 assertions round 1
+  had dropped. **Lessons for future prompts:**
+  - a "never serves X" test must make X actually exist and be reachable
+  - when strengthening a test, don't drop its old assertions (split into a new test instead)
+- **Known gaps (⚠️):**
+  - an explicit `"dataset": null` report is skipped (not defaulted)
+  - loading a malformed report via `/benchmarks/{name}` → 400
+- **Evaluator note:** `make serve` spawns uvicorn as a child, so killing make leaves the server running. Kill by PID from
+  `ss -ltnp` (not `ps | grep` or `pkill -f` on a pattern present in your own command line).
+- Tests 400 → 408 (D1 total: 342 → 408). **D1 complete.** Next: D2 (web UI; Node via nvm).

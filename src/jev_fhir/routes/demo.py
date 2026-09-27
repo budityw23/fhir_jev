@@ -7,6 +7,7 @@ from fastapi.responses import StreamingResponse
 
 from jev_fhir.dataset.labels import Difficulty, Source
 from jev_fhir.demo import DemoNotFoundError
+from jev_fhir.demo.benchmarks import BenchmarkSummary, list_reports, load_report
 from jev_fhir.demo.feed import DecisionEvent, event_from_compare
 from jev_fhir.demo.pipeline import PipelineRunRequest, PipelineRunResponse
 from jev_fhir.demo.schemas import (
@@ -120,3 +121,17 @@ async def run_pipeline(body: PipelineRunRequest, services: DemoDependency) -> Pi
 async def stop_pipeline(run_id: str, services: DemoDependency) -> dict[str, bool]:
     """Stop the active named pipeline run, if it is still running."""
     return {"stopped": await services.pipeline.stop(run_id)}
+
+
+@router.get("/benchmarks", response_model=list[BenchmarkSummary])
+async def get_benchmarks(request: Request, services: DemoDependency) -> list[BenchmarkSummary]:
+    """List valid completed benchmark reports, newest first."""
+    del services
+    return list_reports(request.app.state.services.settings.demo_results_dir)
+
+
+@router.get("/benchmarks/{name}")
+async def get_benchmark(name: str, request: Request, services: DemoDependency) -> dict[str, object]:
+    """Return one regex-validated raw benchmark report."""
+    del services
+    return load_report(request.app.state.services.settings.demo_results_dir, name)

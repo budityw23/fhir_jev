@@ -8,6 +8,7 @@ from uuid import uuid4
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ValidationError
 from pydantic.v1 import ValidationError as PydanticV1ValidationError
@@ -19,6 +20,7 @@ from jev_fhir.demo.compare import Comparer
 from jev_fhir.demo.feed import DecisionFeed
 from jev_fhir.demo.pipeline import PipelineRunner
 from jev_fhir.demo.schemas import Thresholds
+from jev_fhir.demo.static import register_static_routes
 from jev_fhir.dependencies import AppServices, DemoServices
 from jev_fhir.jev_client.client import JevClient, JevClientError, LiveJevClient
 from jev_fhir.jev_client.mock import MockJevClient
@@ -136,6 +138,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         response.headers["X-Request-Duration-Ms"] = f"{elapsed_seconds * 1000:.3f}"
         return response
 
+    if effective_settings.demo_enabled:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=effective_settings.demo_cors_origins,
+            allow_methods=["GET", "POST"],
+            allow_headers=["*"],
+            expose_headers=["X-Request-Id", "X-Request-Duration-Ms"],
+        )
+
     @app.exception_handler(RequestValidationError)
     async def request_validation_handler(
         request: Request, exc: RequestValidationError
@@ -170,6 +181,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(metrics.router, prefix="/api/v1")
     if effective_settings.demo_enabled:
         app.include_router(demo.router, prefix="/api/v1/demo")
+        register_static_routes(app, effective_settings)
 
     @app.get("/health", tags=["health"])
     async def health(request: Request) -> dict[str, str | None]:

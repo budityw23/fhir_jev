@@ -34,4 +34,4 @@ smoke-live:
 	MOCK_JEV=false $(PYTHON) scripts/smoke_live.py
 
 serve:
-	uvicorn jev_fhir.main:app --host 127.0.0.1 --port 8000
+	$(PYTHON) -m uvicorn jev_fhir.main:app --host 127.0.0.1 --port 8000

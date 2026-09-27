@@ -1,6 +1,10 @@
-"""D1b demo compare API tests using the deterministic mock client."""
+"""Demo API tests using the deterministic mock client."""
 
+import json
+from pathlib import Path
+from shutil import copy
 from typing import Any, cast
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 from fhir.resources.R4B.auditevent import AuditEvent
@@ -284,3 +288,152 @@ def test_invalid_last_event_id_is_treated_as_absent() -> None:
     assert _parse_last_event_id("-1") is None
     assert _parse_last_event_id(None) is None
     assert _parse_last_event_id("12") == 12
+
+
+def test_benchmark_list_is_newest_first_and_old_reports_default_dataset(tmp_path: Path) -> None:
+    """Benchmark reports ignore non-reports and preserve pre-D0.5 compatibility."""
+    results_dir = tmp_path / "results"
+    results_dir.mkdir()
+    reports_root = Path("benchmarks/results")
+    copy(reports_root / "bench_20260924T083443Z.json", results_dir)
+    copy(reports_root / "bench_20260924T154552Z.json", results_dir)
+    (results_dir / "bench_20260924T154552Z.md").write_text("ignore me")
+    (results_dir / "bench_20260924T160000Z.json").write_text("not json")
+    (results_dir / "bench_20260924T160001Z.json").write_text("[]")
+    settings = Settings(mock_jev=True, demo_enabled=True, demo_results_dir=results_dir)
+    with TestClient(create_app(settings)) as client:
+        response = client.get("/api/v1/demo/benchmarks")
+        assert response.status_code == 200
+        reports = response.json()
+        assert [report["name"] for report in reports] == [
+            "bench_20260924T154552Z",
+            "bench_20260924T083443Z",
+        ]
+        assert reports[-1]["dataset"] == "unit"
+        assert reports[-1]["jev_model"] is None
+        raw_report = client.get("/api/v1/demo/benchmarks/bench_20260924T154552Z")
+        assert raw_report.status_code == 200 and raw_report.json()["dataset"] == "unit"
+        assert client.get("/api/v1/demo/benchmarks/nope").status_code == 404
+        assert client.get("/api/v1/demo/benchmarks/../../pyproject").status_code == 404
+
+
+def test_benchmark_missing_directory_and_bad_names_never_read_files(tmp_path: Path) -> None:
+    """Invalid report names are rejected before any file in a real directory is read."""
+    results_dir = tmp_path / "results"
+    results_dir.mkdir()
+    copy(Path("benchmarks/results/bench_20260924T083443Z.json"), results_dir)
+    (results_dir / "notes.json").write_text('{"secret": true}')
+    settings = Settings(mock_jev=True, demo_enabled=True, demo_results_dir=results_dir)
+    with TestClient(create_app(settings)) as client:
+        valid = client.get("/api/v1/demo/benchmarks/bench_20260924T083443Z")
+        assert valid.status_code == 200
+        with patch("pathlib.Path.read_text", side_effect=AssertionError("must not read")):
+            for name in ("notes", "bench_20260924T083443Z.txt", "nope"):
+                response = client.get(f"/api/v1/demo/benchmarks/{name}")
+                assert response.status_code == 404
+                assert response.json()["error"] == "not_found"
+                assert "secret" not in response.text
+
+
+def test_benchmark_missing_directory_and_report_return_empty_or_404(tmp_path: Path) -> None:
+    """Missing report directories are empty, while a valid absent report is a structured 404."""
+    settings = Settings(mock_jev=True, demo_enabled=True, demo_results_dir=tmp_path / "missing")
+    with TestClient(create_app(settings)) as client:
+        assert client.get("/api/v1/demo/benchmarks").json() == []
+        absent = client.get("/api/v1/demo/benchmarks/bench_20990101T000000Z")
+        assert absent.status_code == 404
+        assert absent.json()["error"] == "not_found"
+        traversal = client.get("/api/v1/demo/benchmarks/%2e%2e%2fbench_20260924T083443Z")
+        assert traversal.status_code == 404
+
+
+def test_static_ui_serves_assets_and_never_serves_traversal_paths(tmp_path: Path) -> None:
+    """The demo UI serves contained files and returns its SPA fallback for traversal."""
+    dist_dir = tmp_path / "dist"
+    assets = dist_dir / "assets"
+    assets.mkdir(parents=True)
+    index = "<!doctype html><title>demo app</title>"
+    (dist_dir / "index.html").write_text(index)
+    (assets / "app.js").write_text("console.log('asset')")
+    secret = tmp_path / "secret.txt"
+    secret.write_text("TOP-SECRET")
+    (dist_dir / "leak.txt").symlink_to(secret)
+    settings = Settings(mock_jev=True, demo_enabled=True, demo_web_dist=dist_dir)
+    with TestClient(create_app(settings)) as client:
+        assert client.get("/demo/studio").text == index
+        assert client.get("/demo/assets/app.js").text == "console.log('asset')"
+        for path in ("%2e%2e/secret.txt", "..%2fsecret.txt", "leak.txt"):
+            response = client.get(f"/demo/{path}")
+            assert response.request.url.path.startswith("/demo/")
+            assert response.text == index
+            assert "TOP-SECRET" not in response.text
+
+
+def test_static_ui_is_built_at_request_time_and_root_redirects(tmp_path: Path) -> None:
+    """A missing build gives the contract error until index.html appears without restart."""
+    dist_dir = tmp_path / "dist"
+    settings = Settings(mock_jev=True, demo_enabled=True, demo_web_dist=dist_dir)
+    with TestClient(create_app(settings)) as client:
+        missing = client.get("/demo")
+        assert missing.status_code == 503
+        assert missing.json()["error"] == "ui_not_built"
+        assert missing.json()["detail"] == "run make web-build"
+        assert missing.json()["request_id"] == missing.headers["X-Request-Id"]
+        redirect = client.get("/", follow_redirects=False)
+        assert redirect.status_code == 307 and redirect.headers["location"] == "/demo"
+        dist_dir.mkdir()
+        (dist_dir / "index.html").write_text("built now")
+        assert client.get("/demo").text == "built now"
+
+
+def test_static_routes_do_not_exist_when_demo_is_disabled() -> None:
+    """Demo disabled leaves the application root and demo UI paths absent."""
+    with TestClient(create_app(Settings(mock_jev=True))) as client:
+        assert client.get("/").status_code == 404
+        assert client.get("/demo").status_code == 404
+
+
+def test_demo_cors_is_enabled_only_for_configured_origins() -> None:
+    """Demo CORS answers allowed preflights and exposes request timing headers."""
+    enabled = create_app(Settings(mock_jev=True, demo_enabled=True))
+    with TestClient(enabled) as client:
+        allowed = client.options(
+            "/api/v1/demo/config",
+            headers={
+                "Origin": "http://localhost:5173",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+        assert allowed.status_code == 200
+        assert allowed.headers["access-control-allow-origin"] == "http://localhost:5173"
+        rejected = client.options(
+            "/api/v1/demo/config",
+            headers={"Origin": "https://example.invalid", "Access-Control-Request-Method": "GET"},
+        )
+        assert "access-control-allow-origin" not in rejected.headers
+        actual = client.get("/api/v1/demo/config", headers={"Origin": "http://localhost:5173"})
+        assert "X-Request-Id" in actual.headers["access-control-expose-headers"]
+    with TestClient(create_app(Settings(mock_jev=True))) as client:
+        disabled = client.options(
+            "/api/v1/demo/config",
+            headers={"Origin": "http://localhost:5173", "Access-Control-Request-Method": "GET"},
+        )
+        assert "access-control-allow-origin" not in disabled.headers
+
+
+def test_phase4_response_schemas_match_snapshot_with_demo_both_ways() -> None:
+    """D1e must not alter the three public Phase 4 response schema contracts."""
+    expected = json.loads(Path("tests/snapshots/phase4_response_schemas.json").read_text())
+    for demo_enabled in (False, True):
+        schemas = create_app(Settings(mock_jev=True, demo_enabled=demo_enabled)).openapi()[
+            "components"
+        ]["schemas"]
+        actual = {
+            name: schemas[name]
+            for name in (
+                "QualityScoreResponse",
+                "BundleRouteResponse",
+                "NotifiableDetectionResponse",
+            )
+        }
+        assert actual == expected

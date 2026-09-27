@@ -1541,46 +1541,99 @@ DEMO_ENABLED=true MOCK_JEV=true make serve    # then run the full final checklis
 **D1e checks (sub-phase):**
 
 ```
-☐ GET /benchmarks → newest first; GET /benchmarks/nope → 404; old report without dataset → "unit"
-☐ GET /demo without web/dist → 503 ui_not_built
-☐ Static tests: SPA fallback, asset served, traversal never served (test names)
-☐ CORS preflight allowed only when demo enabled (test name)
-☐ make serve uses $(PYTHON) -m uvicorn (Step 10b)
-☐ OpenAPI snapshot test for the three Phase 4 response models passes
+✅ GET /benchmarks → newest first; GET /benchmarks/nope → 404; old report without dataset → "unit"
+   → real server: 5 reports newest first (…154552Z → …083443Z), all dataset "unit" (3 pre-D0.5 without the field); nope → 404;
+     encoded traversal name → 404; load bench_20260924T154552Z → mode mock_jev
+✅ GET /demo without web/dist → 503 ui_not_built
+   → real server: 503 {"error":"ui_not_built","detail":"run make web-build",…} (ErrorResponse shape); building index.html later
+     serves it without restart (test_static_ui_is_built_at_request_time_and_root_redirects)
+✅ Static tests: SPA fallback, asset served, traversal never served (test names)
+   → test_static_ui_serves_assets_and_never_serves_traversal_paths (after fix-up 1: a real secret file outside dist and an escaping
+     symlink are never served); test_static_routes_do_not_exist_when_demo_is_disabled
+✅ CORS preflight allowed only when demo enabled (test name)
+   → test_demo_cors_is_enabled_only_for_configured_origins; real server: localhost:5173 preflight 200 + allow-origin, evil.example
+     no allow-origin, GET exposes X-Request-Id, X-Request-Duration-Ms; demo disabled → no allow-origin
+✅ make serve uses $(PYTHON) -m uvicorn (Step 10b)
+   → Makefile diff; `MOCK_JEV=true make serve` started and answered /health 200
+✅ OpenAPI snapshot test for the three Phase 4 response models passes
+   → test_phase4_response_schemas_match_snapshot_with_demo_both_ways; snapshot (9 / 5 / 7 fields) is identical to the schemas
+     generated from the base commit e40188e in a separate git worktree
 ```
 
 **Final D1 end-to-end checklist (the original D1 checklist, run after D1e):**
 
 ```
-☐ make lint / typecheck / test green; coverage ≥ 95%; each new demo/*.py ≥ 90%
-☐ Test count increased by ≥ 30 (show before/after)
-☐ MOCK_JEV=true make serve (demo disabled): curl -s -o /dev/null -w "%{http_code}" :8000/api/v1/demo/config → 404
-☐ DEMO_ENABLED=true MOCK_JEV=true make serve, then:
-   ☐ curl /api/v1/demo/config → mode=mock, 4 thresholds, 5 route_options, 4 questions
-   ☐ curl "/api/v1/demo/fixtures?source=hard" | python -c "…len…" → ≥ 25
-   ☐ curl "/api/v1/demo/fixtures/tests/fixtures/patients/complete_patient.json" → Patient JSON
-   ☐ curl --path-as-is "/api/v1/demo/fixtures/../../.env" → 404, body has no JEV_API_KEY
-   ☐ POST /compare/router mixed_bundle with {"thresholds":{"route_confidence_minimum":0.99}} → override_applied true, lane review
-   ☐ POST /compare/notifiable JE fixture → lane flagged, audit_event.type present, no audit_event.code
-   ☐ POST /pipeline/run {"source":"unit","rate_per_s":null} then curl "/decisions/stream?limit=5" → 5 SSE blocks with id/event/data
-   ☐ GET /decisions?limit=3 → 3 items, seq strictly decreasing
-   ☐ GET /benchmarks → newest first; GET /benchmarks/nope → 404
-   ☐ GET /demo without web/dist → 503 ui_not_built
-☐ Response headers on demo endpoints include X-Request-Id and X-Request-Duration-Ms
-☐ grep routes/demo.py and catalog.py: no Path(...) / "/" joins using request-supplied strings
-☐ Phase 4 schemas unchanged: openapi snapshot test passes
-☐ No new runtime dependency in pyproject.toml
-☐ Lifespan shutdown cancels an in-flight pipeline (test name)
-☐ Final code matches the full D1 contract (Steps 1–10b): DemoServices shape, route table, lane strings, SSE format
+✅ make lint / typecheck / test green; coverage ≥ 95%; each new demo/*.py ≥ 90%
+   → 408 passed, 98% total; demo/*.py 91–100% (lanes.py 91%: type guards; sse.py 96%; all others 100%)
+✅ Test count increased by ≥ 30 (show before/after)
+   → 342 (before D1) → 408 (+66)
+✅ MOCK_JEV=true make serve (demo disabled): curl -s -o /dev/null -w "%{http_code}" :8000/api/v1/demo/config → 404
+   → 404 (also / → 404, /demo → 404, no CORS header)
+✅ DEMO_ENABLED=true MOCK_JEV=true make serve, then:
+   → server started with demo enabled (direct uvicorn with a tracked PID; make serve itself verified above)
+   ✅ curl /api/v1/demo/config → mode=mock, 4 thresholds, 5 route_options, 4 questions
+      → mode mock | 4 | 5 | 4
+   ✅ curl "/api/v1/demo/fixtures?source=hard" | python -c "…len…" → ≥ 25
+      → 28
+   ✅ curl "/api/v1/demo/fixtures/tests/fixtures/patients/complete_patient.json" → Patient JSON
+      → resourceType Patient
+   ✅ curl --path-as-is "/api/v1/demo/fixtures/../../.env" → 404, body has no JEV_API_KEY
+      → 404, JEV_API_KEY 0 times
+   ✅ POST /compare/router mixed_bundle with {"thresholds":{"route_confidence_minimum":0.99}} → override_applied true, lane review
+      → override True, lane review
+   ✅ POST /compare/notifiable JE fixture → lane flagged, audit_event.type present, no audit_event.code
+      → lane flagged, type present, no code
+   ✅ POST /pipeline/run {"source":"unit","rate_per_s":null} then curl "/decisions/stream?limit=5" → 5 SSE blocks with id/event/data
+      → with -H "Last-Event-ID: 0" (D1d clarification): 5 blocks, all exactly id/event/data
+   ✅ GET /decisions?limit=3 → 3 items, seq strictly decreasing
+      → [63, 62, 61]
+   ✅ GET /benchmarks → newest first; GET /benchmarks/nope → 404
+      → newest first; 404
+   ✅ GET /demo without web/dist → 503 ui_not_built
+      → 503 ui_not_built
+✅ Response headers on demo endpoints include X-Request-Id and X-Request-Duration-Ms
+   → both present on /api/v1/demo/config
+✅ grep routes/demo.py and catalog.py: no Path(...) / "/" joins using request-supplied strings
+   → none; the only request-derived paths are the regex-validated report name (benchmarks.py) and the contained, resolved static
+     path (static.py), each backed by a mutation-checked test
+✅ Phase 4 schemas unchanged: openapi snapshot test passes
+   → passes; snapshot matches the base commit
+✅ No new runtime dependency in pyproject.toml
+   → pyproject.toml unchanged across D1
+✅ Lifespan shutdown cancels an in-flight pipeline (test name)
+   → test_shutdown_stops_active_run (D1c)
+✅ Final code matches the full D1 contract (Steps 1–10b): DemoServices shape, route table, lane strings, SSE format
+   → yes, with the recorded, accepted deviations: SSE disconnect logs "cancelled" (D1d); 404/503 use ErrorResponse (decided pre-D1b)
+```
+
+**Issues found and fixes (Sep 27, 2026, via /phase-loop):**
+
+```
+✅ FIXED (fix-up 1) ❌ test_static_ui_serves_assets_and_never_serves_traversal_paths passed even with the containment check removed:
+   its traversal targets didn't exist relative to the temp dist folder. It now uses a real outside secret file and an escaping symlink.
+✅ FIXED (fix-up 1) ❌ test_benchmark_missing_directory_and_bad_names_never_read_files passed with the name regex removed (it used a
+   missing directory). It now uses a real results dir with notes.json, and patches Path.read_text to prove no read for invalid names.
+✅ FIXED (fix-up 2) ❌ fix-up 1 dropped three earlier assertions (missing dir → [], absent well-formed name → 404, encoded traversal
+   name → 404). Restored in test_benchmark_missing_directory_and_report_return_empty_or_404; benchmarks.py back to 100%; nothing
+   else removed (diff against the round-1 file: additions only).
+✅ Mutation check after the fixes: containment removed, name regex skipped, oldest-first sort, CORS always on, dataset fallback,
+   ui_not_built check removed → each makes a test fail; files restored byte-identical.
+⚠️ A report with an explicit "dataset": null is skipped rather than falling back to "unit" (the contract covers only a missing field;
+   no such report exists).
+⚠️ Loading a malformed report via /benchmarks/{name} returns 400 through the existing ValueError handler (unspecified in the contract).
+ℹ️ static.py imports main._error_response inside the handler to avoid a circular import.
+ℹ️ Codex's real-server check hit a transient port-8000 conflict and used 8001; the evaluator re-ran everything on 8000, with no stray
+   process left.
 ```
 
 **D1e / final D1 evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Tests:     before D1 = 342 → after D1e = <n>
-Results:   <sub-phase checks + final checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: Sep 27, 2026 by Claude Code via /phase-loop (Codex headless; 2 fix-up rounds, same session, tests only)
+Tests:     before D1 = 342 → after D1e = 408 (D1e: 400 → 408); coverage 98%; benchmarks.py 100%, static.py 100%
+Results:   6/6 D1e checks ✅; Final D1 end-to-end checklist 25/25 ✅ (real server, disabled + enabled); snapshot verified against the
+           base commit; 3 ❌ test gaps fixed; 2 ⚠️ and 2 ℹ️ accepted
+Verdict:   PASS. D1 (Demo API) is complete; D2 (UI shell) can start.
 ```
 
 ---
