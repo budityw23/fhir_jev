@@ -104,3 +104,24 @@ Test count after each phase is the `make test` total.
 - SSE is live-only without `Last-Event-ID`. A stream opened after a finished run needs
   `Last-Event-ID: 0` to replay; otherwise it only gets pings. Race rule: subscribe first, then
   replay, then drop live events with `seq ≤` the last replayed one.
+
+## D1d — SSE — PASS (Sep 27, 2026) — first /phase-loop run (Codex headless, 1 fix-up round)
+
+- **Built:**
+  - `demo/sse.py` `stream_events()` generator, with `SSE_PING_INTERVAL_S = 15.0` as a module constant
+  - `GET /decisions/stream?limit=`: `StreamingResponse`, `text/event-stream`, `Cache-Control: no-cache`,
+    `X-Accel-Buffering: no`
+  - exact `id / event / data` blocks and `": ping"` comments that don't count toward `limit`
+  - `Last-Event-ID` replay; subscribe BEFORE replay, then drop live `seq ≤` the last one sent; `sse_stream_closed`
+    logged with the reason
+- **Choices beyond the contract:**
+  - the logic lives in a testable generator (TestClient buffers streams)
+  - an invalid `Last-Event-ID` is ignored (treated as absent)
+  - `limit` has `ge=1` (0 → 422)
+  - the log reason is `limit` / `disconnect` / `cancelled`
+- **Accepted deviation (Budi):** a real client disconnect logs `reason="cancelled"`, not `"disconnect"`. The app's
+  `BaseHTTPMiddleware` cancels the generator before `is_disconnected()` turns true. Cleanup is correct; only the
+  label differs. Don't "fix" this by restructuring the middleware without asking.
+- **Fix-up:** Codex had added a hidden HEAD route because the prompt used `curl -I`. Removed. **Lesson for future
+  prompts:** check headers with `curl -D - -o /dev/null`, never `curl -I` (FastAPI doesn't add HEAD for GET routes).
+- Tests 389 → 400. Known gaps: `sse.py` lines 37–38 (disconnect during replay) untested (96% coverage).

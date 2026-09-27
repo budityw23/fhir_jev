@@ -9,6 +9,7 @@ from jev_fhir.baselines.quality import score_observation
 from jev_fhir.config import Settings
 from jev_fhir.demo.catalog import FixtureCatalog
 from jev_fhir.main import create_app
+from jev_fhir.routes.demo import _parse_last_event_id
 
 
 def test_demo_disabled_has_no_services_or_routes() -> None:
@@ -215,3 +216,71 @@ def test_pipeline_stop_unknown_run_is_structured_not_found() -> None:
         response = client.post("/api/v1/demo/pipeline/no-such-run/stop")
         assert response.status_code == 404
         assert response.json()["error"] == "not_found"
+
+
+def test_sse_endpoint_replays_pipeline_events_in_wire_format() -> None:
+    import time
+
+    app = create_app(Settings(mock_jev=True, demo_enabled=True))
+    with TestClient(app) as client:
+        started = client.post(
+            "/api/v1/demo/pipeline/run",
+            json={"source": "unit", "modules": ["router"], "rate_per_s": None},
+        ).json()
+        feed = app.state.services.demo.feed
+        deadline = time.monotonic() + 3
+        while time.monotonic() < deadline:
+            if any(
+                event.run_id == started["run_id"] and event.status == "finished"
+                for _, event in feed.since(0)
+                if hasattr(event, "status")
+            ):
+                break
+            time.sleep(0.02)
+        response = client.get(
+            "/api/v1/demo/decisions/stream?limit=3", headers={"Last-Event-ID": "0"}
+        )
+        assert response.status_code == 200
+        assert response.text.count("event: ") == 3
+        assert all(block.startswith("id: ") for block in response.text.strip().split("\n\n"))
+
+
+def test_sse_endpoint_replays_only_events_newer_than_last_event_id_and_has_headers() -> None:
+    app = create_app(Settings(mock_jev=True, demo_enabled=True))
+    with TestClient(app) as client:
+        feed = app.state.services.demo.feed
+        for index in range(3):
+            compare(client, "quality", "tests/fixtures/patients/complete_patient.json")
+            assert feed.since(0)[-1][0] == index + 1
+        response = client.get(
+            "/api/v1/demo/decisions/stream?limit=2", headers={"Last-Event-ID": "1"}
+        )
+        assert [line for line in response.text.splitlines() if line.startswith("id: ")] == [
+            "id: 2",
+            "id: 3",
+        ]
+        assert response.headers["content-type"].startswith("text/event-stream")
+        assert response.headers["Cache-Control"] == "no-cache"
+        assert response.headers["X-Accel-Buffering"] == "no"
+
+
+def test_sse_endpoint_formats_run_events_and_validates_limit() -> None:
+    from jev_fhir.demo.feed import RunEvent
+
+    app = create_app(Settings(mock_jev=True, demo_enabled=True))
+    with TestClient(app) as client:
+        app.state.services.demo.feed.publish(
+            RunEvent(run_id="run-1", status="started", total=1, processed=0)
+        )
+        response = client.get(
+            "/api/v1/demo/decisions/stream?limit=1", headers={"Last-Event-ID": "0"}
+        )
+        assert "event: run\n" in response.text
+        assert client.get("/api/v1/demo/decisions/stream?limit=0").status_code == 422
+
+
+def test_invalid_last_event_id_is_treated_as_absent() -> None:
+    assert _parse_last_event_id("not-an-integer") is None
+    assert _parse_last_event_id("-1") is None
+    assert _parse_last_event_id(None) is None
+    assert _parse_last_event_id("12") == 12

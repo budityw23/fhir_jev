@@ -3,6 +3,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request
+from fastapi.responses import StreamingResponse
 
 from jev_fhir.dataset.labels import Difficulty, Source
 from jev_fhir.demo import DemoNotFoundError
@@ -16,6 +17,7 @@ from jev_fhir.demo.schemas import (
     FixtureEntry,
     Thresholds,
 )
+from jev_fhir.demo.sse import stream_events
 from jev_fhir.dependencies import DemoServices, get_demo
 from jev_fhir.modules.bundle_router import ROUTE_OPTIONS, ROUTE_QUESTION
 from jev_fhir.modules.notifiable_detector import NOTIFIABLE_STATEMENT
@@ -23,6 +25,13 @@ from jev_fhir.modules.quality_scorer import NIK_VALIDATION_STATEMENT, QUALITY_SC
 
 router = APIRouter(tags=["demo"])
 DemoDependency = Annotated[DemoServices, Depends(get_demo)]
+
+
+def _parse_last_event_id(value: str | None) -> int | None:
+    """Return a valid non-negative Last-Event-ID, or no replay marker for invalid input."""
+    if value is None or not value.isascii() or not value.isdecimal():
+        return None
+    return int(value)
 
 
 @router.get("/config", response_model=DemoConfig)
@@ -79,6 +88,26 @@ async def get_decisions(
 ) -> list[DecisionEvent]:
     """Return recent decision events in descending sequence order."""
     return services.feed.recent(limit)
+
+
+@router.get("/decisions/stream")
+async def stream_decisions(
+    request: Request,
+    services: DemoDependency,
+    limit: Annotated[int | None, Query(ge=1)] = None,
+) -> StreamingResponse:
+    """Stream replayed or live decision-feed events as server-sent events."""
+    last_event_id = _parse_last_event_id(request.headers.get("Last-Event-ID"))
+    return StreamingResponse(
+        stream_events(
+            services.feed,
+            last_event_id=last_event_id,
+            limit=limit,
+            is_disconnected=request.is_disconnected,
+        ),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @router.post("/pipeline/run", response_model=PipelineRunResponse)

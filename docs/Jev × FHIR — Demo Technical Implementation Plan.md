@@ -1436,21 +1436,60 @@ curl -sN -H "Last-Event-ID: 3" "localhost:8000/api/v1/demo/decisions/stream?limi
 **D1d evaluation checklist:**
 
 ```
-☐ make lint / typecheck / test green; coverage ≥ 95%
-☐ POST /pipeline/run {"source":"unit","rate_per_s":null} then curl "/decisions/stream?limit=5" → 5 SSE blocks with id/event/data (curl with -H "Last-Event-ID: 0", see the clarification above)
-☐ Last-Event-ID: N replays only seq > N (curl + test name)
-☐ Response headers: Content-Type text/event-stream, Cache-Control no-cache, X-Accel-Buffering no
-☐ ": ping" comment emitted (test with a monkeypatched interval); production constant is 15 s
-☐ No subscriber leak after the stream ends (test name)
-☐ No new runtime dependency; tests/test_api.py passes unchanged; no benchmarks / static / CORS code present
+✅ make lint / typecheck / test green; coverage ≥ 95%
+   → 400 passed (389 → 400), 98% total, suite ~7.6 s; demo/sse.py 96% (uncovered: disconnect during replay), routes/demo.py 100%
+✅ POST /pipeline/run {"source":"unit","rate_per_s":null} then curl "/decisions/stream?limit=5" → 5 SSE blocks with id/event/data (curl with -H "Last-Event-ID: 0", see the clarification above)
+   → real server: 5 blocks, ids 1–5, each exactly `id / event / data`; kinds run, decision ×4
+✅ Last-Event-ID: N replays only seq > N (curl + test name)
+   → curl Last-Event-ID: 3, limit 2 → ids 4, 5; tests test_stream_events_replays_only_newer_events_then_continues_live,
+     test_sse_endpoint_replays_only_events_newer_than_last_event_id_and_has_headers; invalid Last-Event-ID ("abc") treated
+     as absent (live id 64, not replay) — test_invalid_last_event_id_is_treated_as_absent
+✅ Response headers: Content-Type text/event-stream, Cache-Control no-cache, X-Accel-Buffering no
+   → real server via GET (`curl -D -`): content-type text/event-stream; charset=utf-8, cache-control no-cache,
+     x-accel-buffering no (plus X-Request-Id); limit=0 → 422
+✅ ": ping" comment emitted (test with a monkeypatched interval); production constant is 15 s
+   → test_stream_events_ping_is_exact_and_does_not_count_toward_limit (": ping\n\n" exact, not counted); SSE_PING_INTERVAL_S = 15.0
+✅ No subscriber leak after the stream ends (test name)
+   → subscriber_count back to 0 after limit (test_stream_events_formats_decision_and_run_blocks_exactly), disconnect
+     (test_stream_events_disconnects_during_ping_idle_time_and_unregisters) and cancellation
+     (test_stream_events_unregisters_after_task_cancellation); real server: every stream logs sse_stream_closed
+✅ No new runtime dependency; tests/test_api.py passes unchanged; no benchmarks / static / CORS code present
+   → pyproject.toml unchanged; test_api.py unchanged (git diff empty); no D1e code
+```
+
+**Additional evaluation (beyond the checklist):**
+
+```
+✅ Contract read-through: StreamingResponse, exact wire format `id / event / data`, pings are comments not counted toward
+   limit, Last-Event-ID replay, ?limit ends the stream, headers; subscribe BEFORE replay and drop live seq ≤ last replayed
+✅ Race rule proven: test_stream_events_race_replays_and_live_queue_without_gap_or_duplicate (a feed publishing just before
+   and just after the replay snapshot → ids 1, 2, 3 exactly once)
+✅ Live streaming through BaseHTTPMiddleware works on a real server: 6 events arrived during a 3 s curl with a paced run
+✅ Mutation check, 6/6 planted bugs caught: no duplicate filter; replay read before subscribing; pings counted toward limit;
+   wrong event name; disconnect check ignored; invalid Last-Event-ID crashing. Files restored byte-identical.
+✅ No weakening: 0 existing test lines removed; hygiene clean (no stray reports, .env untracked, no secrets)
+```
+
+**Issues found and decisions (Budi, Sep 27, 2026):**
+
+```
+⚠️ ACCEPTED A real client disconnect is logged as sse_stream_closed reason="cancelled", not "disconnect": under the app's
+   BaseHTTPMiddleware, Starlette cancels the generator before request.is_disconnected() reports true. Behaviour is correct
+   (the stream ends, the subscription is released, no leak); only the log label differs. The "disconnect" wording came from
+   the D1d prompt, not this checklist. Restructuring the Phase 4 middleware (option B) was declined as not worth the risk.
+✅ FIXED (fix-up round 1) Codex had added a hidden HEAD /decisions/stream route (not in the contract) only because the
+   prompt's header check used `curl -I`. Removed, with its 3 test lines; headers are verified through GET (`curl -D -`),
+   and HEAD now returns 405.
 ```
 
 **D1d evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Results:   <checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: Sep 27, 2026 by Claude Code via /phase-loop (Codex implemented headless; 1 fix-up round, same session)
+Checks:    make lint / typecheck clean; make test 400 passed (389 → 400), 98% total; sse.py 96%, routes/demo.py 100%
+Results:   7/7 checklist items ✅; contract, race rule, live streaming and 6/6 mutations ✅; 1 ⚠️ accepted (disconnect log
+           label), 1 fixed (HEAD route)
+Verdict:   PASS. D1e can start.
 ```
 
 ---
