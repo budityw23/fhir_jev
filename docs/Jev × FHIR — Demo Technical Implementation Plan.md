@@ -1326,25 +1326,67 @@ curl -s "localhost:8000/api/v1/demo/decisions?limit=3"
 
 **D1c evaluation checklist:**
 
+Evaluated with the test suite, a real server (`DEMO_ENABLED=true MOCK_JEV=true uvicorn`), 6 planted bugs, and a failure-path probe.
+
 ```
-☐ make lint / typecheck / test green; coverage ≥ 95%; demo/feed.py and demo/pipeline.py ≥ 90%
-☐ DemoServices matches the Step 9 shape exactly (catalog, comparer, feed, pipeline)
-☐ POST /pipeline/run {"source":"unit","rate_per_s":null} → run completes; decision count == total
-☐ GET /decisions?limit=3 → 3 items, seq strictly decreasing
-☐ POST /compare publishes one DecisionEvent (run_id null) visible in /decisions
-☐ Injected JevTimeoutError → review lane, lane_reason "jev error: jev_timeout", run finishes (test name)
-☐ Second start → first run gets a "stopped" RunEvent (test name)
-☐ Lifespan shutdown cancels an in-flight pipeline (test name)
-☐ Concurrency never exceeds demo_pipeline_max_concurrency (test name)
-☐ tests/test_api.py passes unchanged; no SSE / benchmarks / static / CORS code present
+✅ make lint / typecheck / test green; coverage ≥ 95%; demo/feed.py and demo/pipeline.py ≥ 90%
+   → 387 passed (369 → 387), 98% total, suite ~7 s (was ~4.8 s; the pacing waits); feed.py 100%, pipeline.py 100%
+✅ DemoServices matches the Step 9 shape exactly (catalog, comparer, feed, pipeline); lifespan builds feed + runner with
+   demo_pipeline_max_concurrency and awaits pipeline.shutdown() before closing the live client
+✅ POST /pipeline/run {"source":"unit","rate_per_s":null} → total 60; 60 decisions for that run_id (real server, polled)
+✅ GET /decisions?limit=3 → seqs [61, 60, 59], strictly decreasing; limit 0 and 501 → 422
+✅ POST /compare publishes one DecisionEvent (run_id null, fixture_id kept, resource_reference Patient/invalid-nik,
+   lane_reason "NIK gate failed: P(valid) 0.08", ground_truth_match true) visible in /decisions
+✅ Injected JevTimeoutError → review lane, lane_reason "jev error: jev_timeout", run finishes
+   (test_jev_timeout_becomes_review_event_and_run_continues)
+✅ Second start → first run gets exactly one "stopped" RunEvent (test_second_start_stops_the_first_run_once)
+✅ Lifespan shutdown cancels an in-flight pipeline (test_shutdown_stops_active_run)
+✅ Concurrency never exceeds demo_pipeline_max_concurrency; the test asserts the in-flight peak EQUALS the limit (2),
+   proving both the bound and real parallelism (test_pipeline_concurrency_never_exceeds_configured_limit)
+✅ Stop semantics (real server): active run → {"stopped":true}, and no decisions after it (3 at stop, still 3 after
+   1.5 s); stopping again or stopping a finished run → {"stopped":false}; unknown run → 404 ErrorResponse not_found
+✅ Mutation check, each planted bug caught by a test: no semaphore; no "stopped" event on cancel; overflow drops the
+   newest instead of the oldest; JevClientError not converted; stop not cancelling in-flight items; compare not
+   publishing. Production files restored byte-identical after each.
+✅ tests/test_api.py passes unchanged; all D1a/D1b tests pass; no SSE / benchmarks / static / CORS code present
+```
+
+**Issues found and fixes (Sep 27, 2026, Claude Code):**
+
+```
+✅ FIXED ❌ Unexpected (non-Jev) exception in one pipeline item. Before: gather() raised, the finally published
+   "finished" (1 of 15 processed), the sibling item tasks kept running and 14 decisions arrived AFTER the terminal
+   event, plus an unhandled "Task exception was never retrieved".
+   Now in PipelineRunner._run: any exception cancels and awaits every sibling (the same _cancel helper the stop path
+   uses); the terminal status is "finished" only when every item completed, otherwise "stopped"; the failure is logged
+   through structlog ("pipeline_run_failed", run_id, error) and not left unretrieved.
+   Test: test_unexpected_item_error_stops_run_without_orphaned_events: exactly one terminal event, "stopped",
+   processed < total, no decisions after it, run task has no exception, failure logged. Fails when the fix is undone.
+✅ FIXED ⚠️ start() no longer relies on `await asyncio.sleep(0)`. The runner records which runs actually entered _run();
+   if stop() cancels a run before its body began (so its finally never ran), stop() publishes the terminal "stopped"
+   event itself (processed 0) and clears the active run.
+   Test: test_stop_before_the_run_starts_still_emits_one_stopped_event (stop with no await after start →
+   ["started", "stopped"], no decisions, and the next run works). Fails when the fix is undone. The existing
+   second-start test now exercises this path too and still passes.
+✅ FIXED ℹ️ docstrings added to DecisionEvent, RunEvent, Subscription, DecisionFeed, event_from_compare,
+   PipelineRunRequest, PipelineRunResponse and PipelineRunner
+ℹ️ NOTED the implementation report called subscriber_count "the sole additive helper"; event_from_compare also exists
+   (it was requested). The report was inaccurate, not the code.
+✅ Re-check after the fixes: make lint / typecheck clean; make test 389 passed (387 → 389), pipeline.py and feed.py 100%;
+   real server: full run 60/60, stop mid-run → true with no later decisions, stop again → false, immediate stop → true,
+   0 tracebacks in the server log
 ```
 
 **D1c evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Results:   <checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: Sep 27, 2026 by Claude Code (fresh-session review; real-server checks; 6-bug mutation check; failure probe);
+           fixes applied and re-checked in the same session
+Checks:    make lint / typecheck clean; make test 389 passed (369 → 389), 98% total; feed.py and pipeline.py 100%;
+           tests/test_api.py unchanged
+Results:   all 12 checklist items ✅; the ❌ failure-path defect and the ⚠️ start race fixed with tests (both
+           mutation-checked); docstrings added; nothing open
+Verdict:   PASS. D1d can start.
 ```
 
 ---

@@ -8,6 +8,8 @@ from jev_fhir.config import Settings
 from jev_fhir.demo import DemoNotFoundError
 from jev_fhir.demo.catalog import FixtureCatalog
 from jev_fhir.demo.compare import Comparer
+from jev_fhir.demo.feed import DecisionFeed
+from jev_fhir.demo.pipeline import PipelineRunner
 from jev_fhir.jev_client.client import JevClient
 from jev_fhir.modules.bundle_router import BundleRouter
 from jev_fhir.modules.notifiable_detector import NotifiableDiseaseDetector
@@ -20,6 +22,8 @@ class DemoServices:
 
     catalog: FixtureCatalog
     comparer: Comparer
+    feed: DecisionFeed
+    pipeline: PipelineRunner
 
 
 @dataclass(frozen=True)

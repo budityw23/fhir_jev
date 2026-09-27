@@ -2,10 +2,12 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 
 from jev_fhir.dataset.labels import Difficulty, Source
 from jev_fhir.demo import DemoNotFoundError
+from jev_fhir.demo.feed import DecisionEvent, event_from_compare
+from jev_fhir.demo.pipeline import PipelineRunRequest, PipelineRunResponse
 from jev_fhir.demo.schemas import (
     CompareRequest,
     CompareResponse,
@@ -66,4 +68,26 @@ async def compare(
     module: DemoModule, body: CompareRequest, services: DemoDependency
 ) -> CompareResponse:
     """Compare a single FHIR resource through Jev and its rule baseline."""
-    return await services.comparer.compare(module, body)
+    response = await services.comparer.compare(module, body)
+    services.feed.publish(event_from_compare(response, run_id=None, fixture_id=body.fixture_id))
+    return response
+
+
+@router.get("/decisions", response_model=list[DecisionEvent])
+async def get_decisions(
+    services: DemoDependency, limit: int = Query(50, ge=1, le=500)
+) -> list[DecisionEvent]:
+    """Return recent decision events in descending sequence order."""
+    return services.feed.recent(limit)
+
+
+@router.post("/pipeline/run", response_model=PipelineRunResponse)
+async def run_pipeline(body: PipelineRunRequest, services: DemoDependency) -> PipelineRunResponse:
+    """Start the finite labelled-fixture replay pipeline."""
+    return await services.pipeline.start(body)
+
+
+@router.post("/pipeline/{run_id}/stop")
+async def stop_pipeline(run_id: str, services: DemoDependency) -> dict[str, bool]:
+    """Stop the active named pipeline run, if it is still running."""
+    return {"stopped": await services.pipeline.stop(run_id)}

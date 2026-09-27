@@ -161,3 +161,57 @@ def test_bad_threshold_override_returns_validation_error() -> None:
             },
         )
         assert response.status_code == 422
+
+
+def test_compare_publishes_decision_event() -> None:
+    fixture_id = "tests/fixtures/patients/complete_patient.json"
+    with demo_client() as client:
+        compare(client, "quality", fixture_id)
+        events = client.get("/api/v1/demo/decisions").json()
+        assert len(events) == 1
+        assert events[0]["run_id"] is None and events[0]["fixture_id"] == fixture_id
+
+
+def test_decision_limit_and_sequence_contract() -> None:
+    with demo_client() as client:
+        compare(client, "quality", "tests/fixtures/patients/complete_patient.json")
+        compare(client, "router", "tests/fixtures/bundles/mixed_bundle.json")
+        compare(
+            client,
+            "notifiable",
+            "tests/fixtures/conditions/japanese_encephalitis_a83.json",
+        )
+        body = client.get("/api/v1/demo/decisions", params={"limit": 3}).json()
+        assert len(body) == 3
+        assert [item["seq"] for item in body] == sorted(
+            (item["seq"] for item in body), reverse=True
+        )
+        assert client.get("/api/v1/demo/decisions", params={"limit": 0}).status_code == 422
+        assert client.get("/api/v1/demo/decisions", params={"limit": 501}).status_code == 422
+
+
+def test_pipeline_api_unit_run_completes_with_its_total() -> None:
+    import time
+
+    with demo_client() as client:
+        started = client.post(
+            "/api/v1/demo/pipeline/run",
+            json={"source": "unit", "modules": ["router"], "rate_per_s": None},
+        )
+        assert started.status_code == 200, started.text
+        run = started.json()
+        deadline = time.monotonic() + 3
+        while time.monotonic() < deadline:
+            events = client.get("/api/v1/demo/decisions", params={"limit": 500}).json()
+            decisions = [event for event in events if event["run_id"] == run["run_id"]]
+            if len(decisions) == run["total"]:
+                break
+            time.sleep(0.02)
+        assert len(decisions) == run["total"]
+
+
+def test_pipeline_stop_unknown_run_is_structured_not_found() -> None:
+    with demo_client() as client:
+        response = client.post("/api/v1/demo/pipeline/no-such-run/stop")
+        assert response.status_code == 404
+        assert response.json()["error"] == "not_found"

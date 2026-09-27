@@ -16,6 +16,8 @@ from jev_fhir.config import PROJECT_ROOT, Settings, get_settings
 from jev_fhir.demo import DemoNotFoundError
 from jev_fhir.demo.catalog import FixtureCatalog
 from jev_fhir.demo.compare import Comparer
+from jev_fhir.demo.feed import DecisionFeed
+from jev_fhir.demo.pipeline import PipelineRunner
 from jev_fhir.demo.schemas import Thresholds
 from jev_fhir.dependencies import AppServices, DemoServices
 from jev_fhir.jev_client.client import JevClient, JevClientError, LiveJevClient
@@ -75,13 +77,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         demo_services = None
         if effective_settings.demo_enabled:
             catalog = FixtureCatalog(effective_settings.labels_dir)
+            comparer = Comparer(
+                jev_client,
+                catalog,
+                Thresholds.from_settings(effective_settings),
+                PROJECT_ROOT / "data" / "notifiable_diseases.json",
+            )
+            feed = DecisionFeed()
             demo_services = DemoServices(
                 catalog=catalog,
-                comparer=Comparer(
-                    jev_client,
-                    catalog,
-                    Thresholds.from_settings(effective_settings),
-                    PROJECT_ROOT / "data" / "notifiable_diseases.json",
+                comparer=comparer,
+                feed=feed,
+                pipeline=PipelineRunner(
+                    catalog, comparer, feed, effective_settings.demo_pipeline_max_concurrency
                 ),
             )
         app.state.services = AppServices(
@@ -95,6 +103,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             demo=demo_services,
         )
         yield
+        if demo_services is not None:
+            await demo_services.pipeline.shutdown()
         if isinstance(jev_client, LiveJevClient):
             await jev_client.aclose()
 
