@@ -18,6 +18,13 @@ export interface ErrorBody {
   request_id: string;
   timestamp: string;
 }
+// Run events exist only on the SSE stream, so they are intentionally handwritten.
+export interface RunEvent {
+  run_id: string;
+  status: "started" | "finished" | "stopped";
+  total: number;
+  processed: number;
+}
 export interface Health {
   status: string;
   jev_client: "mock" | "live";

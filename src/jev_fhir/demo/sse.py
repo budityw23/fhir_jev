@@ -27,6 +27,10 @@ async def stream_events(
     logger = get_logger()
     reason: Literal["limit", "disconnect", "cancelled"] = "cancelled"
     yielded = 0
+    # A browser can reconnect after this in-memory feed was recreated.  Its old
+    # Last-Event-ID then belongs to a different feed and must not suppress new events.
+    if last_event_id is not None and last_event_id > feed.last_seq:
+        last_event_id = None
     highest_seq = last_event_id if last_event_id is not None else -1
 
     try:

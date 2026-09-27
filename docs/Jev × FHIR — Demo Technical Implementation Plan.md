@@ -2234,23 +2234,51 @@ reconnect checks, and the final D3 checklist.
 **D3a evaluation checklist:**
 
 ```
-☐ make web-test green; make test (backend) green (backend 408 + restart-rule test)
-☐ make web-e2e → all D2 specs + D3 specs 1, 2, 3, 4, 6 pass
-☐ Lanes + counters sum to total for a full unit run (cite e2e assertion)
-☐ Stop leaves no running task: after stop, GET /decisions?limit=1 seq stable for 3 s (curl twice)
-☐ Feed never renders > 100 rows (inspect DOM count in e2e)
-☐ Review items show exact lane_reason strings from the D1 table
-☐ SSE restart rule: Last-Event-ID above the highest issued seq is treated as absent (backend test; planted bug caught)
-☐ No console errors / unhandled promise rejections in e2e logs
-☐ Pipeline screenshots at 1280×720 and 1920×1080 viewed by the evaluator
+✅ make web-test green; make test (backend) green (backend 408 + restart-rule test)
+   → Vitest 28 → 38 (10 files); backend 408 → 411 in 8.85 s, TOTAL 98% (sse.py 96%, feed.py 100%);
+     ruff, mypy --strict, eslint, tsc, web-build (no file > 1 MB), schema.d.ts unchanged, no line > 100
+✅ make web-e2e → all D2 specs + D3 specs 1, 2, 3, 4, 6 pass
+   → 14 passed, twice in a row (26.7 s / 27.0 s); workers: 1 + serial pipeline spec (one global runner)
+✅ Lanes + counters sum to total for a full unit run (cite e2e assertion)
+   → pipeline.spec.ts spec 1: sum of lane-count-* === total from the POST /pipeline/run response,
+     and StatsStrip "Processed 60/60"; screenshot shows 18 + 13 + 9 + 20 = 60
+✅ Stop leaves no running task: after stop, GET /decisions?limit=1 seq stable for 3 s (curl twice)
+   → real uvicorn :18741, unit at 1/s, stop → {"stopped":true}; seq t0=4, t+3s=4; no tracebacks
+✅ Feed never renders > 100 rows (inspect DOM count in e2e)
+   → e2e: full all-source run (204 events) → exactly 100 tbody rows; Vitest: 500 events → 100 rows
+✅ Review items show exact lane_reason strings from the D1 table
+   → spec 4 matches the D1 formats; Vitest asserts exact strings; screenshot shows "score 35 < threshold 70",
+     "NIK gate failed: P(valid) 0.08", "model chose unknown"
+✅ SSE restart rule: Last-Event-ID above the highest issued seq is treated as absent (backend test; planted bug caught)
+   → removing the rule fails 2 of the 3 new tests; real server: fresh uvicorn + Last-Event-ID: 812 → id 1, id 2 delivered
+✅ No console errors / unhandled promise rejections in e2e logs
+   → spec 6 collects console errors + pageerror over a full run: []
+✅ Pipeline screenshots at 1280×720 and 1920×1080 viewed by the evaluator
+   → round 0 showed run-together buttons, unlabelled threshold groups, plain lane headers, overlapping histogram
+     labels, a 20-item unbounded queue (fixed in fix1); regenerated screenshots viewed; D2 Studio screenshot unchanged
 ```
+
+**Issues found (D3a):**
+- ❌→✅ Round 0 delivered only 3 reducer tests and no pipeline e2e spec (Codex said so); fix1 added the full Vitest set
+  and `web/e2e/pipeline.spec.ts`.
+- ❌→✅ Pipeline layout defects visible only in the screenshot (see above); fixed in fix1.
+- ✅ Planted bugs (evaluator-run, all restored byte-identical): foreign run_id check, 500 cap, current→previous, 100-row
+  slice, Δ sign, Accept calling fetch, `max` → 4, EventSource not closed: each fails ≥ 1 Vitest test; backend rule
+  removal fails 2 pytest tests.
+- ⚠️ `web/src/index.css` was reformatted (Prettier style) alongside the new rules; the evaluator verified every D2 rule is
+  unchanged apart from whitespace and leading zeros. App.tsx routes collapsed to one line each (formatting only).
+- ⚠️ Each RunControls threshold group shows the module label and then ThresholdSliders' own "Thresholds" heading
+  (slightly redundant; D4 polish).
+- ⚠️ `playwright.config.ts` now uses `workers: 1` (the e2e suite shares one global pipeline runner); suite ≈ 27 s.
+- Additive helper: read-only `DecisionFeed.last_seq` property (allowed by the D3a prompt).
+- Choices: full thresholds object sent on start; nearest-rank p50/p95; Δ uses `+n` / `−n` (U+2212) / `±0`.
 
 **D3a evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Results:   <checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: 2026-09-27 by Claude (phase-loop, Codex session 01a0e18c-49b0-7013-b76a-4d863695f092, 1 fix-up round)
+Results:   9/9 checklist items ✅ (evidence above); 3 ⚠️ non-blocking; 9 planted bugs caught
+Verdict:   PASS
 ```
 
 ---

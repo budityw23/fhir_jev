@@ -81,6 +81,11 @@ class DecisionFeed:
     def subscriber_count(self) -> int:
         return len(self._subscribers)
 
+    @property
+    def last_seq(self) -> int:
+        """Return the highest sequence number issued by this feed, or zero when empty."""
+        return self._sequence
+
     def publish(self, event: FeedEvent) -> int:
         self._sequence += 1
         seq = self._sequence

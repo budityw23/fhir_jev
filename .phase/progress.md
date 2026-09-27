@@ -213,3 +213,28 @@ Test count after each phase is the `make test` total.
   defects.
 - **Known gaps:** the fixture picker makes Studio pages tall (it lists every fixture); D4 polish may collapse or page it.
 - **D2 complete:** backend 408 (unchanged); web Vitest 0 → 28, Playwright 0 → 8. Next: D3 (Live Pipeline).
+
+## D3a — Live Pipeline screen + SSE restart fix — PASS (Sep 27, 2026) — /phase-loop, 1 fix-up round
+
+- **Built:**
+  - backend: `stream_events` treats a `Last-Event-ID` above `DecisionFeed.last_seq` (new read-only property) as absent,
+    so a browser reconnecting after a server restart gets live events again; 3 pytest tests
+  - `web/src/api/sse.ts` `useDecisionStream` (native EventSource, `decision` / `run` listeners, latest handler in a ref,
+    closes on unmount); hand-written `RunEvent` in `types.ts` (SSE-only, not in OpenAPI)
+  - `pages/pipeline/reducer.ts` (pure; foreign run ids ignored; `started` moves current → previous; cap 500; last 50
+    latencies) and `pages/Pipeline.tsx` with RunControls (one ThresholdSliders per module, pace max → `rate_per_s: null`),
+    StatsStrip, LaneBoard, LiveFeed (≤ 100 rows, row → Studio), LatencySparkline + ConfidenceHistogram (rAF-throttled),
+    ReviewQueue (client-only Accept / Override, "simulated reviewer"), RerunDelta; components in
+    `components/pipeline/{RunControls,PipelineParts}.tsx`
+  - `web/e2e/pipeline.spec.ts` (specs 1, 2, 3, 4, 6 + an all-source 100-row check), Pipeline screenshots
+- **Choices beyond the contract:**
+  - throughput counts events within 5 s of the NEWEST event's timestamp (deterministic)
+  - nearest-rank p50/p95; the full thresholds object is sent on Start; Δ uses `+n` / `−n` / `±0`
+  - `playwright.config.ts` `workers: 1`: the e2e server has ONE global pipeline runner, and starting a run stops another
+- **Lessons:**
+  - Codex stopped after the code with 3 of ~20 required tests and said so; the fix-up prompt listed every test + bug
+  - viewing the screenshot again caught layout defects (run-together buttons, unlabelled thresholds) no test sees
+  - a unit run is only 60 events, so row-cap checks need source `all` (204)
+  - `index.css` was Prettier-reformatted; verified rule-by-rule it's equivalent
+- **Known gaps:** redundant "Thresholds" heading inside each module group (D4 polish).
+- Backend 408 → 411; web Vitest 28 → 38, Playwright 8 → 14. Next: D3b (drawer, reconnect, final D3 checklist).

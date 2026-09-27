@@ -88,6 +88,58 @@ async def test_stream_events_delivers_a_live_event_after_subscription() -> None:
 
 
 @pytest.mark.asyncio
+async def test_stream_events_ignores_last_event_id_from_a_prior_feed() -> None:
+    """A stale browser sequence must not suppress the first event after a restart."""
+    feed = DecisionFeed()
+    for index in range(3):
+        feed.publish(decision(index))
+    events = sse.stream_events(feed, last_event_id=812, limit=1, is_disconnected=connected)
+
+    async def receive() -> str:
+        return await anext(events)
+
+    next_event: asyncio.Task[str] = asyncio.create_task(receive())
+    await asyncio.sleep(0)
+    feed.publish(decision(4))
+    assert (await asyncio.wait_for(next_event, timeout=0.2)).startswith("id: 4\n")
+    with pytest.raises(StopAsyncIteration):
+        await anext(events)
+
+
+@pytest.mark.asyncio
+async def test_stream_events_delivers_first_event_for_empty_restarted_feed() -> None:
+    """A restarted empty feed starts at one despite a stale Last-Event-ID."""
+    feed = DecisionFeed()
+    events = sse.stream_events(feed, last_event_id=5, limit=1, is_disconnected=connected)
+
+    async def receive() -> str:
+        return await anext(events)
+
+    next_event: asyncio.Task[str] = asyncio.create_task(receive())
+    await asyncio.sleep(0)
+    feed.publish(decision())
+    assert (await asyncio.wait_for(next_event, timeout=0.2)).startswith("id: 1\n")
+
+
+@pytest.mark.asyncio
+async def test_stream_events_keeps_equal_last_event_id_semantics() -> None:
+    """The current feed's final sequence is not replayed, but later events are live."""
+    feed = DecisionFeed()
+    feed.publish(decision())
+    events = sse.stream_events(
+        feed, last_event_id=feed.last_seq, limit=1, is_disconnected=connected
+    )
+
+    async def receive() -> str:
+        return await anext(events)
+
+    next_event: asyncio.Task[str] = asyncio.create_task(receive())
+    await asyncio.sleep(0)
+    feed.publish(decision(2))
+    assert (await asyncio.wait_for(next_event, timeout=0.2)).startswith("id: 2\n")
+
+
+@pytest.mark.asyncio
 async def test_stream_events_replays_only_newer_events_then_continues_live() -> None:
     feed = DecisionFeed()
     for index in range(3):
