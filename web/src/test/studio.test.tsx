@@ -7,6 +7,7 @@ import { DecisionCard } from "../components/studio/DecisionCard";
 import { FixturePicker } from "../components/studio/FixturePicker";
 import { ProbabilityBars } from "../components/studio/ProbabilityBars";
 import { QuestionBox } from "../components/studio/QuestionBox";
+import { ScoreGauge } from "../components/studio/ScoreGauge";
 import { ThresholdSliders } from "../components/studio/ThresholdSliders";
 import { VerdictStrip } from "../components/studio/VerdictStrip";
 import { questionsFor, Studio } from "../pages/Studio";
@@ -48,6 +49,16 @@ const fixtures: FixtureEntry[] = [
   {
     id: "two", name: "needle", label: "Needle", source: "hard", resource_type: "Patient",
     module: "quality", difficulty: "hard", approved: false, ground_truth: {},
+  },
+  {
+    id: "generated/patient", name: "generated_003", label: "Auto accept", source: "generated",
+    resource_type: "Patient", module: "quality", difficulty: "easy", approved: true,
+    ground_truth: {},
+  },
+  {
+    id: "generated/observation", name: "generated_003", label: "Review", source: "generated",
+    resource_type: "Observation", module: "quality", difficulty: "easy", approved: true,
+    ground_truth: {},
   },
 ];
 
@@ -137,11 +148,41 @@ describe("Studio decision components", () => {
     expect(screen.queryByLabelText("Quality threshold")).not.toBeInTheDocument();
   });
 
+  it("draws score and threshold positions as distinct radial SVG attributes", () => {
+    const view = render(<ScoreGauge confidence={0.71} score={80} threshold={70} />);
+    const scoreArc = (): SVGPathElement => (
+      view.container.querySelector("[data-testid='score-arc']")!
+    );
+    const thresholdTick = (): SVGLineElement => (
+      view.container.querySelector("[data-testid='threshold-tick']")!
+    );
+    const arcAt80 = scoreArc().getAttribute("stroke-dasharray");
+    expect(tickCoordinate(thresholdTick(), "x1")).toBeCloseTo(147.02, 1);
+    expect(tickCoordinate(thresholdTick(), "y1")).toBeCloseTo(35.28, 1);
+    expect(tickCoordinate(thresholdTick(), "x1")).toBeGreaterThan(100);
+    expect(tickCoordinate(thresholdTick(), "y1")).toBeLessThan(100);
+    const { rerender } = view;
+    rerender(<ScoreGauge confidence={0.71} score={20} threshold={85} />);
+    expect(scoreArc()).toHaveAttribute("stroke-dasharray", "20 100");
+    expect(scoreArc()).not.toHaveAttribute("stroke-dasharray", arcAt80 ?? "");
+    expect(tickCoordinate(thresholdTick(), "x1")).not.toBeCloseTo(147.02, 1);
+    rerender(<ScoreGauge confidence={0.71} score={20} threshold={50} />);
+    expect(tickCoordinate(thresholdTick(), "x1")).toBeCloseTo(100, 1);
+    expect(tickCoordinate(thresholdTick(), "y1")).toBeCloseTo(20, 1);
+    rerender(<ScoreGauge confidence={0.71} score={20} threshold={0} />);
+    expect(tickCoordinate(thresholdTick(), "x1")).toBeCloseTo(20, 1);
+    expect(tickCoordinate(thresholdTick(), "y1")).toBeCloseTo(100, 1);
+  });
+
   it("groups, searches, and marks draft fixtures.", async () => {
     const user = userEvent.setup();
     render(<FixturePicker module="quality" value={null} onChange={vi.fn()} />);
     expect(screen.getByRole("group", { name: "unit" })).toBeVisible();
     expect(screen.getByRole("group", { name: "hard" })).toBeVisible();
+    expect(screen.getByText("alpha")).toBeVisible();
+    expect(screen.getByText("Alpha")).toBeVisible();
+    expect(screen.getByText("generated_003 · Patient")).toBeVisible();
+    expect(screen.getByText("generated_003 · Observation")).toBeVisible();
     expect(screen.getByText("draft")).toBeVisible();
     await user.type(screen.getByLabelText("Search fixtures"), "needle");
     expect(screen.getByLabelText("needle")).toBeVisible();
@@ -178,6 +219,10 @@ function laneText(lane: CompareResponse["lane"]): string {
     flagged: "⚑ flagged",
     review: "⚠ review",
   }[lane];
+}
+
+function tickCoordinate(element: SVGLineElement, name: "x1" | "y1"): number {
+  return Number(element.getAttribute(name));
 }
 
 function renderStudio(): void {

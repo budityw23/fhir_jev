@@ -11,10 +11,10 @@ export function VerdictStrip(
 ) {
   if (groundTruth === null) return null;
   return (
-    <section aria-label="Verdict">
-      <span>Jev {verdict.jev_correct ? "✓" : "✗"}: {jevDecision}</span>
-      <span>Rules {verdict.rule_correct ? "✓" : "✗"}: {ruleDecision}</span>
-      <span>Ground truth: {expectedDecision(groundTruth)}</span>
+    <section aria-label="Verdict" className="verdict-strip">
+      <span className="verdict-pill">Jev {verdict.jev_correct ? "✓" : "✗"}: {jevDecision}</span>
+      <span className="verdict-pill">Rules {verdict.rule_correct ? "✓" : "✗"}: {ruleDecision}</span>
+      <span className="verdict-pill">Ground truth: {expectedDecision(groundTruth)}</span>
     </section>
   );
 }

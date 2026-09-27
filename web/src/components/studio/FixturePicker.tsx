@@ -29,15 +29,22 @@ export function FixturePicker({ module, value, onChange }: FixturePickerProps) {
       {Object.entries(groups).map(([source, entries]) => (
         <fieldset key={source}>
           <legend>{source}</legend>
-          {entries.map((entry) => (
-            <label className="fixture-option" key={entry.id}>
-              <input aria-label={entry.name} checked={value === entry.id} type="radio"
-                name="fixture" onChange={() => onChange(entry.id)} />
-              <span>{entry.label}</span>
-              {entry.difficulty === "hard" && <small>hard</small>}
-              {!entry.approved && <small>draft</small>}
-            </label>
-          ))}
+          {entries.map((entry) => {
+            const duplicate = entries.some(
+              (item) => item.id !== entry.id && item.name === entry.name,
+            );
+            const displayName = duplicate ? `${entry.name} · ${entry.resource_type}` : entry.name;
+            return (
+              <label className="fixture-option" key={entry.id}>
+                <input aria-label={displayName} checked={value === entry.id} type="radio"
+                  name="fixture" onChange={() => onChange(entry.id)} />
+                <span className="fixture-name">{displayName}</span>
+                <span className="fixture-label">{entry.label}</span>
+                {entry.difficulty === "hard" && <small className="fixture-tag">hard</small>}
+                {!entry.approved && <small className="fixture-tag">draft</small>}
+              </label>
+            );
+          })}
         </fieldset>
       ))}
     </section>

@@ -13,6 +13,7 @@ nav { display: flex; gap: .75rem; }
 nav a { color: var(--c-muted); text-decoration: none; }
 nav a.active { color: var(--c-text); font-weight: 700; }
 main { padding: 2rem; }
+main > h2 { font-size: 1.75rem; letter-spacing: -.02em; margin: 0 0 .5rem; }
 .mode-badge, .health-dot { border-radius: 999px; font-size: .8rem; font-weight: 700; padding: .3rem .55rem; white-space: nowrap; }
 .mode-mock { background: color-mix(in srgb, var(--c-mock) 20%, transparent); color: var(--c-mock); }
 .mode-live, .health-up { color: var(--c-live); }
@@ -31,16 +32,26 @@ main { padding: 2rem; }
 .module-grid, .studio-grid { display: grid; gap: 1rem; }
 .module-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .studio-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 1rem; }
-.fixture-option, .slider-label { display: flex; gap: .4rem; margin: .5rem 0; }
-.fixture-option small, .chip, .boolean-chip, .null-chip { border-radius: 999px; padding: .1rem .35rem; }
-.fixture-option small, .chip { background: color-mix(in srgb, var(--c-neutral) 16%, transparent); }
+.fixture-option, .slider-label { align-items: baseline; display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0; }
+.fixture-name { font-weight: 700; }
+.fixture-label { color: var(--c-muted); font-size: .9rem; }
+.fixture-tag, .chip, .boolean-chip, .null-chip { border-radius: 999px; padding: .1rem .35rem; }
+.fixture-tag, .chip { background: color-mix(in srgb, var(--c-neutral) 16%, transparent); }
 .boolean-chip { background: color-mix(in srgb, var(--c-accept) 18%, transparent); }
 .null-chip, .is-null { background: color-mix(in srgb, var(--c-review) 18%, transparent); }
 .flat-state { border-collapse: collapse; width: 100%; }
 .flat-state th, .flat-state td { border-bottom: 1px solid var(--c-border); padding: .35rem; text-align: left; }
-.gauge-track, .probability-track, .noul-meter { background: var(--c-border); height: .8rem; position: relative; }
-.gauge-track i, .probability-track i { background: var(--c-accept); display: block; height: 100%; }
-.gauge-track b, .probability-track b, .noul-meter b { border-left: 2px dashed var(--c-text); height: 1.2rem; position: absolute; top: -.2rem; }
+.score-gauge { max-width: 16rem; }
+.score-gauge svg { display: block; height: auto; max-width: 100%; }
+.gauge-arc { fill: none; stroke-linecap: round; stroke-width: 12; }
+.gauge-track { stroke: var(--c-border); }
+.gauge-value { stroke: var(--c-accept); }
+.gauge-threshold { stroke: var(--c-text); stroke-width: 3; }
+.gauge-score { fill: var(--c-text); font-size: 2rem; font-weight: 700; text-anchor: middle; }
+.gauge-label { fill: var(--c-muted); font-size: .75rem; text-anchor: middle; }
+.probability-track, .noul-meter { background: var(--c-border); height: .8rem; position: relative; }
+.probability-track i { background: var(--c-accept); display: block; height: 100%; }
+.probability-track b, .noul-meter b { border-left: 2px dashed var(--c-text); height: 1.2rem; position: absolute; top: -.2rem; }
 .probability-row { align-items: center; display: grid; gap: .5rem; grid-template-columns: 10rem 1fr 3rem; }
 .noul-meter { margin-top: .5rem; }
 .noul-meter i { display: block; height: 100%; position: absolute; }
@@ -54,4 +65,11 @@ main { padding: 2rem; }
 .lane-review { background: color-mix(in srgb, var(--c-review) 18%, transparent); color: var(--c-review); }
 .lane-flag { background: color-mix(in srgb, var(--c-flag) 18%, transparent); color: var(--c-flag); }
 .latency-line, .override-note { color: var(--c-muted); }
+.studio-tabs, .artifact-controls, .verdict-strip { align-items: center; display: flex; flex-wrap: wrap; gap: .5rem; }
+.studio-tabs { margin: 1rem 0; }
+.studio-tabs button, .artifact-tab, .artifact-copy { border: 1px solid var(--c-border); border-radius: .35rem; padding: .35rem .6rem; }
+.studio-tabs button[aria-pressed="true"], .artifact-tab[aria-pressed="true"] { background: var(--c-text); color: var(--c-surface); font-weight: 700; }
+.artifact-copy { margin-left: .5rem; }
+.verdict-strip { margin: 1rem 0; }
+.verdict-pill { background: color-mix(in srgb, var(--c-neutral) 12%, transparent); border: 1px solid var(--c-border); border-radius: 999px; padding: .3rem .55rem; }
 @media (max-width: 1023px) { .module-grid, .studio-grid { grid-template-columns: 1fr; } }

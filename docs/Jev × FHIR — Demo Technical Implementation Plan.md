@@ -2028,30 +2028,67 @@ Plus a Vitest test that the Playground never sends `fixture_id`.
 **Final D2 checklist (the original D2 checklist, run after D2c):**
 
 ```
-☐ node --version → v20.x; npm ci succeeds from a clean clone (rm -rf web/node_modules first)
-☐ make web-test → eslint 0 errors, tsc 0 errors, vitest all pass
-☐ make web-types then git diff --exit-code web/src/api/schema.d.ts → no diff (types in sync with backend)
-☐ grep -rn "interface CompareResponse\|type CompareResponse =" web/src --exclude=schema.d.ts → only re-exports in types.ts
-☐ make web-build → web/dist/index.html exists; no files > 1 MB except sourcemaps
-☐ make demo → curl -s :8000/demo | grep -c "<div id=\"root\">" → 1; curl :8000/demo/studio/quality → index.html (SPA fallback)
-☐ make web-e2e → all 6 specs pass; screenshots produced at both sizes (list files)
-☐ Network guard spec passes (no non-localhost requests)
-☐ grep -rn "http://\|https://" web/src --exclude=schema.d.ts → no external URLs (fonts bundled)
-☐ Mode badge tooltip text equals UI-G-1 wording exactly
-☐ Noul labels use noulView everywhere (grep NoulMeter + QualityDecision use it)
-☐ Colour never the sole signal: DecisionCard lanes render icon + text (cite component)
-☐ localStorage access wrapped in try/catch (grep)
-☐ Backend make test still green (no backend regressions)
-☐ Final code matches the full D2 contract (Steps 1–11) with the Clarifications applied
+✅ node --version → v20.x; npm ci succeeds from a clean clone (rm -rf web/node_modules first)
+   → v20.19.0; `rm -rf web/node_modules && make web-install`: 413 packages from the lockfile
+✅ make web-test → eslint 0 errors, tsc 0 errors, vitest all pass
+   → eslint 0 (max-len 100, covering JSX), tsc 0, Vitest 28/28 (D2: 0 → 28)
+✅ make web-types then git diff --exit-code web/src/api/schema.d.ts → no diff (types in sync with backend)
+   → schema.d.ts unchanged after regeneration; generated files deterministic
+✅ grep -rn "interface CompareResponse\|type CompareResponse =" web/src --exclude=schema.d.ts → only re-exports in types.ts
+   → only the re-export in api/types.ts
+✅ make web-build → web/dist/index.html exists; no files > 1 MB except sourcemaps
+   → dist/index.html; largest non-map chunk CodeMirror 433.5 KB; 0 files > 1 MB
+✅ make demo → curl -s :8000/demo | grep -c "<div id=\"root\">" → 1; curl :8000/demo/studio/quality → index.html (SPA fallback)
+   → make demo with PATH=/usr/bin:/bin: /demo, /demo/studio/quality, /demo/playground each serve the root div; clean stop
+✅ make web-e2e → all 6 specs pass; screenshots produced at both sizes (list files)
+   → 8 passed: specs 1–6 (verbatim titles), the guard's expected failure, and screenshots: overview, studio-quality,
+     studio-router, studio-notifiable, playground × 1280×720 and 1920×1080 (10 PNGs, git-ignored)
+✅ Network guard spec passes (no non-localhost requests)
+   → auto fixture on every test; the guard test fails when the guard is disabled (D2a mutation)
+⚠️ grep -rn "http://\|https://" web/src --exclude=schema.d.ts → no external URLs (fonts bundled)
+   → hits only in src/test/fixtures (recorded FHIR code-system identifiers, never fetched; accepted in D2a); none in code
+✅ Mode badge tooltip text equals UI-G-1 wording exactly
+   → exact UI-G-1 string (Vitest + Playwright)
+✅ Noul labels use noulView everywhere (grep NoulMeter + QualityDecision use it)
+   → NoulMeter and DecisionCard (NIK gate, notifiable answer)
+✅ Colour never the sole signal: DecisionCard lanes render icon + text (cite component)
+   → LaneChip icon + lane + exact lane_reason on every decision card (D2b); ✓/✗ text on chips, pills and gauge labels
+✅ localStorage access wrapped in try/catch (grep)
+   → uiPrefs.tsx try/catch; tested with throwing storage
+✅ Backend make test still green (no backend regressions)
+   → 408 passed, 98%; lint/mypy clean; no backend change in D2
+✅ Final code matches the full D2 contract (Steps 1–11) with the Clarifications applied
+   → after the D2c fix-ups: radial ScoreGauge with the threshold tick on the arc (it was a bar, then a tick drawn below the
+     arc), all 14 Step 8 props exact, Playground per Step 9, Makefile/webServer per the Clarifications
+```
+
+**Issues found and fixes (Sep 27, 2026, via /phase-loop, 2 fix-up rounds):**
+
+```
+✅ Playground (Step 9) correct on first pass: never sends fixture_id (even after loading a fixture), no VerdictStrip, JSON.parse
+   errors disable Run, 422 → ErrorCard with a UUID request_id (spec 5, valid JSON / invalid FHIR). 5/5 planted bugs caught.
+✅ FIXED (round 1) ❌ ScoreGauge was a horizontal bar; the Step 8 contract says a radial gauge. Found only by viewing the screenshots.
+✅ FIXED (round 1) ❌ FixturePicker hid fixture names (about 70 items showing only labels): unusable by a presenter; tests passed via hidden
+   accessible names. Names are now primary text.
+✅ FIXED (round 1) ⚠️ Run-together text (module tabs, verdict pills, artifact tabs); headings styled; Response JSON collapsed.
+✅ FIXED (round 2) ❌ The gauge's threshold tick was invisible: a clockwise SVG rotation put it below the centre. It now uses arc geometry,
+   and a geometric test fails under the flipped tick (planted bug caught).
+✅ FIXED (round 2) ⚠️ Duplicate fixture names (generated Patients vs Observations) now show "· Patient" / "· Observation".
+✅ Evaluator viewed the regenerated screenshots: Overview, Studio quality (tick visible at 70) and Studio router (lane chip "⚠ review ·
+   confidence 0.92 < floor 0.99", override note, verdict pills "Jev ✓ unknown · Rules ✗ encounter_summary · Ground truth unknown").
+⚠️ Lesson: screenshots must be viewed as part of evaluation. Two contract-level UI defects passed every automated check.
+ℹ️ Pages are tall because the fixture picker lists every fixture (up to about 100); D4 polish may add collapsing or paging.
 ```
 
 **D2c / final D2 evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Screenshots: <paths>
-Results:   <sub-phase checks + final checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: Sep 27, 2026 by Claude Code via /phase-loop (Codex headless; 2 fix-up rounds, same session)
+Screenshots: web/e2e/screenshots/{overview,studio-quality,studio-router,studio-notifiable,playground}-{1280x720,1920x1080}.png (git-ignored)
+Tests:     backend 408 (unchanged across D2); web Vitest 0 → 28, Playwright 0 → 8 (D2c: Vitest 22 → 28, Playwright 6 → 8)
+Results:   Final D2 checklist 14/15 ✅, 1 ⚠️ (URL grep hits = FHIR identifiers in sample data); 3 ❌ + 2 ⚠️ fixed across 2 rounds;
+           all planted bugs caught
+Verdict:   PASS. D2 (web UI: shell, Overview, Studio, Playground) is complete; D3 (Live Pipeline) can start.
 ```
 
 ---

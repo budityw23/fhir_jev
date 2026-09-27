@@ -64,7 +64,9 @@ function StudioPage({ module }: { module: DemoModule }) {
     return <main><ErrorCard error={config.error.body} /></main>;
   }
   return <main><h2>Studio</h2><div className="studio-tabs">{modules.map((item) => (
-    <button key={item} onClick={() => navigate(`/studio/${item}`)}>{item}</button>
+    <button aria-pressed={module === item} key={item} onClick={() => navigate(`/studio/${item}`)}>
+      {item}
+    </button>
   ))}</div><div className="studio-grid">
     <div><FixturePicker module={module} value={fixtureId} onChange={selectFixture} />
       {fixture.data && <><h3>Raw FHIR</h3><JsonView value={fixture.data} /></>}

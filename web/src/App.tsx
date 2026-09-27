@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { TopBar } from "./components/shell/TopBar";
 import { Overview } from "./pages/Overview";
+import { Playground } from "./pages/Playground";
 import { Studio } from "./pages/Studio";
 
 function Placeholder({ heading, phase }: { heading: string; phase: string }) {
@@ -27,7 +28,7 @@ export function App() {
         />
         <Route
           path="/playground"
-          element={<Placeholder heading="Playground" phase="D2c" />}
+          element={<Playground />}
         />
         <Route
           path="/pipeline"

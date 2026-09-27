@@ -195,3 +195,21 @@ Test count after each phase is the `make test` total.
   - when a prompt lists required tests, verify each with a planted bug: the first pass shipped 3 of 9
 - **Hygiene:** `web/*.tsbuildinfo` is git-ignored and untracked (it had been committed in D2a).
 - Backend 408 (unchanged); web: Vitest 12 → 22, Playwright 2 → 6. Known gaps: none.
+
+## D2c — Playground, screenshots, final D2 regression — PASS (Sep 27, 2026) — /phase-loop, 2 fix-up rounds
+
+- **Built:**
+  - Playground: module select, CodeMirror JSON with `JSON.parse` errors that disable Run, "load fixture as starting
+    point", POST without `fixture_id`, DecisionCard + LaneChip + artifacts + latency and no VerdictStrip, ErrorCard for
+    422s
+  - e2e spec 5 and a screenshots spec (5 pages × 1280×720 / 1920×1080 → `web/e2e/screenshots/`, git-ignored)
+- **Fix-ups (these were really D2b defects, found by VIEWING the screenshots):**
+  - `ScoreGauge` was a bar, not the contract's radial gauge
+  - the fixture picker hid the fixture names
+  - text ran together across tabs and pills
+  - the gauge's threshold tick was invisible (a clockwise SVG rotation put it below the arc; it now uses geometry)
+  - duplicate generated fixture names are now disambiguated by resource type
+- **Lesson for D3/D4 evaluation:** always view the regenerated screenshots; automated checks passed two contract-level UI
+  defects.
+- **Known gaps:** the fixture picker makes Studio pages tall (it lists every fixture); D4 polish may collapse or page it.
+- **D2 complete:** backend 408 (unchanged); web Vitest 0 → 28, Playwright 0 → 8. Next: D3 (Live Pipeline).

@@ -15,13 +15,14 @@ export function ArtifactTabs({ response, flag, auditEvent }: ArtifactTabsProps) 
   const copy = () => void navigator.clipboard?.writeText(JSON.stringify(value, null, 2));
   return (
     <section aria-label="Artifacts">
-      <div>
+      <div className="artifact-controls">
         {labels.map((label) => (
-          <button key={label} onClick={() => setActive(label)}>{label}</button>
+          <button aria-pressed={active === label} className="artifact-tab" key={label}
+            onClick={() => setActive(label)}>{label}</button>
         ))}
-        <button onClick={copy}>copy</button>
+        <button className="artifact-copy" onClick={copy}>copy</button>
       </div>
-      <JsonView value={value} />
+      <JsonView collapsedDepth={active === "Response" ? 1 : undefined} value={value} />
     </section>
   );
 }
