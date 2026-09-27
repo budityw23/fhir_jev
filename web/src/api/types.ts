@@ -8,6 +8,7 @@ export type Thresholds = components["schemas"]["Thresholds"];
 export type DecisionEvent = components["schemas"]["DecisionEvent"];
 export type BenchmarkSummary = components["schemas"]["BenchmarkSummary"];
 export type CompareRequest = components["schemas"]["CompareRequest"];
+export type ThresholdOverrides = components["schemas"]["ThresholdOverrides"];
 export type DemoModule = CompareResponse["module"];
 
 // These two responses are not exported by the backend OpenAPI schema.

@@ -1,5 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { TopBar } from "./components/shell/TopBar";
+import { Overview } from "./pages/Overview";
+import { Studio } from "./pages/Studio";
 
 function Placeholder({ heading, phase }: { heading: string; phase: string }) {
   return (
@@ -17,11 +19,11 @@ export function App() {
       <Routes>
         <Route
           path="/"
-          element={<Placeholder heading="Overview" phase="D2b" />}
+          element={<Overview />}
         />
         <Route
           path="/studio/:module"
-          element={<Placeholder heading="Studio" phase="D2b" />}
+          element={<Studio />}
         />
         <Route
           path="/playground"

@@ -176,3 +176,22 @@ Test count after each phase is the `make test` total.
   `-c 'sandbox_workspace_write.writable_roots=["$HOME/.npm","$HOME/.cache/ms-playwright"]'` so `npm ci` and the
   Chromium download work.
 - Backend 408 (unchanged); web: Vitest 12, Playwright 2. Known gaps: no frontend coverage tool (not required).
+
+## D2b — Overview and Studio — PASS (Sep 27, 2026) — /phase-loop, 1 fix-up round
+
+- **Built:**
+  - Overview: `ArchitectureDiagram` (animated SVG, dimmed "LLM reasoning layer · next", reduced-motion aware),
+    3 `ModuleCard`s (latest benchmark accuracy and p95, or "no report yet"), "Start demo"
+  - Studio at `/studio/:module?fixture=`: the 14 Step 8 components (props exactly per the table) plus `LaneChip`;
+    thresholds from `DemoConfig` with reset, overrides sent only when changed, 250 ms debounce, `keepPreviousData`
+- **Choices beyond the contract:**
+  - `LaneChip` (icon + lane + exact `lane_reason`) on every decision card
+  - the Dinkes card uses the fallback "mandatory reporting" (disease urgency isn't exposed by any API)
+  - `LevelDistribution` is live-only
+  - an unknown module redirects to `/studio/quality`
+- **Fix-up lessons (put these in future web prompts):**
+  - render the backend's explanation fields (`lane_reason`); a UI that hides the "why" misses the demo's point
+  - ESLint `max-len` must NOT use `ignoreStrings` / `ignoreTemplateLiterals` (that disables it for JSX)
+  - when a prompt lists required tests, verify each with a planted bug: the first pass shipped 3 of 9
+- **Hygiene:** `web/*.tsbuildinfo` is git-ignored and untracked (it had been committed in D2a).
+- Backend 408 (unchanged); web: Vitest 12 → 22, Playwright 2 → 6. Known gaps: none.

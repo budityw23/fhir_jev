@@ -25,6 +25,7 @@ web/dist/
 web/e2e/screenshots/
 web/test-results/
 web/playwright-report/
+web/*.tsbuildinfo
 
 # Local tooling
 .claude/settings.local.json

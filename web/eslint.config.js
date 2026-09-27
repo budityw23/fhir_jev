@@ -14,8 +14,6 @@ export default tseslint.config(
         "error",
         {
           code: 100,
-          ignoreStrings: true,
-          ignoreTemplateLiterals: true,
           ignoreUrls: true,
           ignoreRegExpLiterals: true,
         },

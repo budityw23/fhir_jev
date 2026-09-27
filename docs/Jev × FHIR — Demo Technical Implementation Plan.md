@@ -1961,21 +1961,49 @@ Verdict:   PASS. D2b can start.
 **D2b evaluation checklist:**
 
 ```
-☐ make web-test green; new component tests pass (VerdictStrip, ProbabilityBars, DecisionCard ×3 modules)
-☐ make web-e2e → specs 1, 2, 3, 4, 6 pass; network guard active
-☐ Studio component props match the Step 8 table (read-through)
-☐ Noul labels use noulView everywhere (grep NoulMeter + QualityDecision use it)
-☐ Colour never the sole signal: DecisionCard lanes render icon + text (cite component)
-☐ grep -rn "http://\|https://" web/src --exclude=schema.d.ts → no external URLs
-☐ Backend make lint / typecheck / test still green
+✅ make web-test green; new component tests pass (VerdictStrip, ProbabilityBars, DecisionCard ×3 modules)
+   → eslint (max-len 100, now covering JSX) + tsc clean; Vitest 22/22 (D2a 12 → D2b 22), incl. VerdictStrip, ProbabilityBars,
+     DecisionCard ×3 samples, LaneChip, sliders, LevelDistribution, Dinkes, picker, questions, debounce
+✅ make web-e2e → specs 1, 2, 3, 4, 6 pass; network guard active
+   → specs 1, 2, 3, 4, 6 pass with verbatim Step 11 titles (+ the guard test, expected-fail); auto network guard on every test
+✅ Studio component props match the Step 8 table (read-through)
+   → all 14 components export props types identical to the Step 8 table (checked field by field)
+✅ Noul labels use noulView everywhere (grep NoulMeter + QualityDecision use it)
+   → noulView used in NoulMeter and DecisionCard (quality NIK gate, notifiable answer)
+✅ Colour never the sole signal: DecisionCard lanes render icon + text (cite component)
+   → LaneChip (added in fix-up 1) renders icon + lane name + exact lane_reason on every decision card: ✓ auto_accepted/routed,
+     ⚑ flagged, ⚠ review; boolean chips and NIK gate carry ✓/✗ text
+✅ grep -rn "http://\|https://" web/src --exclude=schema.d.ts → no external URLs
+   → 0 hits outside src/test/fixtures (the recorded FHIR sample data, accepted in D2a)
+✅ Backend make lint / typecheck / test still green
+   → lint / mypy clean; 408 passed, 98%; no backend change
+```
+
+**Issues found and fixes (Sep 27, 2026, via /phase-loop, 1 fix-up round):**
+
+```
+✅ FIXED ❌ Lane and lane_reason were never rendered (only an internal lane === "flagged" check), so the demo's "why" (e.g.
+   "NIK gate failed: P(valid) 0.08", "confidence 0.92 < floor 0.99") was invisible. LaneChip was added; e2e spec 2 now asserts
+   "score 80 < threshold 85".
+✅ FIXED ❌ VerdictStrip's ground-truth pill was a static "Ground truth ✓"; it now shows expected_action / _category / _status.
+✅ FIXED ❌ JSX lines up to 576 chars passed lint because max-len had ignoreStrings (skipping every JSX line with a string literal).
+   ignoreStrings / ignoreTemplateLiterals were removed and everything reformatted: 0 lines > 100.
+✅ FIXED ❌ 6 required tests were missing: planted bugs (Dinkes for every lane, LevelDistribution in mock, all sliders, draft
+   marker, debounce 250→0, wrong router question) all passed the suite. Tests added.
+✅ Mutation check after the fix: 10/10 planted bugs caught (the 6 above + VerdictStrip without ground truth, override wording,
+   lane reason hidden, static ground-truth pill); files restored byte-identical.
+✅ FIXED ⚠️ Playwright titles now verbatim from Step 11.
+✅ FIXED ⚠️ web/tsconfig.tsbuildinfo (a TS build cache committed by mistake in D2a) is now git-ignored and untracked in this
+   commit.
 ```
 
 **D2b evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Results:   <checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: Sep 27, 2026 by Claude Code via /phase-loop (Codex headless; 1 fix-up round, same session)
+Checks:    backend 408 (unchanged), 98%; web: eslint/tsc clean, Vitest 22/22, Playwright 6/6; build < 1 MB per file
+Results:   7/7 checklist items ✅; 4 ❌ + 2 ⚠️ fixed; 10/10 mutations caught
+Verdict:   PASS. D2c can start.
 ```
 
 ---
