@@ -1,0 +1,3488 @@
+[
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Demographics and a valid NIK are present; missing address country is a minor interoperability gap.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/address_no_country.json",
+    "label": "auto_accept \u00b7 70\u2013100 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "address_no_country",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "All core demographics and a valid 16-digit NIK are present; the record is usable for intake.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/complete_patient.json",
+    "label": "auto_accept \u00b7 70\u2013100 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "complete_patient",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Complete demographic record with a valid NIK and sufficient contact context for routine processing.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/complete_patient_two.json",
+    "label": "auto_accept \u00b7 70\u2013100 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "complete_patient_two",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Core identity and demographics are complete; an empty telecom list is not a blocking quality defect.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/empty_telecom.json",
+    "label": "auto_accept \u00b7 70\u2013100 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "empty_telecom",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": false,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Demographics are complete, but the only identifier is a local MRN with no Indonesian NIK; the NIK gate fails, so a human must confirm identity before acceptance.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/full_no_nik.json",
+    "label": "review_needed \u00b7 70\u2013100 \u00b7 NIK \u2717",
+    "module": "quality",
+    "name": "full_no_nik",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": false,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Demographics are complete, but the NIK has 15 digits instead of 16; the NIK gate fails, so the record goes to review despite a high completeness score.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/invalid_nik.json",
+    "label": "review_needed \u00b7 70\u2013100 \u00b7 NIK \u2717",
+    "module": "quality",
+    "name": "invalid_nik",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        35
+      ],
+      "rationale": "Only resource identity is present; essential demographic and identifier fields are absent.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/minimal_patient.json",
+    "label": "review_needed \u00b7 0\u201335",
+    "module": "quality",
+    "name": "minimal_patient",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        70,
+        90
+      ],
+      "rationale": "Identity and clinical demographics are usable with a valid NIK; address can be completed later.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/missing_address.json",
+    "label": "auto_accept \u00b7 70\u201390 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "missing_address",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        30
+      ],
+      "rationale": "The record has no usable demographic content beyond the FHIR resource shell.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/missing_all_demographics.json",
+    "label": "review_needed \u00b7 0\u201330",
+    "module": "quality",
+    "name": "missing_all_demographics",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        70,
+        90
+      ],
+      "rationale": "A valid NIK and other core demographics are present; birth date is an important but recoverable gap.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/missing_birthdate.json",
+    "label": "auto_accept \u00b7 70\u201390 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "missing_birthdate",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        70,
+        90
+      ],
+      "rationale": "Identity, NIK, and most demographics are present; gender should be reviewed but does not block intake.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/missing_gender.json",
+    "label": "auto_accept \u00b7 70\u201390 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "missing_gender",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        20,
+        65
+      ],
+      "rationale": "The record cannot be reliably matched without an identifier, despite some demographic fields being present.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/missing_identifier.json",
+    "label": "review_needed \u00b7 20\u201365",
+    "module": "quality",
+    "name": "missing_identifier",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        20,
+        65
+      ],
+      "rationale": "A valid NIK is present but no patient name is available for safe operational review.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/missing_name.json",
+    "label": "review_needed \u00b7 20\u201365 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "missing_name",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Multiple identifiers include a valid NIK and the remaining demographic fields are complete.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/multiple_identifiers.json",
+    "label": "auto_accept \u00b7 70\u2013100 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "multiple_identifiers",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": false,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Complete record for a foreign patient identified by passport only; with no Indonesian NIK the gate fails, so identity needs manual confirmation.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/non_indonesian.json",
+    "label": "review_needed \u00b7 70\u2013100 \u00b7 NIK \u2717",
+    "module": "quality",
+    "name": "non_indonesian",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        0,
+        45
+      ],
+      "rationale": "A valid NIK alone is insufficient because demographic, contact, and address data are absent.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/only_identifier.json",
+    "label": "review_needed \u00b7 0\u201345 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "only_identifier",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        40
+      ],
+      "rationale": "A name alone cannot support reliable matching or clinical use.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/only_name.json",
+    "label": "review_needed \u00b7 0\u201340",
+    "module": "quality",
+    "name": "only_name",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": false,
+      "expected_score_range": [
+        70,
+        90
+      ],
+      "rationale": "Demographics are complete, but the NIK value is only 5 digits; the NIK gate fails, so the record goes to review despite a high completeness score.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/short_identifier.json",
+    "label": "review_needed \u00b7 70\u201390 \u00b7 NIK \u2717",
+    "module": "quality",
+    "name": "short_identifier",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Multiple names are acceptable; core demographics and a valid NIK are present.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/two_names.json",
+    "label": "auto_accept \u00b7 70\u2013100 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "two_names",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Complete demographic and contact information with a valid NIK supports automated intake.",
+      "resource_type": "Patient"
+    },
+    "id": "tests/fixtures/patients/with_telecom.json",
+    "label": "auto_accept \u00b7 70\u2013100 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "with_telecom",
+    "resource_type": "Patient",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Observation case complete_lab_hb is manually labelled for clinical completeness.",
+      "resource_type": "Observation"
+    },
+    "id": "tests/fixtures/observations/complete_lab_hb.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "complete_lab_hb",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Observation case vital_heart_rate is manually labelled for clinical completeness.",
+      "resource_type": "Observation"
+    },
+    "id": "tests/fixtures/observations/vital_heart_rate.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "vital_heart_rate",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Observation case missing_value is manually labelled for clinical completeness.",
+      "resource_type": "Observation"
+    },
+    "id": "tests/fixtures/observations/missing_value.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "missing_value",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Observation case missing_code_system is manually labelled for clinical completeness.",
+      "resource_type": "Observation"
+    },
+    "id": "tests/fixtures/observations/missing_code_system.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "missing_code_system",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Observation case entered_in_error is manually labelled for clinical completeness.",
+      "resource_type": "Observation"
+    },
+    "id": "tests/fixtures/observations/entered_in_error.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "entered_in_error",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Observation case value_string is manually labelled for clinical completeness.",
+      "resource_type": "Observation"
+    },
+    "id": "tests/fixtures/observations/value_string.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "value_string",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Observation case no_subject is manually labelled for clinical completeness.",
+      "resource_type": "Observation"
+    },
+    "id": "tests/fixtures/observations/no_subject.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "no_subject",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Observation case unusual_unit is manually labelled for clinical completeness.",
+      "resource_type": "Observation"
+    },
+    "id": "tests/fixtures/observations/unusual_unit.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "unusual_unit",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Observation case future_effective is manually labelled for clinical completeness.",
+      "resource_type": "Observation"
+    },
+    "id": "tests/fixtures/observations/future_effective.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "future_effective",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Observation case local_code_only is manually labelled for clinical completeness.",
+      "resource_type": "Observation"
+    },
+    "id": "tests/fixtures/observations/local_code_only.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "local_code_only",
+    "resource_type": "Observation",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Hard patient case requires semantic review beyond field presence.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/hard/patients/nik_dotted.json",
+    "label": "review_needed \u00b7 0\u201369 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "nik_dotted",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Hard patient case requires semantic review beyond field presence.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/hard/patients/nik_spaced.json",
+    "label": "review_needed \u00b7 0\u201369 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "nik_spaced",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": false,
+      "expected_score_range": [
+        0,
+        70
+      ],
+      "rationale": "Hard patient case requires semantic review beyond field presence.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/hard/patients/nik_letters.json",
+    "label": "review_needed \u00b7 0\u201370 \u00b7 NIK \u2717",
+    "module": "quality",
+    "name": "nik_letters",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": false,
+      "expected_score_range": [
+        0,
+        70
+      ],
+      "rationale": "Hard patient case requires semantic review beyond field presence.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/hard/patients/nik_all_zeros.json",
+    "label": "review_needed \u00b7 0\u201370 \u00b7 NIK \u2717",
+    "module": "quality",
+    "name": "nik_all_zeros",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": false,
+      "expected_score_range": [
+        0,
+        70
+      ],
+      "rationale": "Hard patient case requires semantic review beyond field presence.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/hard/patients/nik_wrong_system.json",
+    "label": "review_needed \u00b7 0\u201370 \u00b7 NIK \u2717",
+    "module": "quality",
+    "name": "nik_wrong_system",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Hard patient case requires semantic review beyond field presence.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/hard/patients/placeholder_name.json",
+    "label": "review_needed \u00b7 0\u201369 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "placeholder_name",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Hard patient case requires semantic review beyond field presence.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/hard/patients/placeholder_address.json",
+    "label": "review_needed \u00b7 0\u201369 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "placeholder_address",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Hard patient case requires semantic review beyond field presence.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/hard/patients/future_birthdate.json",
+    "label": "review_needed \u00b7 0\u201369 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "future_birthdate",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Hard patient case requires semantic review beyond field presence.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/hard/patients/ancient_birthdate.json",
+    "label": "review_needed \u00b7 0\u201369 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "ancient_birthdate",
+    "resource_type": "Patient",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic polished demo patient preset.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/demo/patients/patient_complete_jakarta.json",
+    "label": "auto_accept \u00b7 70\u2013100 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "patient_complete_jakarta",
+    "resource_type": "Patient",
+    "source": "demo"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": true,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Synthetic polished demo patient preset.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/demo/patients/patient_nik_dotted_jakarta.json",
+    "label": "review_needed \u00b7 0\u201369 \u00b7 NIK \u2713",
+    "module": "quality",
+    "name": "patient_nik_dotted_jakarta",
+    "resource_type": "Patient",
+    "source": "demo"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_000.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "generated_000",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_001.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "generated_001",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_002.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "generated_002",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_003.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "generated_003",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_004.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "generated_004",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_005.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "generated_005",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_006.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "generated_006",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic complete patient from built-in Indonesian name and address lists.",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_007.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "generated_007",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": false,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: malformed NIK with letters",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_008.json",
+    "label": "review_needed \u00b7 0\u201369 \u00b7 NIK \u2717",
+    "module": "quality",
+    "name": "generated_008",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: placeholder family name '-'",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_009.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_009",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: future birthDate 2031-03-02",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_010.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_010",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": false,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: malformed NIK with letters",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_011.json",
+    "label": "review_needed \u00b7 0\u201369 \u00b7 NIK \u2717",
+    "module": "quality",
+    "name": "generated_011",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: placeholder family name '-'",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_012.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_012",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: future birthDate 2031-03-02",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_013.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_013",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": false,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: malformed NIK with letters",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_014.json",
+    "label": "review_needed \u00b7 0\u201369 \u00b7 NIK \u2717",
+    "module": "quality",
+    "name": "generated_014",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: placeholder family name '-'",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_015.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_015",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: future birthDate 2031-03-02",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_016.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_016",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": false,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: malformed NIK with letters",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_017.json",
+    "label": "review_needed \u00b7 0\u201369 \u00b7 NIK \u2717",
+    "module": "quality",
+    "name": "generated_017",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: placeholder family name '-'",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_018.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_018",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: future birthDate 2031-03-02",
+      "resource_type": "Patient"
+    },
+    "id": "benchmarks/dataset/generated/patients/generated_019.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_019",
+    "resource_type": "Patient",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic complete laboratory Observation.",
+      "resource_type": "Observation"
+    },
+    "id": "benchmarks/dataset/generated/observations/generated_000.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "generated_000",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic complete laboratory Observation.",
+      "resource_type": "Observation"
+    },
+    "id": "benchmarks/dataset/generated/observations/generated_001.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "generated_001",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic complete laboratory Observation.",
+      "resource_type": "Observation"
+    },
+    "id": "benchmarks/dataset/generated/observations/generated_002.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "generated_002",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "auto_accept",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        70,
+        100
+      ],
+      "rationale": "Synthetic complete laboratory Observation.",
+      "resource_type": "Observation"
+    },
+    "id": "benchmarks/dataset/generated/observations/generated_003.json",
+    "label": "auto_accept \u00b7 70\u2013100",
+    "module": "quality",
+    "name": "generated_003",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: missing value",
+      "resource_type": "Observation"
+    },
+    "id": "benchmarks/dataset/generated/observations/generated_004.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_004",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: missing code system",
+      "resource_type": "Observation"
+    },
+    "id": "benchmarks/dataset/generated/observations/generated_005.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_005",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: status entered-in-error",
+      "resource_type": "Observation"
+    },
+    "id": "benchmarks/dataset/generated/observations/generated_006.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_006",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: future effectiveDateTime",
+      "resource_type": "Observation"
+    },
+    "id": "benchmarks/dataset/generated/observations/generated_007.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_007",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: missing value",
+      "resource_type": "Observation"
+    },
+    "id": "benchmarks/dataset/generated/observations/generated_008.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_008",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_action": "review_needed",
+      "expected_nik_valid": null,
+      "expected_score_range": [
+        0,
+        69
+      ],
+      "rationale": "Injected defects: missing code system",
+      "resource_type": "Observation"
+    },
+    "id": "benchmarks/dataset/generated/observations/generated_009.json",
+    "label": "review_needed \u00b7 0\u201369",
+    "module": "quality",
+    "name": "generated_009",
+    "resource_type": "Observation",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "unknown",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/condition_bundle.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "condition_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "unknown",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/empty_bundle.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "empty_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "encounter_summary",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/encounter_bundle.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "encounter_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "immunization_report",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/immunization_and_patient_bundle.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "immunization_and_patient_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "immunization_report",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/immunization_bundle.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "immunization_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "lab_result",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/lab_bundle.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "lab_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "lab_result",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/large_bundle.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "large_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "medication_dispense",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/medication_and_condition_bundle.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "medication_and_condition_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "medication_dispense",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/medication_bundle.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "medication_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "unknown",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/mixed_bundle.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "mixed_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "lab_result",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/multi_lab_bundle.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "multi_lab_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "unknown",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/nested_bundle.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "nested_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "unknown",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/patient_bundle.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "patient_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "lab_result",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/single_observation_bundle.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "single_observation_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "unknown",
+      "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/bundles/unknown_bundle.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "unknown_bundle",
+    "resource_type": "Bundle",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "lab_result",
+      "rationale": "Bundle composition label is authored independently of the baseline."
+    },
+    "id": "benchmarks/dataset/hard/bundles/realistic_lab_submission.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "realistic_lab_submission",
+    "resource_type": "Bundle",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "immunization_report",
+      "rationale": "Bundle composition label is authored independently of the baseline."
+    },
+    "id": "benchmarks/dataset/hard/bundles/immunization_with_context.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "immunization_with_context",
+    "resource_type": "Bundle",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "medication_dispense",
+      "rationale": "Bundle composition label is authored independently of the baseline."
+    },
+    "id": "benchmarks/dataset/hard/bundles/medication_transaction.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "medication_transaction",
+    "resource_type": "Bundle",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "unknown",
+      "rationale": "Bundle composition label is authored independently of the baseline."
+    },
+    "id": "benchmarks/dataset/hard/bundles/vitals_only.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "vitals_only",
+    "resource_type": "Bundle",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "unknown",
+      "rationale": "Bundle composition label is authored independently of the baseline."
+    },
+    "id": "benchmarks/dataset/hard/bundles/genuinely_mixed.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "genuinely_mixed",
+    "resource_type": "Bundle",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "lab_result",
+      "rationale": "Bundle composition label is authored independently of the baseline."
+    },
+    "id": "benchmarks/dataset/demo/bundles/bundle_lab_submission_9_entries.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "bundle_lab_submission_9_entries",
+    "resource_type": "Bundle",
+    "source": "demo"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_category": "unknown",
+      "rationale": "Bundle composition label is authored independently of the baseline."
+    },
+    "id": "benchmarks/dataset/demo/bundles/bundle_ambiguous_referral.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "bundle_ambiguous_referral",
+    "resource_type": "Bundle",
+    "source": "demo"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 27 entries (Encounter, Observation, Patient), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_000.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_000",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 27 entries (Encounter, Observation, Patient), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_001.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_001",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 15 entries (Encounter, Observation, Patient), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_002.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_002",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 28 entries (Encounter, Observation, Patient), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_003.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_003",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 23 entries (Encounter, Observation, Patient), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_004.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_004",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 17 entries (Encounter, Observation, Patient), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_005.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_005",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 13 entries (Encounter, Observation, Patient), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_006.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_006",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 13 entries (Encounter, Observation, Patient), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_007.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_007",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 27 entries (Encounter, Observation, Patient), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_008.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_008",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 14 entries (Encounter, Observation, Patient), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_009.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_009",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 30 entries (Encounter, Observation, Patient), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_010.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_010",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 24 entries (Encounter, Observation, Patient), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_011.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_011",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 20 entries (Encounter, Observation, Patient), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_012.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_012",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 15 entries (Encounter, Observation, Patient), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_013.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_013",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 25 entries (Encounter, Observation, Patient), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_014.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_014",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 19 entries (Encounter, Observation, Patient), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_015.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_015",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 27 entries (Encounter, Observation, Patient), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_016.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_016",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "lab_result",
+      "rationale": "lab_result template: 14 entries (Encounter, Observation, Patient), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_017.json",
+    "label": "lab_result",
+    "module": "router",
+    "name": "generated_017",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 3 entries (Condition, Encounter), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_018.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_018",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 6 entries (Condition, Encounter), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_019.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_019",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 3 entries (Condition, Encounter), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_020.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_020",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 9 entries (Condition, Encounter), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_021.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_021",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 6 entries (Condition, Encounter), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_022.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_022",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 2 entries (Condition, Encounter), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_023.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_023",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 8 entries (Condition, Encounter), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_024.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_024",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 2 entries (Condition, Encounter), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_025.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_025",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 2 entries (Condition, Encounter), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_026.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_026",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 8 entries (Condition, Encounter), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_027.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_027",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 4 entries (Condition, Encounter), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_028.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_028",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 2 entries (Condition, Encounter), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_029.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_029",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 7 entries (Condition, Encounter), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_030.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_030",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 7 entries (Condition, Encounter), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_031.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_031",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 6 entries (Condition, Encounter), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_032.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_032",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 2 entries (Condition, Encounter), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_033.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_033",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 6 entries (Condition, Encounter), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_034.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_034",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "encounter_summary",
+      "rationale": "encounter_summary template: 7 entries (Condition, Encounter), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_035.json",
+    "label": "encounter_summary",
+    "module": "router",
+    "name": "generated_035",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 2 entries (Immunization), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_036.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_036",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 6 entries (Immunization), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_037.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_037",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 9 entries (Immunization), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_038.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_038",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 4 entries (Immunization), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_039.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_039",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 2 entries (Immunization), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_040.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_040",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 8 entries (Immunization), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_041.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_041",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 6 entries (Immunization), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_042.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_042",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 5 entries (Immunization), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_043.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_043",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 8 entries (Immunization), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_044.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_044",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 9 entries (Immunization), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_045.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_045",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 8 entries (Immunization), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_046.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_046",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 3 entries (Immunization), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_047.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_047",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 8 entries (Immunization), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_048.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_048",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 7 entries (Immunization), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_049.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_049",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 6 entries (Immunization), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_050.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_050",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "immunization_report",
+      "rationale": "immunization_report template: 3 entries (Immunization), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_051.json",
+    "label": "immunization_report",
+    "module": "router",
+    "name": "generated_051",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 3 entries (MedicationDispense), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_052.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_052",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 7 entries (MedicationDispense), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_053.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_053",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 6 entries (MedicationDispense), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_054.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_054",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 6 entries (MedicationDispense), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_055.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_055",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 8 entries (MedicationDispense), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_056.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_056",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 9 entries (MedicationDispense), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_057.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_057",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 3 entries (MedicationDispense), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_058.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_058",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 8 entries (MedicationDispense), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_059.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_059",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 8 entries (MedicationDispense), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_060.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_060",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 8 entries (MedicationDispense), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_061.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_061",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 3 entries (MedicationDispense), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_062.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_062",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 8 entries (MedicationDispense), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_063.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_063",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 5 entries (MedicationDispense), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_064.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_064",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 8 entries (MedicationDispense), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_065.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_065",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 7 entries (MedicationDispense), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_066.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_066",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "medication_dispense",
+      "rationale": "medication_dispense template: 6 entries (MedicationDispense), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_067.json",
+    "label": "medication_dispense",
+    "module": "router",
+    "name": "generated_067",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "unknown",
+      "rationale": "unknown template: 14 entries (Immunization, MedicationDispense, Observation), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_068.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "generated_068",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "unknown",
+      "rationale": "unknown template: 0 entries (empty), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_069.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "generated_069",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "unknown",
+      "rationale": "unknown template: 1 entries (Patient), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_070.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "generated_070",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "unknown",
+      "rationale": "unknown template: 10 entries (Immunization, MedicationDispense, Observation), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_071.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "generated_071",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "unknown",
+      "rationale": "unknown template: 0 entries (empty), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_072.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "generated_072",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "unknown",
+      "rationale": "unknown template: 1 entries (Patient), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_073.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "generated_073",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "unknown",
+      "rationale": "unknown template: 21 entries (Immunization, MedicationDispense, Observation), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_074.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "generated_074",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "unknown",
+      "rationale": "unknown template: 0 entries (empty), batch."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_075.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "generated_075",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "unknown",
+      "rationale": "unknown template: 1 entries (Patient), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_076.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "generated_076",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "unknown",
+      "rationale": "unknown template: 12 entries (Immunization, MedicationDispense, Observation), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_077.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "generated_077",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "unknown",
+      "rationale": "unknown template: 0 entries (empty), transaction."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_078.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "generated_078",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": true,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": "construction",
+      "expected_category": "unknown",
+      "rationale": "unknown template: 1 entries (Patient), collection."
+    },
+    "id": "benchmarks/dataset/generated/bundles/generated_079.json",
+    "label": "unknown",
+    "module": "router",
+    "name": "generated_079",
+    "resource_type": "Bundle",
+    "source": "generated"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "not_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/asthma_j45.json",
+    "label": "not_notifiable",
+    "module": "notifiable",
+    "name": "asthma_j45",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/cholera_a00.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "cholera_a00",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "not_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/common_cold_j06.json",
+    "label": "not_notifiable",
+    "module": "notifiable",
+    "name": "common_cold_j06",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/dengue_a90.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "dengue_a90",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "not_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/fracture_s72.json",
+    "label": "not_notifiable",
+    "module": "notifiable",
+    "name": "fracture_s72",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/hiv_b20.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "hiv_b20",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "not_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/hypertension_i10.json",
+    "label": "not_notifiable",
+    "module": "notifiable",
+    "name": "hypertension_i10",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/japanese_encephalitis_a83.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "japanese_encephalitis_a83",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/leprosy_a30.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "leprosy_a30",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/malaria_b50.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "malaria_b50",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/missing_coding_system.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "missing_coding_system",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "not_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/no_code.json",
+    "label": "not_notifiable",
+    "module": "notifiable",
+    "name": "no_code",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "not_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/snomed_only.json",
+    "label": "not_notifiable",
+    "module": "notifiable",
+    "name": "snomed_only",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/tuberculosis_a15.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "tuberculosis_a15",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Existing unit reporting expectation migrated into the labelled dataset."
+    },
+    "id": "tests/fixtures/conditions/typhoid_a01.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "typhoid_a01",
+    "resource_type": "Condition",
+    "source": "unit"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/tb_subcode_a15_0.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "tb_subcode_a15_0",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/malaria_subcode_b50_9.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "malaria_subcode_b50_9",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/typhoid_subcode_a01_0.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "typhoid_subcode_a01_0",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/dengue_hemorrhagic_a91.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "dengue_hemorrhagic_a91",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/dengue_snomed_only.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "dengue_snomed_only",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/tb_snomed_only.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "tb_snomed_only",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/dbd_text_only.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "dbd_text_only",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/tb_paru_text_only.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "tb_paru_text_only",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "not_notifiable",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/dengue_refuted.json",
+    "label": "not_notifiable",
+    "module": "notifiable",
+    "name": "dengue_refuted",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "not_notifiable",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/cholera_entered_in_error.json",
+    "label": "not_notifiable",
+    "module": "notifiable",
+    "name": "cholera_entered_in_error",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "review_needed",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/code_display_mismatch.json",
+    "label": "review_needed",
+    "module": "notifiable",
+    "name": "code_display_mismatch",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "review_needed",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/fever_unspecified_r50_9.json",
+    "label": "review_needed",
+    "module": "notifiable",
+    "name": "fever_unspecified_r50_9",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "not_notifiable",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/viral_infection_b34_9.json",
+    "label": "not_notifiable",
+    "module": "notifiable",
+    "name": "viral_infection_b34_9",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "not_notifiable",
+      "rationale": "Hard notifiable case designed to distinguish semantic assessment from exact-code rules."
+    },
+    "id": "benchmarks/dataset/hard/conditions/pneumonia_j18_9.json",
+    "label": "not_notifiable",
+    "module": "notifiable",
+    "name": "pneumonia_j18_9",
+    "resource_type": "Condition",
+    "source": "hard"
+  },
+  {
+    "approved": false,
+    "difficulty": "easy",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Synthetic demo disease preset."
+    },
+    "id": "benchmarks/dataset/demo/conditions/condition_je_bali.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "condition_je_bali",
+    "resource_type": "Condition",
+    "source": "demo"
+  },
+  {
+    "approved": false,
+    "difficulty": "hard",
+    "ground_truth": {
+      "approved_by": null,
+      "expected_status": "confirmed_notifiable",
+      "rationale": "Synthetic demo disease preset."
+    },
+    "id": "benchmarks/dataset/demo/conditions/condition_dbd_text_only.json",
+    "label": "confirmed_notifiable",
+    "module": "notifiable",
+    "name": "condition_dbd_text_only",
+    "resource_type": "Condition",
+    "source": "demo"
+  }
+]

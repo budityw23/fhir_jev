@@ -7,16 +7,25 @@ import { Overview } from "./pages/Overview";
 import { Playground } from "./pages/Playground";
 import { Pipeline } from "./pages/Pipeline";
 import { Studio } from "./pages/Studio";
+import { PresenterNotes, PresenterProvider } from "./state/presenter";
+import { UiPrefsProvider } from "./state/uiPrefs";
 
 /** Route-level application shell for the D2 incremental implementation. */
 export function App() {
-  const [drawerOpen, setDrawerOpen] = useState(false);
   return (
-    <>
-      <TopBar
-        onObservability={() => setDrawerOpen((open) => !open)}
-        observabilityOpen={drawerOpen}
-      />
+    <UiPrefsProvider>
+      <AppShell />
+    </UiPrefsProvider>
+  );
+}
+
+/** Keep application preferences available for both production and isolated shell tests. */
+function AppShell() {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const toggleDrawer = (): void => setDrawerOpen((open) => !open);
+  return (
+    <PresenterProvider onDrawer={toggleDrawer}>
+      <TopBar onObservability={toggleDrawer} observabilityOpen={drawerOpen} />
       <ObservabilityDrawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
@@ -28,6 +37,7 @@ export function App() {
         <Route path="/pipeline" element={<Pipeline />} />
         <Route path="/benchmarks" element={<Benchmarks />} />
       </Routes>
-    </>
+      <PresenterNotes />
+    </PresenterProvider>
   );
 }

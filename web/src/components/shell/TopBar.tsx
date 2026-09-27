@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import { HealthDot } from "./HealthDot";
 import { ModeBadge } from "./ModeBadge";
 import { NavTabs } from "./NavTabs";
+import { usePresenter } from "../../state/presenter";
 
 /** Persistent shell controls shared by every demo page. */
 export function TopBar({
@@ -11,6 +12,7 @@ export function TopBar({
   onObservability: () => void;
   observabilityOpen: boolean;
 }) {
+  const { scene, step } = usePresenter();
   const header = useRef<HTMLElement>(null);
   // Publish the real bar height (it wraps on narrow screens) so the drawer opens below it.
   useLayoutEffect(() => {
@@ -29,7 +31,12 @@ export function TopBar({
       <NavTabs />
       <ModeBadge />
       <HealthDot />
-      <span aria-label="Scene stepper placeholder" />
+      <span
+        aria-label={`Scene ${scene.id}/6, step ${step + 1}/${(scene.steps?.length ?? 0) + 1}`}
+      >
+        Scene {scene.id}/6 · step {step + 1}/{(scene.steps?.length ?? 0) + 1} ·{" "}
+        {scene.title}
+      </span>
       <button
         type="button"
         aria-label="Observability"

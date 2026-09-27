@@ -22,6 +22,18 @@ test("captures all D2 pages at projector and desktop sizes", async ({
       await page.getByLabel("complete_patient", { exact: true }).check();
       await expect(page.getByTestId("quality-action")).toBeVisible();
     });
+    await capture(page, "scene-quality", async () => {
+      await page.goto("/demo/");
+      await page.keyboard.press("ArrowRight");
+      await page.keyboard.press("n");
+      await expect(
+        page.getByText("Scene 1/6 · step 1/5 · Quality"),
+      ).toBeVisible();
+      await expect(page.getByTestId("lane")).toBeVisible();
+      await expect(page.getByLabel("Presenter notes")).toBeVisible();
+      await page.keyboard.press("n");
+      await expect(page.getByLabel("Presenter notes")).not.toBeVisible();
+    });
     await capture(page, "studio-router", async () => {
       await page.goto("/demo/studio/router");
       await page.getByLabel("mixed_bundle", { exact: true }).check();

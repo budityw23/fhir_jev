@@ -41,9 +41,23 @@ body {
   min-width: 320px;
   background: var(--c-bg);
 }
+body:has(.presenter-notes) main {
+  padding-bottom: 5rem;
+}
 button,
 input {
   font: inherit;
+}
+.presenter-notes {
+  background: var(--c-surface);
+  border-top: 2px solid var(--c-review);
+  bottom: 0;
+  box-shadow: 0 -0.25rem 0.75rem rgb(16 24 40 / 12%);
+  left: 0;
+  padding: 0.75rem 1rem;
+  position: fixed;
+  right: 0;
+  z-index: 12;
 }
 .top-bar {
   align-items: center;

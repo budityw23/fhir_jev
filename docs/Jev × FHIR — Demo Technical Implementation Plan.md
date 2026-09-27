@@ -2598,22 +2598,53 @@ font size), 6 (the network guard covers the whole walk).
 **D4b evaluation checklist:**
 
 ```
-☐ make web-test, make web-e2e, make test all green
-☐ Scene walk e2e passes: scenes 0–6 + sub-steps reachable by → only
-☐ Scene fixture ids all exist in the catalog (vitest)
-☐ Scene fixtures chosen provisionally from the mock full report (comment in scenes.ts cites the report name)
-☐ Key handler ignores keys typed in Playground editor (e2e or vitest)
-☐ R resets the thresholds; F changes the root font size; O toggles the drawer; N toggles the notes (e2e / vitest)
-☐ No console errors during the walk; the network guard covers the whole walk
-☐ Screenshots of a scene with the stepper and notes strip viewed by the evaluator
+✅ make web-test, make web-e2e, make test all green
+   → Vitest 51 → 56, backend 412 (98%); eslint, tsc, build (no file > 1 MB), schema.d.ts unchanged, catalog.json
+     regenerated identically by make web-types; e2e 24 passed twice (39.0–39.2 s; the ✘ is D2a's intentional guard test)
+✅ Scene walk e2e passes: scenes 0–6 + sub-steps reachable by → only
+   → presenter.spec.ts walk: Overview → quality ×5 (review_needed at 85) → router ×4 (override at 0.99) →
+     notifiable ×3 (Flag) → pipeline running/finished → Benchmarks → Overview; planted "skip last step" fails it
+✅ Scene fixture ids all exist in the catalog (vitest)
+   → vitest vs web/src/test/fixtures/catalog.json; planted fixture-id typo fails it
+✅ Scene fixtures chosen provisionally from the mock full report (comment in scenes.ts cites the report name)
+   → scenes.ts cites bench_20260927T120759Z (mixed_bundle wrong for both; dbd_text_only missed by both)
+✅ Key handler ignores keys typed in Playground editor (e2e or vitest)
+   → vitest: textarea, contenteditable and nested .cm-content suppress r/f/→; planted "select only" and
+     "drop .cm-content" both fail it; range/radio focus does NOT block keys (planted "block every input" fails)
+✅ R resets the thresholds; F changes the root font size; O toggles the drawer; N toggles the notes (e2e / vitest)
+   → e2e R and F (planted R no-op and F=150 fail them); vitest N and O (planted no-ops fail them); 1–6 jump e2e
+✅ No console errors during the walk; the network guard covers the whole walk
+   → e2e guard spec; walk ran with the auto guard, no blocked URLs
+✅ Screenshots of a scene with the stepper and notes strip viewed by the evaluator
+   → scene-quality-*.png: "Scene 1/6 · step 1/5 · Quality" + loaded decision; evaluator viewport check: notes strip
+     shows the scene note at the bottom, F → data-scale 125
 ```
+
+**Issues found (D4b):**
+- ❌→✅ Real bugs found by evaluation: (1) the fixed notes strip covered page controls (it broke the D2 screenshot test by
+  intercepting "Load fixture as starting point"); now space is reserved. (2) `R` was ignored right after dragging a
+  threshold, because focus stays on the range input and every `input` counted as typing; only text entry blocks keys
+  now. (3) Studio read URL thresholds only on first render; overrides now follow the URL on each navigation.
+  (4) Pipeline autostart had no error handling; it now catches and shows ErrorCard.
+- ❌→✅ Tests: round 0 caught 1/8 planted bugs; after rounds 1–2, 7/10 (Vitest + e2e); after round 3, **10/10**
+  (textarea/contenteditable/.cm-content ignore, range focus, → order, R, F, N, O, autostart before connect, Studio URL
+  thresholds, fixture typo).
+- ⚠️ **Round 3 was an exception approved by Budi** after the loop's two fix-up rounds left three behaviours untested.
+- ⚠️ No Playwright test types into the Playground CodeMirror editor (the item allows Vitest; Vitest covers `.cm-content`).
+- ⚠️ `make web-types --samples` stamps today's date into `compare_notifiable.json` (pre-existing since D2a), so the sample
+  changes whenever the date does; the evaluator reverts it. Fix candidate for D4c.
+- ⚠️ At 125 % font scale the TopBar title wraps to two lines (D4c polish).
+- Choices: thresholds travel in Studio query params (`?fixture=…&quality_threshold=85`), so deep links carry them;
+  autostart uses `/pipeline?autostart=1&source=unit&rate=4`, consumed once after the stream connects. The unit set is 60
+  resources (Demo Plan says 50).
 
 **D4b evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Results:   <checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: 2026-09-28 by Claude (phase-loop, Codex session 01a0e40f-f1d3-7bf0-b26d-a29de57ddd29, 3 fix-up rounds —
+           the third approved by Budi)
+Results:   8/8 checklist items ✅ (evidence above), 4 ⚠️ non-blocking; 10/10 planted bugs caught
+Verdict:   PASS
 ```
 
 ---

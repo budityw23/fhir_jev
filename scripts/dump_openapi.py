@@ -23,6 +23,14 @@ def _write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _write_catalog() -> None:
+    """Write the deterministic fixture-id snapshot used by presenter scene tests."""
+    settings = Settings(mock_jev=True, demo_enabled=True)
+    catalog = FixtureCatalog(settings.labels_dir)
+    entries = [entry.model_dump(mode="json") for entry in catalog.entries()]
+    _write_json(FIXTURES_DIR / "catalog.json", entries)
+
+
 def _stable(value: Any, key: str | None = None) -> Any:
     """Replace volatile timings and timestamps recursively with stable sample values."""
     if key == "latency_ms":
@@ -78,6 +86,7 @@ def main() -> None:
         return
     app = create_app(Settings(mock_jev=True, demo_enabled=True))
     _write_json(WEB_DIR / "openapi.json", app.openapi())
+    _write_catalog()
 
 
 if __name__ == "__main__":
