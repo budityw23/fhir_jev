@@ -43,6 +43,15 @@ test("captures all D2 pages at projector and desktop sizes", async ({ page }) =>
       await page.getByRole("button", { name: "Start" }).click();
       await expect(page.getByTestId("run-status")).toHaveText("Status: finished");
     });
+    await capture(page, "drawer", async () => {
+      await page.goto("/demo/pipeline");
+      await page.getByLabel("Source").selectOption("unit");
+      await page.getByLabel("Pace").selectOption("max");
+      await page.getByRole("button", { name: "Start" }).click();
+      await expect(page.getByTestId("run-status")).toHaveText("Status: finished");
+      await page.getByLabel("Observability").click();
+      await expect(page.getByLabel("Observability drawer")).toBeVisible();
+    });
   }
 });
 

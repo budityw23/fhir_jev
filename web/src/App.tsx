@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
+import { ObservabilityDrawer } from "./components/shell/ObservabilityDrawer";
 import { TopBar } from "./components/shell/TopBar";
 import { Overview } from "./pages/Overview";
 import { Playground } from "./pages/Playground";
@@ -15,9 +17,14 @@ function Placeholder({ heading, phase }: { heading: string; phase: string }) {
 }
 /** Route-level application shell for the D2 incremental implementation. */
 export function App() {
+  const [drawerOpen, setDrawerOpen] = useState(false);
   return (
     <>
-      <TopBar />
+      <TopBar
+        onObservability={() => setDrawerOpen((open) => !open)}
+        observabilityOpen={drawerOpen}
+      />
+      <ObservabilityDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <Routes>
         <Route path="/" element={<Overview />} />
         <Route path="/studio/:module" element={<Studio />} />

@@ -238,3 +238,27 @@ Test count after each phase is the `make test` total.
   - `index.css` was Prettier-reformatted; verified rule-by-rule it's equivalent
 - **Known gaps:** redundant "Thresholds" heading inside each module group (D4 polish).
 - Backend 408 → 411; web Vitest 28 → 38, Playwright 8 → 14. Next: D3b (drawer, reconnect, final D3 checklist).
+
+## D3b — Observability drawer, reconnect, final D3 regression — PASS (Sep 27, 2026) — /phase-loop, 2 fix-up rounds
+
+- **Built:**
+  - `web/src/lib/prometheus.ts` `parsePrometheus` (quoted labels with commas/braces, escapes, ±Inf, NaN, timestamps),
+    tested on a captured `web/src/test/fixtures/metrics.txt`
+  - `components/shell/ObservabilityDrawer.tsx`: full-height slide-over toggled by the TopBar "Observability" button
+    (and Escape / Close); last 50 decisions merged with live SSE by `seq`; last request id / duration via
+    `getLastRequest()` + `subscribeLastRequest`; `/api/v1/metrics` every 5 s only while open (`apiText()`), decision and
+    HTTP tables + raw toggle
+  - Pipeline stream indicator reads "connected" / "disconnected"
+  - e2e: spec 5 (drawer + request id), two tabs in one guarded context; drawer screenshots
+- **Reconnect proof:** evaluator procedure (Playwright script with its own uvicorn): kill → "disconnected", restart →
+  "connected" without reload, and a new run's events arrive. The D3a restart rule works end to end.
+- **Lessons:**
+  - Codex again stopped early twice and skipped the planted-bug runs; the evaluator must run the mutations itself
+  - vacuous-test patterns seen: fake timers enabled after an interval was created; identical mock ids; `?? ""` in
+    `toContain`; `browser.newContext()` bypassing the auto network guard
+  - a Codex usage limit can stop a round midway: resume the same session after the reset with a continuation prompt
+- **Known gaps / open questions:**
+  - `jev_fhir_decisions_total` isn't incremented by demo calls, so the drawer's decision-metrics table is empty (note
+    shown). Recording demo decisions needs a backend change: ask Budi (D4 candidate)
+  - drawer screenshot: the TopBar button overlaps the drawer heading; charts captured mid-animation (D4 polish)
+- **D3 complete:** backend 408 → 411; web Vitest 28 → 46, Playwright 8 → 16. Next: D4 (Benchmarks, presenter mode).

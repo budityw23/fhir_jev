@@ -28,7 +28,7 @@ export function Pipeline() {
         current={state.current}
         onReset={() => dispatch({ type: "reset" })}
       />
-      <p>Stream: {connected ? "connected" : "connecting"}</p>
+      <p>Stream: {connected ? "connected" : "disconnected"}</p>
       <RerunDelta previous={state.previous} current={state.current} />
       <StatsStrip state={state} live={health.data?.jev_client === "live"} />
       <LaneBoard state={state} />

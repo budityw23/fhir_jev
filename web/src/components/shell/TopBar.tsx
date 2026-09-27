@@ -2,8 +2,14 @@ import { HealthDot } from "./HealthDot";
 import { ModeBadge } from "./ModeBadge";
 import { NavTabs } from "./NavTabs";
 
-/** Persistent shell with intentionally empty D3/D4 control slots. */
-export function TopBar() {
+/** Persistent shell controls shared by every demo page. */
+export function TopBar({
+  onObservability,
+  observabilityOpen,
+}: {
+  onObservability: () => void;
+  observabilityOpen: boolean;
+}) {
   return (
     <header className="top-bar">
       <h1>Jev × FHIR</h1>
@@ -11,7 +17,14 @@ export function TopBar() {
       <ModeBadge />
       <HealthDot />
       <span aria-label="Scene stepper placeholder" />
-      <span aria-label="Observability drawer placeholder" />
+      <button
+        type="button"
+        aria-label="Observability"
+        aria-expanded={observabilityOpen}
+        onClick={onObservability}
+      >
+        Observability
+      </button>
     </header>
   );
 }

@@ -20,6 +20,7 @@ export interface LastRequest {
 }
 
 const listeners = new Set<(request: LastRequest) => void>();
+let lastRequest: LastRequest | null = null;
 
 /** Subscribe to metadata for each API response. */
 export function subscribeLastRequest(
@@ -27,6 +28,11 @@ export function subscribeLastRequest(
 ): () => void {
   listeners.add(callback);
   return () => listeners.delete(callback);
+}
+
+/** Return request metadata retained for app-lifetime observability. */
+export function getLastRequest(): LastRequest | null {
+  return lastRequest;
 }
 
 /** Make a JSON API request and raise ApiError for non-success responses. */
@@ -47,6 +53,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
     durationMs: Number.isFinite(durationMs) ? durationMs : null,
     path,
   };
+  lastRequest = request;
   listeners.forEach((listener) => listener(request));
   if (!response.ok) {
     let body: ErrorBody = {
@@ -63,4 +70,22 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
     throw new ApiError(response.status, body, requestId);
   }
   return response.json() as Promise<T>;
+}
+
+/** Make a text API request while retaining request metadata for the drawer. */
+export async function apiText(path: string): Promise<string> {
+  const response = await fetch(path);
+  const duration = response.headers.get("X-Request-Duration-Ms");
+  const durationMs = duration === null ? null : Number(duration);
+  const request = {
+    requestId: response.headers.get("X-Request-Id"),
+    durationMs: Number.isFinite(durationMs) ? durationMs : null,
+    path,
+  };
+  lastRequest = request;
+  listeners.forEach((listener) => listener(request));
+  if (!response.ok) {
+    throw new Error(`Metrics request failed (${response.status})`);
+  }
+  return response.text();
 }

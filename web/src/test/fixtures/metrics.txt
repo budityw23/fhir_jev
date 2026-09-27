@@ -1,0 +1,8 @@
+# HELP jev_fhir_http_requests_total HTTP requests handled by endpoint
+# TYPE jev_fhir_http_requests_total counter
+jev_fhir_http_requests_total{endpoint="/fixtures/{fixture_id:path}",method="GET",status="200"} 1.0
+jev_fhir_http_requests_total{endpoint="/compare/{module}",method="POST",status="200"} 1.0
+# HELP jev_fhir_decisions_total Jev decisions by module and outcome
+# TYPE jev_fhir_decisions_total counter
+# HELP jev_fhir_decision_confidence Jev decision confidence by module
+# TYPE jev_fhir_decision_confidence histogram

@@ -2306,25 +2306,62 @@ The reconnect check may be an e2e test with its own controlled server, or a docu
 **Final D3 checklist (the original D3 checklist, run after D3b):**
 
 ```
-☐ make web-test green; make test (backend) green
-☐ make web-e2e → all D2 + D3 specs pass
-☐ Lanes + counters sum to total for a full unit run (cite e2e assertion)
-☐ Stop leaves no running task: after stop, GET /decisions?limit=1 seq stable for 3 s (curl twice)
-☐ Two browser tabs on /demo/pipeline both receive events (manual or e2e with two pages)
-☐ Kill + restart uvicorn during a run → page shows disconnected, then reconnects without reload
-☐ Feed never renders > 100 rows (inspect DOM count in e2e)
-☐ Review items show exact lane_reason strings from the D1 table
-☐ Drawer shows X-Request-Id matching the last response header
-☐ No console errors / unhandled promise rejections in e2e logs
-☐ Final code matches the full D3 contract (Steps 1–5), with the SSE restart rule in place
+✅ make web-test green; make test (backend) green
+   → from a clean rm -rf web/node_modules + make web-install: Vitest 46 (38 → 46), backend 411 (98%);
+     ruff, mypy --strict, eslint, tsc, schema.d.ts unchanged, build (no file > 1 MB), no URLs, no line > 100
+✅ make web-e2e → all D2 + D3 specs pass
+   → 16 passed, twice in a row (30.8 s / 30.7 s)
+✅ Lanes + counters sum to total for a full unit run (cite e2e assertion)
+   → pipeline.spec.ts spec 1 (unchanged since D3a): Σ lane-count-* === total from the start response
+✅ Stop leaves no running task: after stop, GET /decisions?limit=1 seq stable for 3 s (curl twice)
+   → real uvicorn :18741, unit at 1/s → stop {"stopped":true}; seq t0=4, t+3s=4; no tracebacks
+✅ Two browser tabs on /demo/pipeline both receive events (manual or e2e with two pages)
+   → e2e "two pipeline tabs receive the same finished unit run" (2 pages, guarded context): both "Status: finished",
+     identical StatsStrip text
+✅ Kill + restart uvicorn during a run → page shows disconnected, then reconnects without reload
+   → evaluator procedure (Playwright script, own uvicorn :18750): before kill "connected", running, 4/60;
+     SIGKILL → "Stream: disconnected"; restart → "connected", window marker kept, 0 extra load events;
+     new run on the fresh server → "Status: finished", 6/6 received (D3a restart rule end to end); page errors []
+✅ Feed never renders > 100 rows (inspect DOM count in e2e)
+   → e2e all-source run (204 events) → exactly 100 rows
+✅ Review items show exact lane_reason strings from the D1 table
+   → spec 4 + Vitest exact strings (D3a); screenshots show the D1 formats
+✅ Drawer shows X-Request-Id matching the last response header
+   → spec 5: the drawer's id is a UUID equal to the x-request-id of a real /api/ response the page received
+     (⚠️ "a" response rather than strictly "the last": the drawer's own 5 s polling races the capture);
+     Vitest: pre-open id shown, updated by a later api() call
+✅ No console errors / unhandled promise rejections in e2e logs
+   → spec 6 (console errors + pageerror []), reconnect procedure page errors []
+✅ Final code matches the full D3 contract (Steps 1–5), with the SSE restart rule in place
+   → read-through of sse.ts, reducer, 8 components, drawer, parsePrometheus (exact signature), TopBar toggle,
+     5 s metrics polling only while open, raw toggle; restart rule in sse.py
 ```
+
+**Issues found (D3b):**
+- ❌→✅ Round 0 shipped the drawer + parser with 2 tests and no Playwright (Codex said so). Fix1 added tests, the
+  toggle (was open-only) and a fetch/live merge by `seq` (live events were overwritten by the initial fetch).
+- ❌→✅ Evaluator planted 9 bugs after fix1: only 3 caught. Two tests were vacuous (fake timers enabled after the
+  interval was created; every mock response carried the same request id). Fix2 → **9/9 caught** (comma split, no
+  unescape, no clearInterval, ignore live events, no subscribe, no initial request, no Escape, "connecting", open-only).
+- ❌→✅ Spec 5 passed against an empty header (`?? ""`); the two-tab test used `browser.newContext()`, bypassing the
+  network guard. Both fixed in fix2.
+- ❌→✅ Drawer screenshot: a short top-right box with clipped JSON and tables spilling over the page; fix2 made it a
+  full-height fixed slide-over with wrapped JSON and "4 ms" durations.
+- ⚠️ `jev_fhir_decisions_total` is only incremented by the Phase 4 routes, so the drawer's decision-metrics table is
+  empty in the demo (a note explains it). Making demo compare / pipeline calls record it is a backend change: open
+  question for Budi (D4 candidate).
+- ⚠️ In the drawer screenshot the TopBar "Observability" button overlaps the drawer heading, and the Recharts charts
+  were captured mid-animation (the plain Pipeline screenshot is fine). D4 polish: disable chart animation for captures.
+- ⚠️ Codex hit its usage limit mid-fix2; the same round was resumed after the reset (`D3b.fix2.resume.prompt.md`).
+- Additive helpers: `getLastRequest()` and `apiText()` in `api/client.ts` (existing `api()` behaviour unchanged).
 
 **D3b / final D3 evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Results:   <sub-phase checks + final checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: 2026-09-27 by Claude (phase-loop, Codex session 01a0e19e-5f78-78f0-8070-bb956c37b7df, 2 fix-up rounds)
+Results:   final D3 checklist 11/11 ✅ (evidence above), 3 ⚠️ non-blocking; 9/9 planted bugs caught;
+           kill/restart reconnect verified by evaluator procedure
+Verdict:   PASS
 ```
 
 ---

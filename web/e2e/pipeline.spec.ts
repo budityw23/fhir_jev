@@ -98,3 +98,40 @@ test("a full all-source run renders exactly 100 feed rows", async ({
     100,
   );
 });
+
+test("The drawer opens and shows a request id and a parsed metrics table.", async ({ page }) => {
+  const responses: import("@playwright/test").Response[] = [];
+  page.on("response", (response) => {
+    if (response.url().includes("/api/")) responses.push(response);
+  });
+  await page.goto("/demo/studio/quality");
+  const metricsResponse = page.waitForResponse((response) => (
+    response.url().includes("/api/v1/metrics") && response.status() === 200
+  ));
+  await page.getByLabel("Observability").click();
+  await metricsResponse;
+  await expect(page.getByLabel("Observability drawer")).toBeVisible();
+  await expect(page.getByRole("table", { name: "HTTP requests metrics" }))
+    .toContainText("GET");
+  const shown = await page.getByTestId("last-request-id").textContent();
+  const requestId = shown?.replace("Request id: ", "") ?? "";
+  expect(requestId).toMatch(/^[0-9a-f]{8}-[0-9a-f-]{27}$/i);
+  expect(responses.some((response) => (
+    response.headers()["x-request-id"] === requestId
+  ))).toBe(true);
+});
+
+test("two pipeline tabs receive the same finished unit run", async ({ page: first }) => {
+  const second = await first.context().newPage();
+  await Promise.all([first.goto("/demo/pipeline"), second.goto("/demo/pipeline")]);
+  await first.getByLabel("Pace").selectOption("max");
+  await first.getByRole("button", { name: "Start" }).click();
+  await Promise.all([
+    expect(first.getByTestId("run-status")).toHaveText("Status: finished"),
+    expect(second.getByTestId("run-status")).toHaveText("Status: finished"),
+  ]);
+  expect(await first.getByTestId("stats-strip").textContent()).toEqual(
+    await second.getByTestId("stats-strip").textContent(),
+  );
+  await second.close();
+});
