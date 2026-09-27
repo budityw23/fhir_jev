@@ -2526,22 +2526,51 @@ real server: `curl` `/api/v1/demo/benchmarks` and one report by name.
 **D4a evaluation checklist:**
 
 ```
-☐ make web-test, make web-e2e, make test all green
-☐ Benchmarks: mock report shows MockDisclaimer text verbatim; router chip FAIL at 0.733
-☐ Live-only parts: LiveMeta shows model, tokens, cost and LiveVsMock renders, with a synthetic live report (temp dir)
-☐ Full-dataset report shows BreakdownTable by source and difficulty; unit report hides it
-☐ LabelGuard triggers on a pre-D0 report (copy an old bench_*.json into a temp results dir)
-☐ Disagreement row click opens Studio with that fixture (e2e spec 2)
-☐ No console errors; no horizontal scroll on the Benchmarks page at 1280×720
-☐ Benchmarks screenshots at 1280×720 and 1920×1080 viewed by the evaluator
+✅ make web-test, make web-e2e, make test all green
+   → Vitest 47 → 51 (assertions extended in fix1), backend 412 (98%); eslint, tsc, build (no file > 1 MB),
+     schema.d.ts unchanged; e2e 19 passed twice (31.8–32.0 s; the ✘ is D2a's intentional guard test)
+✅ Benchmarks: mock report shows MockDisclaimer text verbatim; router chip FAIL at 0.733
+   → spec 1: newest (mock full) report shows the disclaimer; selecting bench_20260924T151507Z shows Router 73% with
+     "FAIL · Routing accuracy ≥ 90%" in the Router row
+✅ Live-only parts: LiveMeta shows model, tokens, cost and LiveVsMock renders, with a synthetic live report (temp dir)
+   → Vitest with benchmark-live.synthetic.json; evaluator: real uvicorn with DEMO_RESULTS_DIR = a scratch copy of the
+     results + the synthetic live report → "Model: synthetic-live-model · Total tokens: 1234 · Estimated cost:
+     $0.000052", Live vs mock table (Quality 62% → 90%, Router 82% → 91%, Notifiable 68% → 90%), no disclaimer,
+     no errors; benchmarks/results untouched
+✅ Full-dataset report shows BreakdownTable by source and difficulty; unit report hides it
+   → screenshot (full) + Vitest (unit hidden); planted bug "show for unit" caught
+✅ LabelGuard triggers on a pre-D0 report (copy an old bench_*.json into a temp results dir)
+   → the committed pre-D0 reports lack quality_labels_banded: e2e selects bench_20260924T083443Z and sees
+     "labels not suitable for live scoring"; Vitest covers false and missing
+✅ Disagreement row click opens Studio with that fixture (e2e spec 2)
+   → spec 2 asserts the Studio URL and the checked picker item for that fixture; Vitest asserts exact router and
+     notifiable hrefs
+✅ No console errors; no horizontal scroll on the Benchmarks page at 1280×720
+   → e2e: scrollWidth <= innerWidth, console/page errors []; evaluator live-report run: same
+✅ Benchmarks screenshots at 1280×720 and 1920×1080 viewed by the evaluator
+   → round 0: calibration chart concatenated all modules on one categorical axis with no legend or diagonal;
+     latency run-on text; six stacked breakdown tables (fixed in fix1). Regenerated screenshots viewed: per-module
+     scatter with y = x line and legend, latency table, compact breakdown cards
 ```
+
+**Issues found (D4a):**
+- ❌→✅ Round 0: e2e spec 1 failed (selected `….json`, option values have no extension); spec 2 only checked that some
+  radio was checked; no synthetic live fixture; missing pre-D0, scroll and console checks; an `eslint-disable max-len`.
+- ❌→✅ Planted bugs (evaluator-run, all restored byte-identical): after round 0, 6/8 caught (router → quality link and
+  banner-at-zero missed); after fix1 **8/8**: PRD `>` 0.85, hidden FAIL chip, breakdown for unit, disclaimer word,
+  LabelGuard `!== false`, dropped both-wrong rows, router → quality, banner at zero.
+- ❌→✅ Calibration chart did not show the contract's "mean confidence vs observed accuracy, with the y = x reference line".
+- ⚠️ The synthetic live fixture has no breakdown/calibration rows, so those sections render headers only; an explicit
+  empty state belongs to D4c ("Every … empty state").
+- ⚠️ Latency cells wrap "33.3 / ms" at 1280 px; `screenshots.spec.ts` reformatted (no assertion change).
+- Components live in `components/benchmarks/BenchmarkParts.tsx` (named exports, as D3's PipelineParts).
 
 **D4a evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Results:   <checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: 2026-09-27 by Claude (phase-loop, Codex session 01a0e2c6-c04d-73c1-a20b-9fdb42ed7839, 1 fix-up round)
+Results:   8/8 checklist items ✅ (evidence above), 2 ⚠️ non-blocking; 8/8 planted bugs caught
+Verdict:   PASS
 ```
 
 ---

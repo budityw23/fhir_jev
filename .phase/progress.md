@@ -271,3 +271,19 @@ Test count after each phase is the `make test` total.
   Recharts animation off (`isAnimationActive={false}`) so screenshots never catch a half-drawn chart; the ThresholdSliders
   "Thresholds" heading is hidden inside the Pipeline's module-labelled groups (props unchanged).
 - Backend 411 → 412; Vitest 46 → 47; Playwright 16. Both new tests fail when their behaviour is removed.
+
+## D4a — Benchmarks page — PASS (Sep 27, 2026) — /phase-loop, 1 fix-up round
+
+- **Built:** `lib/prdTargets.ts` (contract verbatim); hand-written report types in `api/benchmarks.ts` (the report isn't
+  in OpenAPI); `pages/Benchmarks.tsx` (`?report=` in the URL, newest by default) with `components/benchmarks/
+  BenchmarkParts.tsx`: ReportSelector, AccuracyTable + PRD chips, LabelGuard, BreakdownTable (full only, per-module
+  cards), LatencyPanel (table, 1 decimal), CalibrationChart (per-module scatter, y = x line), DisagreementList (→ Studio),
+  NotifiablePRF, MockDisclaimer, LiveMeta, LiveVsMock, the unapproved-labels banner; `benchmarks.spec.ts` + screenshots.
+- **Data facts:** `breakdown` / `unapproved_labels` are per module; pre-D0 reports lack `quality_labels_banded`
+  (LabelGuard triggers on committed data); option values are report names without `.json`.
+- **Live-only verification:** a synthetic live report in `web/src/test/fixtures/benchmark-live.synthetic.json` (Vitest)
+  and, for the evaluator, a scratch results dir via `DEMO_RESULTS_DIR` — never in `benchmarks/results/`.
+- **Lessons:** Codex skipped the full e2e runs and planted bugs again (the evaluator ran them); the calibration chart
+  was wrong in a way only the screenshot showed.
+- **Known gaps:** empty breakdown/calibration sections show headers only (D4c empty states); latency cells wrap.
+- Backend 412; Vitest 47 → 51; Playwright 16 → 19. Next: D4b (scenes + presenter controls).

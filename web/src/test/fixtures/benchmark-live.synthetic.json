@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-09-27T12:07:59.710570Z",
+  "mode": "live_jev",
+  "jev_model": "synthetic-live-model",
+  "dataset": "full",
+  "quality_labels_banded": true,
+  "token_and_cost": { "tokens_used": 1234, "estimated_cost_usd": 0.000052 },
+  "modules": {
+    "quality_scorer": {
+      "fixture_count": 71, "jev_accuracy": 0.9, "rule_accuracy": 0.8,
+      "latency": { "mean_ms": 12, "p50_ms": 10, "p95_ms": 22 },
+      "confidence_calibration": [], "rows": [], "unapproved_labels": 0
+    },
+    "bundle_router": {
+      "fixture_count": 102, "jev_accuracy": 0.91, "rule_accuracy": 0.8,
+      "latency": { "mean_ms": 12, "p50_ms": 10, "p95_ms": 22 },
+      "confidence_calibration": [], "rows": [], "unapproved_labels": 0
+    },
+    "notifiable_detector": {
+      "fixture_count": 31, "jev_accuracy": 0.9, "rule_accuracy": 0.8,
+      "latency": { "mean_ms": 12, "p50_ms": 10, "p95_ms": 22 },
+      "confidence_calibration": [], "rows": [], "unapproved_labels": 0,
+      "jev_precision_recall_f1": { "precision": 0.9, "recall": 0.96, "f1": 0.93 },
+      "rule_precision_recall_f1": { "precision": 0.8, "recall": 0.8, "f1": 0.8 }
+    }
+  }
+}

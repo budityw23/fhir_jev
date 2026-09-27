@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { api } from "./client";
+import type { BenchmarkReport } from "./benchmarks";
 import type {
   CompareRequest,
   CompareResponse,
@@ -75,5 +76,21 @@ export function useCompare(module: DemoModule, input: CompareRequest | null) {
         method: "POST",
         body: JSON.stringify(input),
       }),
+  });
+}
+/** List benchmark summaries newest first. */
+export function useBenchmarks() {
+  return useQuery({
+    queryKey: ["benchmarks"],
+    queryFn: () =>
+      api<import("./types").BenchmarkSummary[]>("/api/v1/demo/benchmarks"),
+  });
+}
+/** Load a selected raw benchmark report. */
+export function useBenchmark(name: string | null) {
+  return useQuery({
+    queryKey: ["benchmark", name],
+    enabled: name !== null,
+    queryFn: () => api<BenchmarkReport>(`/api/v1/demo/benchmarks/${name}`),
   });
 }

@@ -6,12 +6,16 @@ const sizes = [
   { width: 1920, height: 1080 },
 ];
 
-test("captures all D2 pages at projector and desktop sizes", async ({ page }) => {
+test("captures all D2 pages at projector and desktop sizes", async ({
+  page,
+}) => {
   for (const size of sizes) {
     await page.setViewportSize(size);
     await capture(page, "overview", async () => {
       await page.goto("/demo/");
-      await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: "Overview" }),
+      ).toBeVisible();
     });
     await capture(page, "studio-quality", async () => {
       await page.goto("/demo/studio/quality");
@@ -22,17 +26,23 @@ test("captures all D2 pages at projector and desktop sizes", async ({ page }) =>
       await page.goto("/demo/studio/router");
       await page.getByLabel("mixed_bundle", { exact: true }).check();
       await page.getByLabel("Route confidence minimum").fill("0.99");
-      await expect(page.getByText("overridden: confidence 0.92 < 0.99")).toBeVisible();
+      await expect(
+        page.getByText("overridden: confidence 0.92 < 0.99"),
+      ).toBeVisible();
     });
     await capture(page, "studio-notifiable", async () => {
       await page.goto("/demo/studio/notifiable");
-      await page.getByLabel("japanese_encephalitis_a83", { exact: true }).check();
+      await page
+        .getByLabel("japanese_encephalitis_a83", { exact: true })
+        .check();
       await expect(page.getByRole("button", { name: "Flag" })).toBeVisible();
     });
     await capture(page, "playground", async () => {
       await page.goto("/demo/playground");
       await page.getByLabel("complete_patient", { exact: true }).check();
-      await page.getByRole("button", { name: "Load fixture as starting point" }).click();
+      await page
+        .getByRole("button", { name: "Load fixture as starting point" })
+        .click();
       await page.getByRole("button", { name: "Run" }).click();
       await expect(page.getByTestId("lane")).toBeVisible();
     });
@@ -41,14 +51,29 @@ test("captures all D2 pages at projector and desktop sizes", async ({ page }) =>
       await page.getByLabel("Source").selectOption("unit");
       await page.getByLabel("Pace").selectOption("max");
       await page.getByRole("button", { name: "Start" }).click();
-      await expect(page.getByTestId("run-status")).toHaveText("Status: finished");
+      await expect(page.getByTestId("run-status")).toHaveText(
+        "Status: finished",
+      );
+    });
+    await capture(page, "benchmarks", async () => {
+      await page.goto("/demo/benchmarks");
+      await expect(
+        page.getByRole("heading", { name: "Benchmarks" }),
+      ).toBeVisible();
+      await expect(
+        page.getByText(
+          "Mock decisions mirror rule logic; this report validates the harness, not Jev.",
+        ),
+      ).toBeVisible();
     });
     await capture(page, "drawer", async () => {
       await page.goto("/demo/pipeline");
       await page.getByLabel("Source").selectOption("unit");
       await page.getByLabel("Pace").selectOption("max");
       await page.getByRole("button", { name: "Start" }).click();
-      await expect(page.getByTestId("run-status")).toHaveText("Status: finished");
+      await expect(page.getByTestId("run-status")).toHaveText(
+        "Status: finished",
+      );
       await page.getByLabel("Observability").click();
       await expect(page.getByLabel("Observability drawer")).toBeVisible();
     });
