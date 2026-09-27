@@ -2377,7 +2377,32 @@ Verdict:   PASS
 **Depends on:** D3 PASS; for the final rehearsal, D0.5's live full report must exist.
 **Requirement refs:** UI-B-1…8 (UI-B-8 out of scope), UI-D-1…3, UI-NFR-*, Demo Plan §2 and §6.
 
-### Codex Implementation
+### How D4 Is Organised
+
+Split on Sep 27, 2026 (Budi's decision), in the same way as D1–D3. Steps 1–8 below are the **unchanged D4 specification
+(source of truth)**; the sub-phases only decide when each part is built:
+
+```
+D4a Benchmarks page → D4b Scenes + presenter controls → D4c Polish, runbook, final D4 regression → Budi's dry runs
+```
+
+Rules for every sub-phase: follow AGENTS.md and the D2/D3 conventions (Node 20 via nvm, ESLint max-len covering JSX,
+no obfuscation, tests that fail when their behaviour is removed, the evaluator runs planted bugs and views the
+screenshots); the backend suite stays green; no live Jev calls from tests or verification.
+
+**Decisions and clarifications (Sep 27, 2026; the contract text is unchanged):**
+- **Scene fixtures are provisional (Budi's decision).** No live full report exists yet (`make bench-live-full` needs
+  Budi's key). D4b picks scene fixtures from the **mock full report** `benchmarks/results/bench_20260927T120759Z.json`
+  (generated with `make bench-full`, `MOCK_JEV=true`) and cites it in `scenes.ts`. Budi runs `make bench-live-full`
+  before the dry runs; scenes are re-picked if the live results differ (Step 8 already allows this).
+- **Live-only Benchmarks components** (`LiveMeta`, `LiveVsMock`) are tested in D4a with a synthetic live report in a
+  temporary results directory (never committed to `benchmarks/results/`); they are re-checked against the real live
+  report once it exists.
+- **Report shape:** `breakdown` (`source`, `difficulty`) and `unapproved_labels` are **per module** under `modules.*`,
+  not top-level. The warning banner appears when any module's `unapproved_labels > 0`; `BreakdownTable` reads
+  `modules.<m>.breakdown`.
+
+### D4 Contract (Source of Truth)
 
 **Goal:** the evidence screen, the one-key scene presets, and a rehearsed, offline-safe demo.
 
@@ -2469,7 +2494,120 @@ export const SCENES: Scene[];
 - Two full dry runs from a cold `make demo`, one **live** and one **mock**, each ≤ 13 minutes.
 - Record problems in the Evaluation Record, and re-pick scene fixtures if live results changed.
 
-### Codex Evaluation Checklist
+### D4 Implementation Sequence
+
+Baseline before D4: backend 412, web Vitest 47, Playwright 16.
+
+---
+
+#### Phase D4a — Benchmarks page
+
+**1. Dependencies:** D3 PASS (`1991b0e`).
+
+**2. Scope and files:** Step 1 (`web/src/lib/prdTargets.ts`) and Step 2: the Benchmarks page (replacing its placeholder)
+with all 11 components (`ReportSelector`, `AccuracyTable`, `BreakdownTable`, `LatencyPanel`, `CalibrationChart`,
+`DisagreementList`, `NotifiablePRF`, `MockDisclaimer`, `LiveMeta`, `LabelGuard`, `LiveVsMock`) and the unapproved-labels
+banner. Benchmarks screenshots at both sizes.
+
+**3. Acceptance criteria:** Step 2 behaves as specified against the committed mock reports (unit and full) and a
+synthetic live report in a temporary results directory; PRD chips are never hidden; the disclaimer text is verbatim.
+
+**4. Tests to add:** Vitest from Step 7: "`LabelGuard` hides quality accuracy for unbanded reports." and "The PRD chip
+shows FAIL for 0.733 routing." Plus: `BreakdownTable` only for `dataset=full`; `MockDisclaimer` only for `mock_jev`;
+`LiveMeta` / `LiveVsMock` only when a live report exists; the banner when any module has `unapproved_labels > 0`;
+`DisagreementList` row selection (`jev_correct !== rule_correct` or both false). Playwright from Step 7: specs 1 (latest
+report, mock disclaimer, router FAIL) and 2 (disagreement row → Studio with that fixture).
+
+**5. Verification:** `make web-test && make web-build && make web-e2e`; backend `make lint && make typecheck && make test`;
+real server: `curl` `/api/v1/demo/benchmarks` and one report by name.
+
+**6. Deferred:** to D4b: scenes and presenter controls; to D4c: polish, runbook, final D4 checklist.
+
+**D4a evaluation checklist:**
+
+```
+☐ make web-test, make web-e2e, make test all green
+☐ Benchmarks: mock report shows MockDisclaimer text verbatim; router chip FAIL at 0.733
+☐ Live-only parts: LiveMeta shows model, tokens, cost and LiveVsMock renders, with a synthetic live report (temp dir)
+☐ Full-dataset report shows BreakdownTable by source and difficulty; unit report hides it
+☐ LabelGuard triggers on a pre-D0 report (copy an old bench_*.json into a temp results dir)
+☐ Disagreement row click opens Studio with that fixture (e2e spec 2)
+☐ No console errors; no horizontal scroll on the Benchmarks page at 1280×720
+☐ Benchmarks screenshots at 1280×720 and 1920×1080 viewed by the evaluator
+```
+
+**D4a evaluation record:**
+
+```
+Evaluated: <date> by <session>
+Results:   <checklist with evidence>
+Verdict:   PASS | FAIL
+```
+
+---
+
+#### Phase D4b — Scenes and presenter controls
+
+**1. Dependencies:** D4a PASS.
+
+**2. Scope and files:** Step 3 (`web/src/scenes.ts`, fixtures provisionally from the mock full report, each choice
+explained in a comment citing `bench_20260927T120759Z`) and Step 4 (the global key handler, `SceneStepper` in the TopBar
+replacing its placeholder, the notes strip, scene changes that navigate, set the fixture and thresholds, and run
+`autoAction`). The committed catalog snapshot `web/src/test/fixtures/catalog.json`, refreshed by `make web-types`.
+
+**3. Acceptance criteria:** Steps 3–4 as specified; scenes 0–6 and their sub-steps are reachable with `→` only.
+
+**4. Tests to add:** Vitest from Step 7: "Every `SCENES[*].fixtureId` and step fixture exists in a committed catalog
+snapshot" and "The key handler ignores keystrokes inside inputs." Plus `←`, `1`–`6`, `R`, `F`, `O`, `N` handling and the
+notes preference (localStorage in try/catch). Playwright from Step 7: specs 3 (`→` walk 0–6), 4 (`R` resets), 5 (`F`
+font size), 6 (the network guard covers the whole walk).
+
+**5. Verification:** `make web-test && make web-build && make web-e2e`; backend unchanged and green.
+
+**6. Deferred:** to D4c: polish, runbook, final D4 checklist.
+
+**D4b evaluation checklist:**
+
+```
+☐ make web-test, make web-e2e, make test all green
+☐ Scene walk e2e passes: scenes 0–6 + sub-steps reachable by → only
+☐ Scene fixture ids all exist in the catalog (vitest)
+☐ Scene fixtures chosen provisionally from the mock full report (comment in scenes.ts cites the report name)
+☐ Key handler ignores keys typed in Playground editor (e2e or vitest)
+☐ R resets the thresholds; F changes the root font size; O toggles the drawer; N toggles the notes (e2e / vitest)
+☐ No console errors during the walk; the network guard covers the whole walk
+☐ Screenshots of a scene with the stepper and notes strip viewed by the evaluator
+```
+
+**D4b evaluation record:**
+
+```
+Evaluated: <date> by <session>
+Results:   <checklist with evidence>
+Verdict:   PASS | FAIL
+```
+
+---
+
+#### Phase D4c — Polish, runbook, final D4 regression
+
+**1. Dependencies:** D4b PASS.
+
+**2. Scope and files:** Step 5 (layout at both sizes with no horizontal scroll, WCAG AA contrast for the decision
+colours in both themes, `prefers-reduced-motion`, the empty states, `ErrorCard` on every `ApiError` path) and Step 6
+(`docs/demo-runbook.md`). Known polish from earlier phases: the tall Studio fixture picker (D2c).
+
+**3. Acceptance criteria:** Step 5 checks pass on every page; the runbook matches the current scenes and key presses.
+
+**4. Tests to add:** an e2e check that `document.scrollWidth <= innerWidth` on every page at 1280×720; a contrast check
+(computed ratios listed); reduced-motion honoured; empty-state texts.
+
+**5. Verification:** the final D4 checklist below (the manual items are Budi's, after D4c).
+
+**6. Deferred:** nothing inside D4. Budi's dry runs and the fallback drill follow D4c; scenes are re-picked if the live
+full report differs from the mock one.
+
+**Final D4 checklist (the original D4 checklist, run after D4c):**
 
 ```
 ☐ make web-test, make web-e2e, make test all green
@@ -2486,14 +2624,15 @@ export const SCENES: Scene[];
 ☐ docs/demo-runbook.md exists and matches the current scenes
 ☐ (manual, Budi) live dry run ≤ 13 min — time: ____ ; mock dry run ≤ 13 min — time: ____
 ☐ (manual, Budi) fallback drill: kill live server, restart MOCK_JEV=true, back on scene in < 30 s
+☐ Final code matches the full D4 contract (Steps 1–7)
 ```
 
-### Evaluation Record
+**D4c / final D4 evaluation record:**
 
 ```
 Evaluated: <date> by <session>
 Dry runs:  live <mm:ss>, mock <mm:ss>
-Results:   <checklist with evidence>
+Results:   <sub-phase checks + final checklist with evidence>
 Verdict:   PASS | FAIL — demo ready?
 ```
 
