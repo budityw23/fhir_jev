@@ -94,3 +94,29 @@ End with a report containing, at minimum:
 - any additive helper beyond the contract, and anything you couldn't implement exactly as
   written, and why
 - any open question for the evaluator, stated plainly at the end
+
+## Phase loop settings (for the evaluator's `/phase-loop`; Codex can skip this section)
+
+The generic procedure is `~/.claude/commands/phase-loop.md`; these are this repo's settings.
+
+- **Plan:** `docs/Jev × FHIR — Demo Technical Implementation Plan.md` (D1 Contract is the source of truth).
+- **Phase order:** `D1d → D1e → D2 → D3 → D4` (read the plan headings if later phases are added).
+- **Base branch:** `main`.
+- **Codex network:** ON (phases need uvicorn + curl on localhost).
+- **Gates:** `make lint && make typecheck && make test`. Coverage: each touched file ≥ 90%,
+  TOTAL ≥ 95%. Frontend phases (D2+) add `npm run lint`, `npm run typecheck`, `npm run test`
+  and `npm run e2e` in `web/`.
+- **Real server:** `DEMO_ENABLED=true MOCK_JEV=true .venv/bin/python -m uvicorn jev_fhir.main:app --host 127.0.0.1 --port 187xx &`,
+  then every checklist curl from the phase.
+- **Record results:** in the plan's phase section (checklist `☐` → `✅`/`⚠️` + evidence, an
+  "Issues found" block, the Evaluation Record), and a phase entry in `.phase/progress.md`.
+  Hold the bar of the D1a–D1c evaluations; D1c's record is the format example.
+- **Prompt house style:** `.phase/D1d.prompt.md`. Frontend phases include the nvm PATH line and
+  the `web/` commands.
+- **Evaluator-owned / protected:** the plan doc (results only), `AGENTS.md`, `.phase/progress.md`,
+  `.gitignore`, `pyproject.toml`, `.env*`, fixtures, labels, earlier phases' modules beyond what
+  the prompt allows. **Must stay unchanged:** `tests/test_api.py`.
+- **Secret pattern:** `apikey_[0-9a-f]\{12,\}`.
+- **Hygiene:** no new `benchmarks/results/bench_*` left over from verification.
+- **Hard stops:** no live Jev/TypeSafe API calls; mock Jev only.
+- **Commit message:** `feat: <what> (phase <P>)`.
