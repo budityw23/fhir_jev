@@ -1404,6 +1404,9 @@ Verdict:   PASS. D1d can start.
   - headers `Cache-Control: no-cache` and `X-Accel-Buffering: no`
 - The 15 s ping interval is a module-level constant (e.g. `SSE_PING_INTERVAL_S = 15.0`), so tests can shorten it with monkeypatch. The production value stays 15 s.
 
+- **Clarification (Sep 27, 2026, before D1d; the contract is unchanged):** without a `Last-Event-ID` header the stream is **live-only**. A finished pipeline run therefore produces no new events, and a stream opened afterwards would only receive pings (every 15 s) and never reach `limit`. Tests and curls that read events **after** a run has finished must send `Last-Event-ID: 0` to replay them from the ring buffer. Live delivery is tested with events published *after* the stream subscribed. The contract test "SSE endpoint: `GET /decisions/stream?limit=3` after a pipeline run → …" is implemented this way.
+- **Race rule:** subscribe to the feed **before** reading the replay (`since`), then drop any live event whose `seq` ≤ the last replayed `seq`. This way no event is lost between replay and live, and none is delivered twice.
+
 **3. Acceptance criteria:**
 - The wire format matches the contract byte for byte: field order and a blank-line separator. Pings are comments and don't count towards `limit`.
 - `Last-Event-ID: N` replays only events with `seq > N`, then continues live.
@@ -1424,7 +1427,7 @@ Verdict:   PASS. D1d can start.
 make lint && make typecheck && make test      # coverage ≥ 95%
 DEMO_ENABLED=true MOCK_JEV=true .venv/bin/python -m uvicorn jev_fhir.main:app --port 8000   # then:
 curl -s -X POST localhost:8000/api/v1/demo/pipeline/run -H 'content-type: application/json' -d '{"source":"unit","rate_per_s":null}'
-curl -sN "localhost:8000/api/v1/demo/decisions/stream?limit=5"
+curl -sN -H "Last-Event-ID: 0" "localhost:8000/api/v1/demo/decisions/stream?limit=5"   # replay the finished run
 curl -sN -H "Last-Event-ID: 3" "localhost:8000/api/v1/demo/decisions/stream?limit=2"
 ```
 
@@ -1434,7 +1437,7 @@ curl -sN -H "Last-Event-ID: 3" "localhost:8000/api/v1/demo/decisions/stream?limi
 
 ```
 ☐ make lint / typecheck / test green; coverage ≥ 95%
-☐ POST /pipeline/run {"source":"unit","rate_per_s":null} then curl "/decisions/stream?limit=5" → 5 SSE blocks with id/event/data
+☐ POST /pipeline/run {"source":"unit","rate_per_s":null} then curl "/decisions/stream?limit=5" → 5 SSE blocks with id/event/data (curl with -H "Last-Event-ID: 0", see the clarification above)
 ☐ Last-Event-ID: N replays only seq > N (curl + test name)
 ☐ Response headers: Content-Type text/event-stream, Cache-Control no-cache, X-Accel-Buffering no
 ☐ ": ping" comment emitted (test with a monkeypatched interval); production constant is 15 s
