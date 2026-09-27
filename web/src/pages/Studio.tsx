@@ -120,6 +120,7 @@ function StudioPage({ module }: { module: DemoModule }) {
             value={fixtureId}
             onChange={selectFixture}
           />
+          {fixture.error instanceof ApiError && <ErrorCard error={fixture.error.body} />}
           {fixture.data && (
             <>
               <h3>Raw FHIR</h3>

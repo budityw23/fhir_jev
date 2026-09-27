@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { api, apiText, getLastRequest, subscribeLastRequest } from "../../api/client";
+import { ApiError, api, apiText, getLastRequest, subscribeLastRequest } from "../../api/client";
 import { useDecisionStream, type StreamEvent } from "../../api/sse";
 import type { DecisionEvent } from "../../api/types";
 import { parsePrometheus } from "../../lib/prometheus";
 import { milliseconds } from "../../lib/format";
+import { ErrorCard } from "./ErrorCard";
 
 interface Props {
   open: boolean;
@@ -22,6 +23,7 @@ function OpenDrawer({ onClose }: Pick<Props, "onClose">) {
   const [lastRequest, setLastRequest] = useState(getLastRequest());
   const [metrics, setMetrics] = useState("");
   const [metricsError, setMetricsError] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<ApiError | null>(null);
   const [showRaw, setShowRaw] = useState(false);
   const onEvent = useCallback((event: StreamEvent) => {
     if (event.kind !== "decision") return;
@@ -45,8 +47,11 @@ function OpenDrawer({ onClose }: Pick<Props, "onClose">) {
           setDecisions((current) => mergeDecisions(current, items));
         }
       })
-      .catch(() => {
-        if (active) setDecisions([]);
+      .catch((error: unknown) => {
+        if (active) {
+          setDecisions([]);
+          if (error instanceof ApiError) setApiError(error);
+        }
       });
     return () => {
       active = false;
@@ -63,6 +68,7 @@ function OpenDrawer({ onClose }: Pick<Props, "onClose">) {
         })
         .catch((error: unknown) => {
           if (active) {
+            if (error instanceof ApiError) setApiError(error);
             setMetricsError(error instanceof Error ? error.message : "Metrics unavailable");
           }
         });
@@ -86,6 +92,7 @@ function OpenDrawer({ onClose }: Pick<Props, "onClose">) {
         </button>
       </div>
       <section>
+        {apiError && <ErrorCard error={apiError.body} />}
         <h3>Last request</h3>
         <p>Path: {lastRequest?.path ?? "none"}</p>
         <p data-testid="last-request-id">

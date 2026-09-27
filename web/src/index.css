@@ -8,12 +8,18 @@
   --c-text: #172033;
   --c-muted: #667085;
   --c-border: #d0d5dd;
-  --c-accept: #16803c;
-  --c-review: #a15c00;
-  --c-flag: #b42318;
-  --c-neutral: #667085;
-  --c-mock: #a15c00;
-  --c-live: #16803c;
+  --c-accept: #0b6b2e;
+  --c-review: #854700;
+  --c-flag: #a91b13;
+  --c-neutral: #596579;
+  --c-mock: #854700;
+  --c-live: #0b6b2e;
+  --c-accept-tint: #effaf2;
+  --c-review-tint: #fff8eb;
+  --c-flag-tint: #fff1f0;
+  --c-neutral-tint: #f1f4f8;
+  --c-json-key: #175cd3;
+  --c-json-value: #0b6b2e;
   font-family: "Inter Variable", sans-serif;
   color: var(--c-text);
   background: var(--c-bg);
@@ -25,12 +31,18 @@
     --c-text: #f9fafb;
     --c-muted: #98a2b3;
     --c-border: #475467;
-    --c-accept: #6ce9a6;
-    --c-review: #fec84b;
-    --c-flag: #fda29b;
-    --c-neutral: #98a2b3;
-    --c-mock: #fec84b;
-    --c-live: #6ce9a6;
+    --c-accept: #75ecab;
+    --c-review: #ffd46b;
+    --c-flag: #ffb4ae;
+    --c-neutral: #c0c8d4;
+    --c-mock: #ffd46b;
+    --c-live: #75ecab;
+    --c-accept-tint: #153c2a;
+    --c-review-tint: #49370b;
+    --c-flag-tint: #4b2526;
+    --c-neutral-tint: #2d3748;
+    --c-json-key: #b9d9ff;
+    --c-json-value: #b7f7d8;
   }
 }
 html[data-scale="125"] {
@@ -45,7 +57,11 @@ body:has(.presenter-notes) main {
   padding-bottom: 5rem;
 }
 button,
-input {
+input,
+select {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  color: var(--c-text);
   font: inherit;
 }
 .presenter-notes {
@@ -63,14 +79,25 @@ input {
   align-items: center;
   border-bottom: 1px solid var(--c-border);
   display: flex;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  white-space: nowrap;
   position: relative;
   z-index: 11;
 }
 .top-bar h1 {
   font-size: 1rem;
   margin: 0;
+}
+@media (max-width: 1023px) {
+  .top-bar {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+  .top-bar nav {
+    flex-basis: 100%;
+    order: 2;
+  }
 }
 :root {
   --top-bar-height: 3.375rem;
@@ -128,7 +155,7 @@ input {
 }
 nav {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.45rem;
 }
 nav a {
   color: var(--c-muted);
@@ -207,11 +234,11 @@ main > h2 {
   white-space: nowrap;
 }
 .prd-pass {
-  background: color-mix(in srgb, var(--c-accept) 18%, transparent);
+  background: var(--c-accept-tint);
   color: var(--c-accept);
 }
 .prd-fail {
-  background: color-mix(in srgb, var(--c-flag) 18%, transparent);
+  background: var(--c-flag-tint);
   color: var(--c-flag);
 }
 .calibration-chart {
@@ -276,7 +303,7 @@ main > h2 {
   white-space: nowrap;
 }
 .mode-mock {
-  background: color-mix(in srgb, var(--c-mock) 20%, transparent);
+  background: var(--c-review-tint);
   color: var(--c-mock);
 }
 .mode-live,
@@ -386,14 +413,14 @@ main > h2 {
 }
 .fixture-tag,
 .chip {
-  background: color-mix(in srgb, var(--c-neutral) 16%, transparent);
+  background: var(--c-neutral-tint);
 }
 .boolean-chip {
-  background: color-mix(in srgb, var(--c-accept) 18%, transparent);
+  background: var(--c-accept-tint);
 }
 .null-chip,
 .is-null {
-  background: color-mix(in srgb, var(--c-review) 18%, transparent);
+  background: var(--c-review-tint);
 }
 .flat-state {
   border-collapse: collapse;
@@ -499,15 +526,15 @@ main > h2 {
   padding: 0.2rem 0.45rem;
 }
 .lane-accept {
-  background: color-mix(in srgb, var(--c-accept) 18%, transparent);
+  background: var(--c-accept-tint);
   color: var(--c-accept);
 }
 .lane-review {
-  background: color-mix(in srgb, var(--c-review) 18%, transparent);
+  background: var(--c-review-tint);
   color: var(--c-review);
 }
 .lane-flag {
-  background: color-mix(in srgb, var(--c-flag) 18%, transparent);
+  background: var(--c-flag-tint);
   color: var(--c-flag);
 }
 .latency-line,
@@ -545,7 +572,7 @@ main > h2 {
   margin: 1rem 0;
 }
 .verdict-pill {
-  background: color-mix(in srgb, var(--c-neutral) 12%, transparent);
+  background: var(--c-neutral-tint);
   border: 1px solid var(--c-border);
   border-radius: 999px;
   padding: 0.3rem 0.55rem;
@@ -554,6 +581,25 @@ main > h2 {
   .module-grid,
   .studio-grid {
     grid-template-columns: 1fr;
+  }
+}
+.fixture-picker-list {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  .architecture-edge {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }
 .controls-actions {

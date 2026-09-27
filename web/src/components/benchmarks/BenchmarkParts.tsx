@@ -152,6 +152,9 @@ export function BreakdownTable({ report }: { report: BenchmarkReport }) {
   return (
     <section className="benchmark-card">
       <h3>Breakdown</h3>
+      {!modules.some(([key]) => hasBreakdown(report.modules[key])) && (
+        <p>No breakdown rows in this report.</p>
+      )}
       <div className="breakdown-grid">
         {modules.map(([key, label]) => (
           <div className="breakdown-module" key={key}>
@@ -171,6 +174,11 @@ export function BreakdownTable({ report }: { report: BenchmarkReport }) {
       </div>
     </section>
   );
+}
+function hasBreakdown(module: BenchmarkModule): boolean {
+  const breakdown = module.breakdown;
+  return Object.keys(breakdown?.source ?? {}).length > 0 ||
+    Object.keys(breakdown?.difficulty ?? {}).length > 0;
 }
 function Breakdown({
   label,
@@ -248,11 +256,13 @@ export function LatencyPanel({ report }: { report: BenchmarkReport }) {
 }
 /** Compare calibration to a perfect-confidence reference diagonal. */
 export function CalibrationChart({ report }: { report: BenchmarkReport }) {
-  const colors = ["#16803c", "#175cd3", "#b42318"];
+  const colors = ["var(--c-accept)", "var(--c-neutral)", "var(--c-flag)"];
+  const hasRows = modules.some(([key]) => report.modules[key].confidence_calibration.length > 0);
   return (
     <section className="benchmark-card">
       <h3>Calibration</h3>
-      <div className="calibration-chart">
+      {!hasRows && <p>No calibration rows in this report.</p>}
+      {hasRows && <div className="calibration-chart">
         <ResponsiveContainer>
           <ScatterChart>
             <XAxis
@@ -289,7 +299,7 @@ export function CalibrationChart({ report }: { report: BenchmarkReport }) {
             ))}
           </ScatterChart>
         </ResponsiveContainer>
-      </div>
+      </div>}
     </section>
   );
 }

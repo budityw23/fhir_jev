@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { api } from "../../api/client";
+import { ApiError, api } from "../../api/client";
+import { ErrorCard } from "../shell/ErrorCard";
 import { useQuery } from "@tanstack/react-query";
 import type { BenchmarkSummary } from "../../api/types";
 import { milliseconds, percent } from "../../lib/format";
@@ -31,13 +32,15 @@ export function ModuleCard({ module, title, primitive, reportKey }: ModuleCardPr
     <article className="module-card">
       <h3>{title}</h3>
       <p>Primitive: {primitive}</p>
+      {summaries.error instanceof ApiError && <ErrorCard error={summaries.error.body} />}
+      {report.error instanceof ApiError && <ErrorCard error={report.error.body} />}
       {metrics && latest ? (
         <p>
           Jev accuracy {percent(metrics.jev_accuracy)} · p95 {milliseconds(metrics.latency.p95_ms)}
           <br />
           {latest.mode} · {latest.dataset}
         </p>
-      ) : <p>no report yet</p>}
+      ) : !summaries.error && !report.error && <p>no report yet</p>}
       <Link to={`/studio/${module}`}>Open in Studio</Link>
     </article>
   );

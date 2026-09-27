@@ -37,6 +37,9 @@ def _stable(value: Any, key: str | None = None) -> Any:
         return 0.0
     if key in {"recorded", "timestamp"}:
         return "2000-01-01T00:00:00Z"
+    # The generated Flag period starts on the current date; freeze it for tracked samples.
+    if key == "start":
+        return "2026-09-27"
     if isinstance(value, dict):
         return {name: _stable(item, name) for name, item in value.items()}
     if isinstance(value, list):

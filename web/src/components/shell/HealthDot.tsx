@@ -1,4 +1,6 @@
 import { useHealth } from "../../api/queries";
+import { ApiError } from "../../api/client";
+import { ErrorCard } from "./ErrorCard";
 
 /** Show health status and a retry affordance when the service cannot be reached. */
 export function HealthDot() {
@@ -6,6 +8,7 @@ export function HealthDot() {
   if (health.isError)
     return (
       <div className="health-wrap">
+        {health.error instanceof ApiError && <ErrorCard error={health.error.body} />}
         <span className="health-dot health-down" role="status">
           ● Offline
         </span>

@@ -304,3 +304,18 @@ Test count after each phase is the `make test` total.
 - **Known gaps:** `--samples` stamps today's date into `compare_notifiable.json` (revert on regenerate; fix in D4c);
   TopBar wraps at 125 %; no e2e typing into CodeMirror (Vitest covers it).
 - Backend 412; Vitest 51 → 56; Playwright 19 → 24. Next: D4c (polish, runbook, final D4 regression).
+
+## D4c — Polish, runbook, final D4 regression — PASS (Sep 28, 2026) — /phase-loop, 2 fix-up rounds
+
+- **Built:** no horizontal scroll on every page at 1280×720 / 1920×1080 (+ 900×800 with a wrapping TopBar); Studio
+  stacks below 1024 px; WCAG AA tokens for light and dark (charts use tokens; JSON viewer themed for dark); reduced
+  motion honoured; empty states ("no fixtures match", empty Benchmarks sections); ErrorCard on every audited ApiError
+  path; scrollable fixture picker; deterministic `--samples`; `docs/demo-runbook.md`; `polish.spec.ts`, `polish.test.tsx`.
+- **Lessons:**
+  - a contrast test must read the real CSS (a mirrored token file let a bad colour through)
+  - read the runbook against the Makefile/.env: `make demo` takes `MOCK_JEV` from `.env`, so live needs
+    `MOCK_JEV=false make demo`
+  - dark-mode and narrow-width screenshots found defects the light 1280 px ones didn't
+- **D4 complete (automated).** Pending Budi: `make bench-live-full` (then re-check live Benchmarks parts and re-pick
+  scene fixtures if needed), two timed dry runs (live and mock), the fallback drill.
+- Backend 412; Vitest 56 → 60; Playwright 24 → 29.

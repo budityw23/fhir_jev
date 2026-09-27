@@ -2670,30 +2670,66 @@ full report differs from the mock one.
 **Final D4 checklist (the original D4 checklist, run after D4c):**
 
 ```
-☐ make web-test, make web-e2e, make test all green
-☐ Benchmarks: mock report shows MockDisclaimer text verbatim; router chip FAIL at 0.733
-☐ Live report (from D0.5) shows model, tokens, cost; LiveVsMock renders when both exist
-☐ Full-dataset report shows BreakdownTable by source and difficulty; unit report hides it
-☐ LabelGuard triggers on a pre-D0 report (copy an old bench_*.json into a temp results dir)
-☐ Scene walk e2e passes: scenes 0–6 + sub-steps reachable by → only
-☐ Scene fixture ids all exist in the catalog (vitest)
-☐ Scene fixtures chosen from the live full report (comment in scenes.ts cites the report name)
-☐ Key handler ignores keys typed in Playground editor (e2e or vitest)
-☐ Layout: no horizontal scroll at 1280×720 (e2e evaluates document.scrollWidth <= innerWidth)
-☐ Contrast: decision colours meet 4.5:1 on background in both themes (list computed ratios)
-☐ docs/demo-runbook.md exists and matches the current scenes
+✅ make web-test, make web-e2e, make test all green
+   → from a clean rm -rf web/node_modules + npm ci: Vitest 60, backend 412 (98%), eslint, tsc, build (no file > 1 MB),
+     schema.d.ts unchanged, fixtures deterministic; e2e 29 passed twice (43.5 s; the ✘ is D2a's intentional guard test)
+✅ Benchmarks: mock report shows MockDisclaimer text verbatim; router chip FAIL at 0.733
+   → D4a spec 1 (still green)
+⚠️ Live report (from D0.5) shows model, tokens, cost; LiveVsMock renders when both exist
+   → PENDING Budi's `make bench-live-full` (no live report exists). Verified with a synthetic live report in a scratch
+     DEMO_RESULTS_DIR (D4a): model, 1234 tokens, $0.000052, Live vs mock table. Re-check with the real report.
+✅ Full-dataset report shows BreakdownTable by source and difficulty; unit report hides it
+   → D4a (mock full report bench_20260927T120759Z); empty sections now say so (D4c)
+✅ LabelGuard triggers on a pre-D0 report (copy an old bench_*.json into a temp results dir)
+   → D4a e2e on the committed pre-D0 report bench_20260924T083443Z
+✅ Scene walk e2e passes: scenes 0–6 + sub-steps reachable by → only
+   → D4b presenter.spec.ts walk (still green)
+✅ Scene fixture ids all exist in the catalog (vitest)
+   → D4b catalog.json test; the runbook ↔ scenes test (D4c) also fails on a missing fixture
+⚠️ Scene fixtures chosen from the live full report (comment in scenes.ts cites the report name)
+   → PROVISIONAL by Budi's decision: chosen from the mock full report bench_20260927T120759Z (cited in scenes.ts).
+     Re-pick after `make bench-live-full` if live results differ (Step 8).
+✅ Key handler ignores keys typed in Playground editor (e2e or vitest)
+   → D4b vitest (.cm-content, textarea, contenteditable); range/radio focus does not block keys
+✅ Layout: no horizontal scroll at 1280×720 (e2e evaluates document.scrollWidth <= innerWidth)
+   → polish.spec.ts: Overview, Studio ×3, Playground, Pipeline after a run, Benchmarks, drawer open, at 1280×720 and
+     1920×1080, plus Overview/Studio at 900×800 (TopBar wraps); Studio stacks below 1024 px
+✅ Contrast: decision colours meet 4.5:1 on background in both themes (list computed ratios)
+   → polish.test.tsx parses web/src/index.css itself (light + dark). On surface, light / dark: accept 6.65 / 10.04,
+     review 7.24 / 10.42, flag 7.36 / 8.67, neutral 5.90 / 8.72, JSON key 4.87 / 9.10, JSON value 6.65 / 12.36; chips on
+     their tints and text/muted pairs also ≥ 4.5. Charts use the tokens.
+✅ docs/demo-runbook.md exists and matches the current scenes
+   → one page: cold start, live `MOCK_JEV=false make demo` after `make smoke-live`, fallback `MOCK_JEV=true make demo`
+     with /health check, per-scene keys and fixtures, Demo Day checklist, Q&A; vitest fails if a scene fixture is missing
 ☐ (manual, Budi) live dry run ≤ 13 min — time: ____ ; mock dry run ≤ 13 min — time: ____
 ☐ (manual, Budi) fallback drill: kill live server, restart MOCK_JEV=true, back on scene in < 30 s
-☐ Final code matches the full D4 contract (Steps 1–7)
+✅ Final code matches the full D4 contract (Steps 1–7)
+   → read-through of prdTargets, the 11 Benchmarks components, scenes.ts, presenter keys, stepper, notes, polish,
+     runbook; Step 8 is Budi's manual rehearsal
 ```
+
+**Issues found (D4c):**
+- ❌→✅ Round 0: the contrast test checked a `tokens.ts` copy, not the CSS (planted `--c-review: #d49a00` in index.css
+  passed all tests); dark-mode JSON keys were dark-on-dark and the search box white; the TopBar overflowed at 900 px; the
+  runbook's live instruction would have started **mock** (`make demo` reads `MOCK_JEV=true` from `.env`).
+- ❌→✅ Round 1 left Vitest red (a real 1.46:1 pair: the dark JSON key on the dark surface); round 2 fixed the colour
+  (`#b9d9ff`, 9.10:1) and made index.css the single source (`tokens.ts` removed).
+- ✅ Planted bugs (evaluator-run, all restored): light review colour, dark JSON key colour, "no fixtures match" text,
+  a runbook fixture removed, reduced-motion disabled, a 1400 px card, never-stack, TopBar nowrap: **8/8 caught**.
+- ⚠️ `web/src/vite-env.d.ts` declares a minimal `node:fs` module so the contrast test can read index.css without
+  adding @types/node; test-only use.
+- ⚠️ In dark mode the JSON viewer's "N items" hints and brackets stay dim (decorative metadata).
+- Also done (earlier ⚠️s): the tall fixture picker is a scrollable box; the TopBar fits at 125 %; latency values stay
+  on one line; `--samples` output is deterministic (no more daily fixture diff).
 
 **D4c / final D4 evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Dry runs:  live <mm:ss>, mock <mm:ss>
-Results:   <sub-phase checks + final checklist with evidence>
-Verdict:   PASS | FAIL — demo ready?
+Evaluated: 2026-09-28 by Claude (phase-loop, Codex session 01a0e433-f6da-7840-b4ab-ac1cf0ce5224, 2 fix-up rounds)
+Dry runs:  live <pending Budi>, mock <pending Budi>
+Results:   D4c PASS. Final D4 checklist: 11 ✅, 2 ⚠️ pending the live full report (make bench-live-full),
+           2 manual items for Budi; 8/8 planted bugs caught
+Verdict:   PASS (automated) — demo ready after Budi's live report re-check and two dry runs
 ```
 
 ---

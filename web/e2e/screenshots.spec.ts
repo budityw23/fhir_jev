@@ -92,6 +92,24 @@ test("captures all D2 pages at projector and desktop sizes", async ({
   }
 });
 
+test("captures the stacked and dark Studio polish views", async ({ page }) => {
+  await page.setViewportSize({ width: 900, height: 800 });
+  await page.goto("/demo/studio/quality");
+  await page.getByLabel("complete_patient", { exact: true }).check();
+  await expect(page.getByTestId("quality-action")).toBeVisible();
+  await page.screenshot({ path: "e2e/screenshots/studio-quality-900x800.png", fullPage: true });
+
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto("/demo/studio/quality");
+  await page.getByLabel("complete_patient", { exact: true }).check();
+  await expect(page.getByTestId("quality-action")).toBeVisible();
+  await page.screenshot({
+    fullPage: true,
+    path: "e2e/screenshots/studio-quality-dark-1280x720.png",
+  });
+});
+
 async function capture(
   page: Page,
   name: string,
