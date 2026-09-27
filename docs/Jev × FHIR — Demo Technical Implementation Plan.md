@@ -1643,7 +1643,30 @@ Verdict:   PASS. D1 (Demo API) is complete; D2 (UI shell) can start.
 **Depends on:** D1 PASS.
 **Requirement refs:** UI-G-1…6 (incl. G-1b), UI-O-1…3, UI-S-1…7, UI-PL-1…3, UI-NFR-1…6.
 
-### Codex Implementation
+### How D2 Is Organised
+
+Split on Sep 27, 2026 (Budi's decision), in the same way as D1. Steps 1–11 below are the **unchanged D2 specification
+(source of truth)**; the sub-phases only decide when each part is built:
+
+```
+D2a Foundations → D2b Overview & Studio → D2c Playground, screenshots & final D2 checklist
+```
+
+Rules for every sub-phase: follow AGENTS.md; don't change backend behaviour or earlier phases' contracts; the backend
+`make lint && make typecheck && make test` stays green; anything listed under "Deferred" is not built early. Once D2c
+passes, the code must match Steps 1–11, and the final D2 checklist (the original D2 checklist) must pass.
+
+**Clarifications (Sep 27, 2026; the contract text is unchanged; these reconcile it with how the repo works since D0.5):**
+- Every Makefile target and Playwright `webServer` command runs Python as `$(PYTHON)` / `.venv/bin/python -m uvicorn …`,
+  never bare `python` or `uvicorn` (Steps 10 and 11 predate the D0.5 `$(PYTHON)` convention).
+- Node 20 is not on the PATH of non-interactive shells. The `web-*` targets prepend
+  `$(HOME)/.nvm/versions/node/v20.19.0/bin` (through a Makefile variable, e.g. `NODE_BIN`), so `make web-*` works from any
+  shell, including Codex's sandbox.
+- "git-ignored" build and test outputs are added to `.gitignore` in D2a: `web/e2e/screenshots/`, `web/test-results/`,
+  `web/playwright-report/` (`web/node_modules/` and `web/dist/` are already ignored).
+- Playwright needs its Chromium once: `npx playwright install chromium` (no sudo; the system libraries are present).
+
+### D2 Contract (Source of Truth)
 
 **Goal:** a working web app at `/demo` with the global shell, Overview, the three-column Studio and the Playground, all typed against the backend's OpenAPI schema.
 
@@ -1792,7 +1815,157 @@ web-e2e:      cd web && npm run e2e
   - Screenshots at 1280×720 and 1920×1080 go to `web/e2e/screenshots/` (git-ignored).
   - A network guard fails the test if any request goes to a host other than `127.0.0.1` (UI-NFR-3).
 
-### Codex Evaluation Checklist
+### D2 Implementation Sequence
+
+The pre-D2 baseline is **408 backend tests** (end of D1e).
+
+---
+
+#### Phase D2a — Foundations (toolchain, shell, API layer)
+
+**1. Dependencies:** D1 PASS (D1e, `b7b1a31`).
+
+**2. Scope and files:**
+- Step 1: the full `web/` scaffold. Install **all** runtime and dev dependencies from the table now (so
+  `package-lock.json` settles once), plus the configs and `package.json` scripts. Files that belong to later
+  sub-phases don't exist yet.
+- Step 2: `vite.config.ts` exactly as given, `BrowserRouter basename="/demo"`, and all five routes, with **placeholder
+  pages** for Overview, Studio, Playground, Pipeline and Benchmarks (a heading plus "coming in D2b/D2c/D3/D4").
+- Step 3, complete:
+  - `scripts/dump_openapi.py`, including `--samples` (writes `web/src/test/fixtures/compare_{quality,router,notifiable}.json`)
+  - `web/openapi.json`, `src/api/schema.d.ts` (generated, committed)
+  - `api/types.ts` (re-exports only), `api/client.ts` (`ApiError`, `api`, `subscribeLastRequest`), `api/queries.ts`
+    (all five hooks)
+- Step 4: design tokens (`index.css`, light and dark, decision colours, bundled Inter, font-scale attribute).
+- Step 5: `lib/noul.ts`. Also `lib/format.ts`, `lib/colors.ts`, `lib/debounce.ts`, and `state/uiPrefs.tsx`
+  (localStorage in try/catch).
+- Step 6: shell: `TopBar`, `ModeBadge`, `HealthDot`, `ErrorCard`, `NavTabs`.
+- Step 10: all Makefile targets (with the Clarifications applied).
+- Step 11 infrastructure: Vitest (jsdom) and Playwright (`webServer` on port 8010, `baseURL http://127.0.0.1:8010/demo/`,
+  the network guard). Chromium installed.
+- `.gitignore`: the three entries from the Clarifications.
+
+**3. Acceptance criteria:**
+- `make web-install` (`npm ci`), `make web-test`, `make web-build`, `make web-types` (no diff) and `make demo` all work.
+- The built UI is served at `/demo` with the SPA fallback. The mode badge shows MOCK with the exact UI-G-1 tooltip.
+  The health dot works. `ErrorCard` shows `request_id`.
+- No hand-written backend models in `web/src`; no external URLs; the backend suite still passes.
+
+**4. Tests to add:**
+- Vitest, from Step 11: "`noulView` boundaries: 0, 0.5, 1, 0.08, 0.94." and "`ErrorCard` shows the request id."
+  Plus: `api()` throws `ApiError` with status, body and requestId on non-2xx; `subscribeLastRequest` receives
+  `X-Request-Id` and `X-Request-Duration-Ms`; ModeBadge renders MOCK and `LIVE · {model}`.
+- Playwright, from Step 11: spec "1. Overview loads, and the mode badge says MOCK." (against the placeholder Overview),
+  plus the network guard applied to every spec.
+
+**5. Verification:**
+
+```bash
+export PATH="$HOME/.nvm/versions/node/v20.19.0/bin:$PATH"
+make web-install && make web-test && make web-types && git diff --exit-code web/src/api/schema.d.ts
+make web-build && make web-e2e
+make lint && make typecheck && make test                 # backend unchanged
+make demo &   # then: curl -s :8000/demo | grep -c '<div id="root">'; curl -s :8000/demo/studio/quality | grep -c '<div id="root">'
+```
+
+**6. Deferred:**
+- to D2b: `ArchitectureDiagram`, `ModuleCard`, the real Overview page, every Studio component and the Studio page, the
+  `VerdictStrip` / `ProbabilityBars` / `DecisionCard` unit tests, and e2e specs 2, 3, 4 and 6
+- to D2c: the Playground page, e2e spec 5, the screenshots, and the final D2 checklist
+
+**D2a evaluation checklist:**
+
+```
+☐ node --version → v20.x; npm ci succeeds from a clean clone (rm -rf web/node_modules first)
+☐ make web-test → eslint 0 errors, tsc 0 errors, vitest all pass
+☐ make web-types then git diff --exit-code web/src/api/schema.d.ts → no diff (types in sync with backend)
+☐ grep -rn "interface CompareResponse\|type CompareResponse =" web/src --exclude=schema.d.ts → only re-exports in types.ts
+☐ make web-build → web/dist/index.html exists; no files > 1 MB except sourcemaps
+☐ make demo → curl -s :8000/demo | grep -c "<div id=\"root\">" → 1; curl :8000/demo/studio/quality → index.html (SPA fallback)
+☐ Playwright spec 1 passes; network guard active on every spec (no non-localhost requests)
+☐ grep -rn "http://\|https://" web/src --exclude=schema.d.ts → no external URLs (fonts bundled)
+☐ Mode badge tooltip text equals UI-G-1 wording exactly
+☐ localStorage access wrapped in try/catch (grep)
+☐ Makefile web targets and Playwright webServer use $(PYTHON) / .venv python and the nvm Node 20 PATH (Clarifications)
+☐ Backend make lint / typecheck / test still green (no backend regressions)
+```
+
+**D2a evaluation record:**
+
+```
+Evaluated: <date> by <session>
+Results:   <checklist with evidence>
+Verdict:   PASS | FAIL
+```
+
+---
+
+#### Phase D2b — Overview and Studio
+
+**1. Dependencies:** D2a PASS.
+
+**2. Scope and files:**
+- Step 7: `ArchitectureDiagram` (inline SVG, dash animation, dimmed "LLM reasoning layer · next" branch,
+  `prefers-reduced-motion`), `ModuleCard` ×3 (latest benchmark accuracy and p95, or "no report"), "Start demo" →
+  `/studio/quality`. This replaces the Overview placeholder.
+- Step 8: every Studio component in the Step 8 table with exactly those props, and the Studio page: three columns at
+  ≥ 1024 px, URL state `/studio/:module?fixture=<id>`, thresholds from `DemoConfig.thresholds` with reset, a 250 ms
+  debounce, `useCompare` re-runs, CSS transitions, and notifiable urgency with the "mandatory reporting" fallback.
+  This replaces the Studio placeholder.
+
+**3. Acceptance criteria:** all Step 7–8 behaviour; `noulView` used for every Noul label; colour never the only signal.
+
+**4. Tests to add:**
+- Vitest, from Step 11: "`VerdictStrip` hides without ground truth.", "`ProbabilityBars` shows the override note.",
+  "`DecisionCard` renders all three modules from **recorded responses** …" (the D2a samples).
+- Playwright, from Step 11: specs 2 (quality threshold 70 → 85 flips `auto_accept` → `review_needed`), 3 (router
+  override note at floor 0.99), 4 (JE shows the Flag tab and Dinkes card; common cold shows neither), 6 (deep-link
+  reload).
+
+**5. Verification:** as D2a, plus `make web-e2e` with specs 1–4 and 6 passing.
+
+**6. Deferred:** to D2c: the Playground page, spec 5, the screenshots, and the final D2 checklist.
+
+**D2b evaluation checklist:**
+
+```
+☐ make web-test green; new component tests pass (VerdictStrip, ProbabilityBars, DecisionCard ×3 modules)
+☐ make web-e2e → specs 1, 2, 3, 4, 6 pass; network guard active
+☐ Studio component props match the Step 8 table (read-through)
+☐ Noul labels use noulView everywhere (grep NoulMeter + QualityDecision use it)
+☐ Colour never the sole signal: DecisionCard lanes render icon + text (cite component)
+☐ grep -rn "http://\|https://" web/src --exclude=schema.d.ts → no external URLs
+☐ Backend make lint / typecheck / test still green
+```
+
+**D2b evaluation record:**
+
+```
+Evaluated: <date> by <session>
+Results:   <checklist with evidence>
+Verdict:   PASS | FAIL
+```
+
+---
+
+#### Phase D2c — Playground, screenshots, and final D2 regression
+
+**1. Dependencies:** D2b PASS.
+
+**2. Scope and files:** Step 9, the Playground page (module selector, CodeMirror JSON editor with lint, "load fixture as
+starting point", Run → `POST /compare/{module}` without `fixture_id`, 422 → `ErrorCard` with detail, no verdict strip);
+Playwright spec 5; screenshots of every D2 page at 1280×720 and 1920×1080 in `web/e2e/screenshots/`.
+
+**3. Acceptance criteria:** the whole D2 contract (Steps 1–11) is met, and the final D2 checklist below passes.
+
+**4. Tests to add:** Playwright, from Step 11: "5. Playground: an invalid Condition shows the ErrorCard with a request id."
+Plus a Vitest test that the Playground never sends `fixture_id`.
+
+**5. Verification:** the full final D2 checklist below, from a clean `rm -rf web/node_modules`.
+
+**6. Deferred:** nothing inside D2. The Pipeline screen is D3; Benchmarks and presenter mode are D4.
+
+**Final D2 checklist (the original D2 checklist, run after D2c):**
 
 ```
 ☐ node --version → v20.x; npm ci succeeds from a clean clone (rm -rf web/node_modules first)
@@ -1809,14 +1982,15 @@ web-e2e:      cd web && npm run e2e
 ☐ Colour never the sole signal: DecisionCard lanes render icon + text (cite component)
 ☐ localStorage access wrapped in try/catch (grep)
 ☐ Backend make test still green (no backend regressions)
+☐ Final code matches the full D2 contract (Steps 1–11) with the Clarifications applied
 ```
 
-### Evaluation Record
+**D2c / final D2 evaluation record:**
 
 ```
 Evaluated: <date> by <session>
 Screenshots: <paths>
-Results:   <checklist with evidence>
+Results:   <sub-phase checks + final checklist with evidence>
 Verdict:   PASS | FAIL
 ```
 
