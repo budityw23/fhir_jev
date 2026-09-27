@@ -26,18 +26,24 @@ Phase order: `D1d → D1e → D2 → D3 → D4` (read the plan headings if later
   export PATH="$HOME/.nvm/versions/node/v24.13.0/bin:$PATH"   # provides node + codex
   CODEX="$HOME/.nvm/versions/node/v24.13.0/bin/codex"
   ```
+- Codex CLI **0.157.1** (upgraded Sep 27, 2026). **`--full-auto` no longer exists** (removed after 0.125).
 - `codex exec` flags used: `--json` (JSONL events on stdout), `-o <file>` (final message),
-  `--full-auto` (workspace-write sandbox, no approvals), `-C <dir>`, prompt from stdin via `-`,
-  `-c key=value` config overrides.
+  `-s workspace-write` (sandbox), `-C <dir>`, prompt from stdin via `-`, `-c key=value` overrides.
+  Headless exec runs with approval "never": a command the sandbox blocks fails instead of waiting.
+  Don't use `--approve-for-me` (it adds an automatic reviewer the loop doesn't need).
 - `codex exec resume <SESSION_ID> [PROMPT]` has **no `-C` and no `-s`**. It filters sessions by
-  cwd, so run it **from the repo root**. It accepts `--json`, `--full-auto`, `-o`, `-c`.
+  cwd, so run it **from the repo root**, and set the sandbox with
+  `-c 'sandbox_mode="workspace-write"'`. It accepts `--json`, `-o`, `-c`.
 - The session ID is `thread_id` in the **first** `{"type":"thread.started",...}` event of the
   `--json` stream.
 - The workspace-write sandbox disables network by default; phases need uvicorn + curl on
   localhost, so pass `-c sandbox_workspace_write.network_access=true`.
-- `~/.codex/config.toml` selects model `gpt-5.6-terra`; **CLI 0.125.0 is too old for it** (the
-  server answers "requires a newer version of Codex"). Budi upgrades with
-  `npm install -g @openai/codex@latest` under Node v24.13.0. The preflight enforces this.
+- `~/.codex/config.toml` selects model `gpt-5.6-terra`, which needs a recent CLI (0.125.0 was
+  rejected with "requires a newer version of Codex"). If that error returns, the fix is
+  `npm install -g @openai/codex@latest` under Node v24.13.0.
+- Verified Sep 27, 2026 with 0.157.1: exec in workspace-write + network reaches a localhost server
+  (HTTP 200); the session ID comes from `thread.started`; resume continues the same thread and can
+  write files. A "bubblewrap not on PATH" warning is harmless (Codex uses its bundled copy).
 - The `rtk` hook rewrites `curl` and `git diff` output. Use `rtk proxy curl ...` and
   `rtk proxy git ...` whenever you parse output.
 - Never `pkill -f <pattern>` when the pattern appears in your own command line (it kills your
@@ -47,14 +53,14 @@ Phase order: `D1d → D1e → D2 → D3 → D4` (read the plan headings if later
 
 1. **Git:** `git status --porcelain` is empty; the branch is `main`; record `HEAD` as the
    phase's base commit.
-2. **Codex:** `$CODEX --version`; `$CODEX exec --help` still lists `--json`, `-o`, `--full-auto`;
-   `$CODEX exec resume --help` exists. If the flags changed, adapt this procedure only if the
+2. **Codex:** `$CODEX --version`; `$CODEX exec --help` still lists `--json`, `-o`, `-s/--sandbox`;
+   `$CODEX exec resume --help` still lists `--json`, `-o`, `-c`. If the flags changed, adapt this procedure only if the
    meaning is unambiguous; otherwise STOP.
 3. **Codex smoke test** in a scratch dir (NOT the repo), about 30 s:
    ```bash
    T=$(mktemp -d) && cd "$T" && git init -q .
    echo 'Run exactly: python3 -m http.server 18799 >/dev/null 2>&1 & sleep 1; curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:18799/; kill %1. Reply with only the status code.' \
-     | timeout 300 "$CODEX" exec --json --full-auto -c 'sandbox_workspace_write.network_access=true' -o "$T/last.md" - > "$T/events.jsonl" 2> "$T/stderr.txt"
+     | timeout 300 "$CODEX" exec --json -s workspace-write -c 'sandbox_workspace_write.network_access=true' -o "$T/last.md" - > "$T/events.jsonl" 2> "$T/stderr.txt"
    ```
    Expect exit 0 and `200` in `last.md`.
    - `requires a newer version of Codex` → STOP: *"Upgrade Codex CLI: `npm install -g @openai/codex@latest` (Node 24.13)."*
@@ -93,7 +99,7 @@ notification. Never poll in a tight loop.
 cd /home/budi/code/sphere_project/FHIR_JEV
 export PATH="$HOME/.nvm/versions/node/v24.13.0/bin:$PATH"
 P=<phase>
-timeout 4h "$CODEX" exec --json --full-auto \
+timeout 4h "$CODEX" exec --json -s workspace-write \
   -c 'sandbox_workspace_write.network_access=true' \
   -C "$PWD" -o ".phase/$P.result.md" - < ".phase/$P.prompt.md" \
   > ".phase/$P.log" 2>&1
@@ -168,8 +174,8 @@ D1c record.
      contract quote), what "done" means, and "don't touch anything else; same rules as before".
   2. Resume the **same** session in the background, from the repo root:
      ```bash
-     timeout 2h "$CODEX" exec resume "$(cat .phase/$P.session)" --json --full-auto \
-       -c 'sandbox_workspace_write.network_access=true' \
+     timeout 2h "$CODEX" exec resume "$(cat .phase/$P.session)" --json \
+       -c 'sandbox_mode="workspace-write"' -c 'sandbox_workspace_write.network_access=true' \
        -o ".phase/$P.fix<N>.result.md" - < ".phase/$P.fix<N>.prompt.md" >> ".phase/$P.log" 2>&1
      echo $? > ".phase/$P.exit"
      ```
