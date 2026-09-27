@@ -2098,7 +2098,30 @@ Verdict:   PASS. D2 (web UI: shell, Overview, Studio, Playground) is complete; D
 **Depends on:** D2 PASS.
 **Requirement refs:** UI-P-1…7, UI-G-4, Demo Plan §5 D3 live-mode constraints.
 
-### Codex Implementation
+### How D3 Is Organised
+
+Split on Sep 27, 2026 (Budi's decision), in the same way as D1 and D2. Steps 1–5 below are the **unchanged D3 specification
+(source of truth)**; the sub-phases only decide when each part is built:
+
+```
+D3a Live Pipeline screen (+ SSE restart fix) → D3b Observability drawer, reconnect and final D3 checklist
+```
+
+Rules for every sub-phase: follow AGENTS.md and the D2 conventions (Node 20 via nvm, ESLint max-len covering JSX, no
+obfuscation, tests that fail when their behaviour is removed); the backend suite stays green; the evaluator views the
+screenshots.
+
+**Decisions and clarifications (Sep 27, 2026; the contract text is unchanged):**
+- **SSE restart fix (Budi's decision, in D3a).** The decision feed is in memory, so a server restart resets `seq` to 1. A
+  reconnecting `EventSource` sends its old `Last-Event-ID` (e.g. 812). D1d then replays `since(812)` (nothing) and drops every
+  live event with `seq ≤ 812`, so the UI shows "connected" but receives nothing. Rule added to `src/jev_fhir/demo/sse.py`:
+  **if `Last-Event-ID` is greater than the highest `seq` the feed has issued, treat it as absent** (the server restarted:
+  live-only, no dropping). This is a small, documented change to D1d behaviour, with a backend test.
+- "`ThresholdSliders` (all modules)" in `RunControls` means one `ThresholdSliders` per module (quality, router,
+  notifiable), reusing the D2b component and its props unchanged.
+- Throughput uses `DecisionEvent.timestamp`; cost uses $42 per 1e9 tokens, shown only in live mode.
+
+### D3 Contract (Source of Truth)
 
 **Goal:** the "hub under load" screen streaming real decisions over SSE, plus the observability drawer.
 
@@ -2168,7 +2191,91 @@ export function parsePrometheus(text: string): Array<{ name: string; labels: Rec
   5. The drawer opens and shows a request id and a parsed metrics table.
   6. No console errors during a full run.
 
-### Codex Evaluation Checklist
+### D3 Implementation Sequence
+
+Baseline before D3: backend 408, web Vitest 28, Playwright 8.
+
+---
+
+#### Phase D3a — Live Pipeline screen (+ SSE restart fix)
+
+**1. Dependencies:** D2 PASS (`ad95859`).
+
+**2. Scope and files:**
+- Backend: the SSE restart rule in `src/jev_fhir/demo/sse.py`, plus a test in `tests/test_demo_sse.py`. That is the only
+  backend change.
+- Step 1: `web/src/api/sse.ts` `useDecisionStream`.
+- Step 2: `web/src/pages/pipeline/reducer.ts`, the pure reducer.
+- Step 3: the Pipeline page (replacing its placeholder) with all 8 components: `RunControls`, `StatsStrip`, `LaneBoard`,
+  `LiveFeed`, `LatencySparkline`, `ConfidenceHistogram`, `ReviewQueue`, `RerunDelta`; the feed caps at 100 rendered rows;
+  chart updates are throttled.
+- Screenshots: add the Pipeline page (after a finished run) to the screenshots spec, at both sizes.
+
+**3. Acceptance criteria:** Steps 1–3 behave as specified; the restart rule holds; a full unit run's lane counters sum to
+`total`; stop leaves no running task; the feed never renders more than 100 rows.
+
+**4. Tests to add:**
+- Backend: a `Last-Event-ID` greater than the feed's highest issued `seq` is treated as absent. Live events after it are
+  delivered, not dropped; a planted bug removing the rule must fail the test. Existing D1d SSE tests unchanged.
+- Vitest, from Step 5: "Reducer: `started` → decisions → `finished`; lane counts sum to `processed`; foreign `run_id` ignored;
+  `previous` kept on a new start; the event cap is 500." and "`RerunDelta` shows the sign." Plus: the feed renders ≤ 100
+  rows; `StatsStrip` percentiles and agreement; `ReviewQueue` shows exact `lane_reason` and its Accept / Override stays
+  client-side; `useDecisionStream` wires the `decision` / `run` listeners and closes on unmount (mock `EventSource`).
+- Playwright, from Step 5: specs 1 (full unit run, lanes sum to `total`), 2 (stop mid-run at 1/s → "stopped",
+  processed < total), 3 (re-run at quality threshold 95 → RerunDelta review count increases), 4 (a review item shows its
+  `lane_reason`), 6 (no console errors during a full run).
+
+**5. Verification:** `make web-test && make web-build && make web-e2e`; backend `make lint && make typecheck && make test`;
+real server: start a paced run, stop it, curl `GET /decisions?limit=1` twice 3 s apart (seq stable).
+
+**6. Deferred:** to D3b: the observability drawer (Step 4) and `parsePrometheus`, spec 5, the two-tab and kill/restart
+reconnect checks, and the final D3 checklist.
+
+**D3a evaluation checklist:**
+
+```
+☐ make web-test green; make test (backend) green (backend 408 + restart-rule test)
+☐ make web-e2e → all D2 specs + D3 specs 1, 2, 3, 4, 6 pass
+☐ Lanes + counters sum to total for a full unit run (cite e2e assertion)
+☐ Stop leaves no running task: after stop, GET /decisions?limit=1 seq stable for 3 s (curl twice)
+☐ Feed never renders > 100 rows (inspect DOM count in e2e)
+☐ Review items show exact lane_reason strings from the D1 table
+☐ SSE restart rule: Last-Event-ID above the highest issued seq is treated as absent (backend test; planted bug caught)
+☐ No console errors / unhandled promise rejections in e2e logs
+☐ Pipeline screenshots at 1280×720 and 1920×1080 viewed by the evaluator
+```
+
+**D3a evaluation record:**
+
+```
+Evaluated: <date> by <session>
+Results:   <checklist with evidence>
+Verdict:   PASS | FAIL
+```
+
+---
+
+#### Phase D3b — Observability drawer, reconnect, and final D3 regression
+
+**1. Dependencies:** D3a PASS.
+
+**2. Scope and files:** Step 4, the observability drawer (TopBar toggle, last 50 decisions plus live updates, last
+`X-Request-Id` / `X-Request-Duration-Ms`, metrics every 5 s while open with the raw toggle) and `parsePrometheus`. Proof of
+the two-tab and kill/restart reconnect behaviour.
+
+**3. Acceptance criteria:** Step 4 as specified; two tabs both receive events; after a uvicorn kill and restart during a
+run, the page shows disconnected, reconnects without a reload, **and receives new events** (verifying the D3a restart
+rule end to end).
+
+**4. Tests to add:** Vitest, from Step 5: "`parsePrometheus` on a captured metrics sample." Playwright, from Step 5: spec 5
+(the drawer opens and shows a request id and a parsed metrics table). A two-page e2e test (both tabs receive events).
+The reconnect check may be an e2e test with its own controlled server, or a documented evaluator procedure.
+
+**5. Verification:** the final D3 checklist below.
+
+**6. Deferred:** nothing inside D3. Presenter mode and the `O` shortcut are D4.
+
+**Final D3 checklist (the original D3 checklist, run after D3b):**
 
 ```
 ☐ make web-test green; make test (backend) green
@@ -2181,13 +2288,14 @@ export function parsePrometheus(text: string): Array<{ name: string; labels: Rec
 ☐ Review items show exact lane_reason strings from the D1 table
 ☐ Drawer shows X-Request-Id matching the last response header
 ☐ No console errors / unhandled promise rejections in e2e logs
+☐ Final code matches the full D3 contract (Steps 1–5), with the SSE restart rule in place
 ```
 
-### Evaluation Record
+**D3b / final D3 evaluation record:**
 
 ```
 Evaluated: <date> by <session>
-Results:   <checklist with evidence>
+Results:   <sub-phase checks + final checklist with evidence>
 Verdict:   PASS | FAIL
 ```
 
