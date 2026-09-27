@@ -1,0 +1,1821 @@
+{
+  "components": {
+    "schemas": {
+      "BenchmarkSummary": {
+        "description": "Metadata displayed for a completed benchmark report.",
+        "properties": {
+          "dataset": {
+            "title": "Dataset",
+            "type": "string"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "jev_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jev Model"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "generated_at",
+          "mode",
+          "dataset",
+          "jev_model"
+        ],
+        "title": "BenchmarkSummary",
+        "type": "object"
+      },
+      "BundleRouteRequest": {
+        "description": "Request body for routing a FHIR Bundle.",
+        "properties": {
+          "bundle": {
+            "additionalProperties": true,
+            "title": "Bundle",
+            "type": "object"
+          }
+        },
+        "required": [
+          "bundle"
+        ],
+        "title": "BundleRouteRequest",
+        "type": "object"
+      },
+      "BundleRouteResponse": {
+        "description": "Structured result returned by the Bundle router.",
+        "properties": {
+          "bundle_id": {
+            "title": "Bundle Id",
+            "type": "string"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "latency_ms": {
+            "title": "Latency Ms",
+            "type": "number"
+          },
+          "probabilities": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Probabilities",
+            "type": "object"
+          }
+        },
+        "required": [
+          "category",
+          "confidence",
+          "probabilities",
+          "bundle_id",
+          "latency_ms"
+        ],
+        "title": "BundleRouteResponse",
+        "type": "object"
+      },
+      "ChoiceResult": {
+        "description": "Result of a Jev Choice decision.",
+        "properties": {
+          "choice": {
+            "title": "Choice",
+            "type": "string"
+          },
+          "confidence": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "latency_ms": {
+            "minimum": 0.0,
+            "title": "Latency Ms",
+            "type": "number"
+          },
+          "probabilities": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Probabilities",
+            "type": "object"
+          },
+          "tokens_used": {
+            "minimum": 0.0,
+            "title": "Tokens Used",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "choice",
+          "confidence",
+          "probabilities",
+          "latency_ms",
+          "tokens_used"
+        ],
+        "title": "ChoiceResult",
+        "type": "object"
+      },
+      "CompareRequest": {
+        "description": "A FHIR resource to decide, with an optional fixture id (for ground truth) and overrides.",
+        "properties": {
+          "fixture_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fixture Id"
+          },
+          "resource": {
+            "additionalProperties": true,
+            "title": "Resource",
+            "type": "object"
+          },
+          "resource_type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "Patient",
+                  "Observation"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Type"
+          },
+          "thresholds": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ThresholdOverrides"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "resource"
+        ],
+        "title": "CompareRequest",
+        "type": "object"
+      },
+      "CompareResponse": {
+        "description": "A Jev decision side by side with the rules, ground truth, lane and audit trail.",
+        "properties": {
+          "audit_event": {
+            "additionalProperties": true,
+            "title": "Audit Event",
+            "type": "object"
+          },
+          "ground_truth": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ground Truth"
+          },
+          "jev": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QualityScoreResponse"
+              },
+              {
+                "$ref": "#/components/schemas/BundleRouteResponse"
+              },
+              {
+                "$ref": "#/components/schemas/NotifiableDetectionResponse"
+              }
+            ],
+            "title": "Jev"
+          },
+          "jev_decision": {
+            "title": "Jev Decision",
+            "type": "string"
+          },
+          "jev_raw": {
+            "items": {
+              "$ref": "#/components/schemas/JevCall"
+            },
+            "title": "Jev Raw",
+            "type": "array"
+          },
+          "lane": {
+            "enum": [
+              "auto_accepted",
+              "routed",
+              "flagged",
+              "review"
+            ],
+            "title": "Lane",
+            "type": "string"
+          },
+          "lane_reason": {
+            "title": "Lane Reason",
+            "type": "string"
+          },
+          "module": {
+            "enum": [
+              "quality",
+              "router",
+              "notifiable"
+            ],
+            "title": "Module",
+            "type": "string"
+          },
+          "override_applied": {
+            "title": "Override Applied",
+            "type": "boolean"
+          },
+          "rule": {
+            "$ref": "#/components/schemas/RuleDecision"
+          },
+          "serialized_state": {
+            "additionalProperties": true,
+            "title": "Serialized State",
+            "type": "object"
+          },
+          "thresholds": {
+            "$ref": "#/components/schemas/Thresholds"
+          },
+          "tokens_used": {
+            "title": "Tokens Used",
+            "type": "integer"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/Verdict"
+          }
+        },
+        "required": [
+          "module",
+          "jev",
+          "jev_decision",
+          "jev_raw",
+          "rule",
+          "ground_truth",
+          "verdict",
+          "serialized_state",
+          "override_applied",
+          "lane",
+          "lane_reason",
+          "audit_event",
+          "thresholds",
+          "tokens_used"
+        ],
+        "title": "CompareResponse",
+        "type": "object"
+      },
+      "DecisionEvent": {
+        "description": "One demo decision as published to the feed; seq is stamped by DecisionFeed.publish.",
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "decision": {
+            "title": "Decision",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "fixture_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fixture Id"
+          },
+          "ground_truth_match": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ground Truth Match"
+          },
+          "jev_latency_ms": {
+            "title": "Jev Latency Ms",
+            "type": "number"
+          },
+          "lane": {
+            "enum": [
+              "auto_accepted",
+              "routed",
+              "flagged",
+              "review"
+            ],
+            "title": "Lane",
+            "type": "string"
+          },
+          "lane_reason": {
+            "title": "Lane Reason",
+            "type": "string"
+          },
+          "latency_ms": {
+            "title": "Latency Ms",
+            "type": "number"
+          },
+          "module": {
+            "enum": [
+              "quality",
+              "router",
+              "notifiable"
+            ],
+            "title": "Module",
+            "type": "string"
+          },
+          "resource_reference": {
+            "title": "Resource Reference",
+            "type": "string"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "seq": {
+            "title": "Seq",
+            "type": "integer"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          },
+          "tokens_used": {
+            "title": "Tokens Used",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "seq",
+          "timestamp",
+          "run_id",
+          "fixture_id",
+          "module",
+          "resource_reference",
+          "decision",
+          "confidence",
+          "lane",
+          "lane_reason",
+          "latency_ms",
+          "jev_latency_ms",
+          "tokens_used",
+          "ground_truth_match"
+        ],
+        "title": "DecisionEvent",
+        "type": "object"
+      },
+      "DemoConfig": {
+        "description": "Demo mode, model, default thresholds, route options and the exact Jev questions.",
+        "properties": {
+          "jev_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jev Model"
+          },
+          "mode": {
+            "enum": [
+              "mock",
+              "live"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "questions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Questions",
+            "type": "object"
+          },
+          "route_options": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Route Options",
+            "type": "array"
+          },
+          "thresholds": {
+            "$ref": "#/components/schemas/Thresholds"
+          }
+        },
+        "required": [
+          "mode",
+          "jev_model",
+          "thresholds",
+          "route_options",
+          "questions"
+        ],
+        "title": "DemoConfig",
+        "type": "object"
+      },
+      "FixtureEntry": {
+        "description": "One allow-listed fixture with its label, provenance and ground truth.",
+        "properties": {
+          "approved": {
+            "title": "Approved",
+            "type": "boolean"
+          },
+          "difficulty": {
+            "enum": [
+              "easy",
+              "hard"
+            ],
+            "title": "Difficulty",
+            "type": "string"
+          },
+          "ground_truth": {
+            "additionalProperties": true,
+            "title": "Ground Truth",
+            "type": "object"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "module": {
+            "enum": [
+              "quality",
+              "router",
+              "notifiable"
+            ],
+            "title": "Module",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "resource_type": {
+            "title": "Resource Type",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "unit",
+              "hard",
+              "generated",
+              "demo"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "module",
+          "resource_type",
+          "source",
+          "difficulty",
+          "label",
+          "ground_truth",
+          "approved"
+        ],
+        "title": "FixtureEntry",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "JevCall": {
+        "description": "One typed Jev primitive call and its raw result.",
+        "properties": {
+          "options": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options"
+          },
+          "primitive": {
+            "enum": [
+              "choice",
+              "score",
+              "noul"
+            ],
+            "title": "Primitive",
+            "type": "string"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChoiceResult"
+              },
+              {
+                "$ref": "#/components/schemas/ScoreResult"
+              },
+              {
+                "$ref": "#/components/schemas/NoulResult"
+              }
+            ],
+            "title": "Result"
+          }
+        },
+        "required": [
+          "primitive",
+          "question",
+          "result"
+        ],
+        "title": "JevCall",
+        "type": "object"
+      },
+      "NotifiableDetectRequest": {
+        "description": "Request body for detecting a notifiable FHIR Condition.",
+        "properties": {
+          "condition": {
+            "additionalProperties": true,
+            "title": "Condition",
+            "type": "object"
+          }
+        },
+        "required": [
+          "condition"
+        ],
+        "title": "NotifiableDetectRequest",
+        "type": "object"
+      },
+      "NotifiableDetectionResponse": {
+        "description": "Structured result returned by the notifiable-disease detector.",
+        "properties": {
+          "condition_code": {
+            "title": "Condition Code",
+            "type": "string"
+          },
+          "condition_display": {
+            "title": "Condition Display",
+            "type": "string"
+          },
+          "flag_resource": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flag Resource"
+          },
+          "is_notifiable": {
+            "title": "Is Notifiable",
+            "type": "boolean"
+          },
+          "latency_ms": {
+            "title": "Latency Ms",
+            "type": "number"
+          },
+          "probability": {
+            "title": "Probability",
+            "type": "number"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "is_notifiable",
+          "probability",
+          "status",
+          "condition_code",
+          "condition_display",
+          "flag_resource",
+          "latency_ms"
+        ],
+        "title": "NotifiableDetectionResponse",
+        "type": "object"
+      },
+      "NoulResult": {
+        "description": "Result of a Jev Noul decision; probability is P(statement is true).",
+        "properties": {
+          "answer": {
+            "title": "Answer",
+            "type": "boolean"
+          },
+          "latency_ms": {
+            "minimum": 0.0,
+            "title": "Latency Ms",
+            "type": "number"
+          },
+          "probability": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Probability",
+            "type": "number"
+          },
+          "tokens_used": {
+            "minimum": 0.0,
+            "title": "Tokens Used",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "answer",
+          "probability",
+          "latency_ms",
+          "tokens_used"
+        ],
+        "title": "NoulResult",
+        "type": "object"
+      },
+      "PipelineRunRequest": {
+        "description": "What to replay: fixture source, modules, pacing, and optional threshold overrides.",
+        "properties": {
+          "modules": {
+            "default": [
+              "quality",
+              "router",
+              "notifiable"
+            ],
+            "items": {
+              "enum": [
+                "quality",
+                "router",
+                "notifiable"
+              ],
+              "type": "string"
+            },
+            "title": "Modules",
+            "type": "array"
+          },
+          "rate_per_s": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 50.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": 4.0,
+            "title": "Rate Per S"
+          },
+          "source": {
+            "default": "unit",
+            "enum": [
+              "all",
+              "unit",
+              "hard",
+              "generated",
+              "demo"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "thresholds": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ThresholdOverrides"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "PipelineRunRequest",
+        "type": "object"
+      },
+      "PipelineRunResponse": {
+        "description": "Acknowledgement of a started run; decisions arrive through the feed.",
+        "properties": {
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "status": {
+            "const": "started",
+            "title": "Status",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_id",
+          "total",
+          "status"
+        ],
+        "title": "PipelineRunResponse",
+        "type": "object"
+      },
+      "QualityScoreRequest": {
+        "description": "Request body for scoring a FHIR Patient or Observation.",
+        "properties": {
+          "resource": {
+            "additionalProperties": true,
+            "title": "Resource",
+            "type": "object"
+          },
+          "resource_type": {
+            "title": "Resource Type",
+            "type": "string"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold"
+          }
+        },
+        "required": [
+          "resource_type",
+          "resource"
+        ],
+        "title": "QualityScoreRequest",
+        "type": "object"
+      },
+      "QualityScoreResponse": {
+        "description": "Structured result returned by the quality-scoring module.",
+        "properties": {
+          "action": {
+            "title": "Action",
+            "type": "string"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "latency_ms": {
+            "title": "Latency Ms",
+            "type": "number"
+          },
+          "level": {
+            "title": "Level",
+            "type": "string"
+          },
+          "missing_fields": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Fields",
+            "type": "array"
+          },
+          "nik_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nik Confidence"
+          },
+          "nik_valid": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nik Valid"
+          },
+          "resource_reference": {
+            "title": "Resource Reference",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "score",
+          "confidence",
+          "level",
+          "missing_fields",
+          "nik_valid",
+          "nik_confidence",
+          "resource_reference",
+          "latency_ms",
+          "action"
+        ],
+        "title": "QualityScoreResponse",
+        "type": "object"
+      },
+      "RuleDecision": {
+        "description": "The rule baseline's decision, in the same vocabulary as the Jev decision.",
+        "properties": {
+          "decision": {
+            "title": "Decision",
+            "type": "string"
+          },
+          "nik_valid": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nik Valid"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          }
+        },
+        "required": [
+          "decision"
+        ],
+        "title": "RuleDecision",
+        "type": "object"
+      },
+      "ScoreResult": {
+        "description": "Result of a Jev Score decision.",
+        "properties": {
+          "confidence": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "latency_ms": {
+            "minimum": 0.0,
+            "title": "Latency Ms",
+            "type": "number"
+          },
+          "level_probabilities": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level Probabilities"
+          },
+          "score": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "type": "integer"
+          },
+          "tokens_used": {
+            "minimum": 0.0,
+            "title": "Tokens Used",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "score",
+          "confidence",
+          "latency_ms",
+          "tokens_used"
+        ],
+        "title": "ScoreResult",
+        "type": "object"
+      },
+      "ThresholdOverrides": {
+        "description": "Optional per-request threshold changes, merged onto the configured defaults.",
+        "properties": {
+          "notifiable_confirmed": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notifiable Confirmed"
+          },
+          "notifiable_review": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notifiable Review"
+          },
+          "quality_threshold": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality Threshold"
+          },
+          "route_confidence_minimum": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Confidence Minimum"
+          }
+        },
+        "title": "ThresholdOverrides",
+        "type": "object"
+      },
+      "Thresholds": {
+        "description": "Effective decision thresholds for one demo decision; review must not exceed confirmed.",
+        "properties": {
+          "notifiable_confirmed": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Notifiable Confirmed",
+            "type": "number"
+          },
+          "notifiable_review": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Notifiable Review",
+            "type": "number"
+          },
+          "quality_threshold": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Quality Threshold",
+            "type": "integer"
+          },
+          "route_confidence_minimum": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Route Confidence Minimum",
+            "type": "number"
+          }
+        },
+        "required": [
+          "quality_threshold",
+          "route_confidence_minimum",
+          "notifiable_confirmed",
+          "notifiable_review"
+        ],
+        "title": "Thresholds",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "Verdict": {
+        "description": "Whether Jev and the rules matched ground truth; None when there is no ground truth.",
+        "properties": {
+          "jev_correct": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jev Correct"
+          },
+          "rule_correct": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Correct"
+          }
+        },
+        "required": [
+          "jev_correct",
+          "rule_correct"
+        ],
+        "title": "Verdict",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Proof-of-concept: Jev AI decision primitives for FHIR clinical workflows",
+    "title": "Jev \u00d7 FHIR Decision Layer",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/demo/benchmarks": {
+      "get": {
+        "description": "List valid completed benchmark reports, newest first.",
+        "operationId": "get_benchmarks_api_v1_demo_benchmarks_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BenchmarkSummary"
+                  },
+                  "title": "Response Get Benchmarks Api V1 Demo Benchmarks Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Benchmarks",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/v1/demo/benchmarks/{name}": {
+      "get": {
+        "description": "Return one regex-validated raw benchmark report.",
+        "operationId": "get_benchmark_api_v1_demo_benchmarks__name__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Benchmark Api V1 Demo Benchmarks  Name  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Benchmark",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/v1/demo/compare/{module}": {
+      "post": {
+        "description": "Compare a single FHIR resource through Jev and its rule baseline.",
+        "operationId": "compare_api_v1_demo_compare__module__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "module",
+            "required": true,
+            "schema": {
+              "enum": [
+                "quality",
+                "router",
+                "notifiable"
+              ],
+              "title": "Module",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompareRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompareResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Compare",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/v1/demo/config": {
+      "get": {
+        "description": "Return the active demo configuration and module prompts.",
+        "operationId": "get_config_api_v1_demo_config_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoConfig"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Config",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/v1/demo/decisions": {
+      "get": {
+        "description": "Return recent decision events in descending sequence order.",
+        "operationId": "get_decisions_api_v1_demo_decisions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DecisionEvent"
+                  },
+                  "title": "Response Get Decisions Api V1 Demo Decisions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Decisions",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/v1/demo/decisions/stream": {
+      "get": {
+        "description": "Stream replayed or live decision-feed events as server-sent events.",
+        "operationId": "stream_decisions_api_v1_demo_decisions_stream_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Stream Decisions",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/v1/demo/fixtures": {
+      "get": {
+        "description": "List the filtered, allow-listed fixture catalog.",
+        "operationId": "get_fixtures_api_v1_demo_fixtures_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "module",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "quality",
+                    "router",
+                    "notifiable"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Module"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "unit",
+                    "hard",
+                    "generated",
+                    "demo"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source"
+            }
+          },
+          {
+            "in": "query",
+            "name": "difficulty",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "easy",
+                    "hard"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Difficulty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FixtureEntry"
+                  },
+                  "title": "Response Get Fixtures Api V1 Demo Fixtures Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Fixtures",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/v1/demo/fixtures/{fixture_id}": {
+      "get": {
+        "description": "Load an allow-listed FHIR resource without constructing user paths.",
+        "operationId": "get_fixture_api_v1_demo_fixtures__fixture_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "fixture_id",
+            "required": true,
+            "schema": {
+              "title": "Fixture Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Fixture Api V1 Demo Fixtures  Fixture Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Fixture",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/v1/demo/pipeline/run": {
+      "post": {
+        "description": "Start the finite labelled-fixture replay pipeline.",
+        "operationId": "run_pipeline_api_v1_demo_pipeline_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PipelineRunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PipelineRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Pipeline",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/v1/demo/pipeline/{run_id}/stop": {
+      "post": {
+        "description": "Stop the active named pipeline run, if it is still running.",
+        "operationId": "stop_pipeline_api_v1_demo_pipeline__run_id__stop_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "title": "Response Stop Pipeline Api V1 Demo Pipeline  Run Id  Stop Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Stop Pipeline",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/v1/detect-notifiable": {
+      "post": {
+        "description": "Detect reportable disease conditions and return a Flag when confirmed.",
+        "operationId": "detect_notifiable_api_v1_detect_notifiable_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotifiableDetectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotifiableDetectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Detect Notifiable",
+        "tags": [
+          "notifiable"
+        ]
+      }
+    },
+    "/api/v1/metrics": {
+      "get": {
+        "description": "Expose Prometheus-compatible counters and histograms.",
+        "operationId": "metrics_api_v1_metrics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Metrics",
+        "tags": [
+          "observability"
+        ]
+      }
+    },
+    "/api/v1/quality-score": {
+      "post": {
+        "description": "Return a data-quality decision for a raw FHIR resource.",
+        "operationId": "quality_score_api_v1_quality_score_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualityScoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualityScoreResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Quality Score",
+        "tags": [
+          "quality"
+        ]
+      }
+    },
+    "/api/v1/route-bundle": {
+      "post": {
+        "description": "Route a raw FHIR Bundle to a declared processing category.",
+        "operationId": "route_bundle_api_v1_route_bundle_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BundleRouteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BundleRouteResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Route Bundle",
+        "tags": [
+          "routing"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "description": "Report that the API has initialized its configured Jev client.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "title": "Response Health Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  }
+}

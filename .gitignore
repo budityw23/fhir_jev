@@ -22,6 +22,9 @@ htmlcov/
 # Demo UI (web/)
 web/node_modules/
 web/dist/
+web/e2e/screenshots/
+web/test-results/
+web/playwright-report/
 
 # Local tooling
 .claude/settings.local.json

@@ -1,0 +1,118 @@
+{
+  "audit_event": {
+    "agent": [
+      {
+        "requestor": false,
+        "who": {
+          "display": "Jev \u00d7 FHIR bundle_router"
+        }
+      }
+    ],
+    "entity": [
+      {
+        "detail": [
+          {
+            "type": "decision",
+            "valueString": "unknown"
+          }
+        ],
+        "what": {
+          "reference": "Bundle/mixed-bundle"
+        }
+      }
+    ],
+    "recorded": "2000-01-01T00:00:00Z",
+    "resourceType": "AuditEvent",
+    "source": {
+      "observer": {
+        "display": "Jev \u00d7 FHIR Decision Layer"
+      }
+    },
+    "type": {
+      "code": "rest",
+      "display": "RESTful Operation",
+      "system": "http://terminology.hl7.org/CodeSystem/audit-event-type"
+    }
+  },
+  "ground_truth": {
+    "approved_by": null,
+    "expected_category": "unknown",
+    "rationale": "Existing unit routing expectation migrated into the labelled dataset."
+  },
+  "jev": {
+    "bundle_id": "mixed-bundle",
+    "category": "unknown",
+    "confidence": 0.92,
+    "latency_ms": 0.0,
+    "probabilities": {
+      "encounter_summary": 0.02,
+      "immunization_report": 0.02,
+      "lab_result": 0.92,
+      "medication_dispense": 0.02,
+      "unknown": 0.02
+    }
+  },
+  "jev_decision": "unknown",
+  "jev_raw": [
+    {
+      "options": [
+        "lab_result",
+        "encounter_summary",
+        "immunization_report",
+        "medication_dispense",
+        "unknown"
+      ],
+      "primitive": "choice",
+      "question": "What type of clinical data does this FHIR Bundle primarily contain?",
+      "result": {
+        "choice": "lab_result",
+        "confidence": 0.92,
+        "latency_ms": 0.0,
+        "probabilities": {
+          "encounter_summary": 0.02,
+          "immunization_report": 0.02,
+          "lab_result": 0.92,
+          "medication_dispense": 0.02,
+          "unknown": 0.02
+        },
+        "tokens_used": 40
+      }
+    }
+  ],
+  "lane": "review",
+  "lane_reason": "confidence 0.92 < floor 0.99",
+  "module": "router",
+  "override_applied": true,
+  "rule": {
+    "decision": "encounter_summary",
+    "nik_valid": null,
+    "score": null
+  },
+  "serialized_state": {
+    "bundle_type": "collection",
+    "contains_condition_codes": true,
+    "contains_immunization": false,
+    "contains_lab_codes": true,
+    "contains_medication": false,
+    "dominant_resource_type": "Observation",
+    "entry_count": 2,
+    "entry_resource_types": [
+      "Observation",
+      "Condition"
+    ],
+    "has_encounter_reference": true,
+    "has_patient_reference": true,
+    "resource_type": "Bundle"
+  },
+  "thresholds": {
+    "notifiable_confirmed": 0.8,
+    "notifiable_review": 0.5,
+    "quality_threshold": 70,
+    "route_confidence_minimum": 0.99
+  },
+  "tokens_used": 40,
+  "verdict": {
+    "jev_correct": true,
+    "rule_correct": false
+  }
+}

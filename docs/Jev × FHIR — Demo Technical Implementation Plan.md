@@ -1876,26 +1876,58 @@ make demo &   # then: curl -s :8000/demo | grep -c '<div id="root">'; curl -s :8
 **D2a evaluation checklist:**
 
 ```
-☐ node --version → v20.x; npm ci succeeds from a clean clone (rm -rf web/node_modules first)
-☐ make web-test → eslint 0 errors, tsc 0 errors, vitest all pass
-☐ make web-types then git diff --exit-code web/src/api/schema.d.ts → no diff (types in sync with backend)
-☐ grep -rn "interface CompareResponse\|type CompareResponse =" web/src --exclude=schema.d.ts → only re-exports in types.ts
-☐ make web-build → web/dist/index.html exists; no files > 1 MB except sourcemaps
-☐ make demo → curl -s :8000/demo | grep -c "<div id=\"root\">" → 1; curl :8000/demo/studio/quality → index.html (SPA fallback)
-☐ Playwright spec 1 passes; network guard active on every spec (no non-localhost requests)
-☐ grep -rn "http://\|https://" web/src --exclude=schema.d.ts → no external URLs (fonts bundled)
-☐ Mode badge tooltip text equals UI-G-1 wording exactly
-☐ localStorage access wrapped in try/catch (grep)
-☐ Makefile web targets and Playwright webServer use $(PYTHON) / .venv python and the nvm Node 20 PATH (Clarifications)
-☐ Backend make lint / typecheck / test still green (no backend regressions)
+✅ node --version → v20.x; npm ci succeeds from a clean clone (rm -rf web/node_modules first)
+   → v20.19.0; `rm -rf web/node_modules && make web-install` (npm ci from the lockfile) succeeds
+✅ make web-test → eslint 0 errors, tsc 0 errors, vitest all pass
+   → eslint 0 (including max-len 100), tsc 0, Vitest 12/12 in 5 files; also passes with NO node on PATH (NODE_BIN)
+✅ make web-types then git diff --exit-code web/src/api/schema.d.ts → no diff (types in sync with backend)
+   → openapi.json, schema.d.ts and the 3 samples are byte-identical across 2 regenerations (checksums)
+✅ grep -rn "interface CompareResponse\|type CompareResponse =" web/src --exclude=schema.d.ts → only re-exports in types.ts
+   → only `export type CompareResponse = components["schemas"]["CompareResponse"]` in types.ts; the sole hand-written
+     types are ErrorBody and Health, which the backend doesn't export in OpenAPI (documented in types.ts)
+✅ make web-build → web/dist/index.html exists; no files > 1 MB except sourcemaps
+   → dist/index.html; largest non-map file recharts chunk 134 KB; 0 files > 1 MB
+✅ make demo → curl -s :8000/demo | grep -c "<div id=\"root\">" → 1; curl :8000/demo/studio/quality → index.html (SPA fallback)
+   → real server (make demo with PATH=/usr/bin:/bin): /demo → 1 root div; /demo/studio/quality → 1 (SPA fallback);
+     built JS served 200 text/javascript; stopped cleanly, no tracebacks
+✅ Playwright spec 1 passes; network guard active on every spec (no non-localhost requests)
+   → spec 1 passes; the guard is an AUTO fixture on every test, blocking non-local hosts and failing in teardown; the guard
+     test (test.fail) FAILS when the host check is disabled (mutation), so the guard is proven (after fix-up 1)
+⚠️ grep -rn "http://\|https://" web/src --exclude=schema.d.ts → no external URLs (fonts bundled)
+   → hits only in the 3 recorded sample JSON files (web/src/test/fixtures): FHIR code-system identifiers such as
+     http://snomed.info/sct, which are data and never fetched (the network guard proves no external request). No URL in
+     any source or style file; fonts are bundled. (Fix-up 1 removed an obfuscation that had hidden these hits.)
+✅ Mode badge tooltip text equals UI-G-1 wording exactly
+   → exact UI-G-1 string; Vitest + Playwright spec 1 assert it; a mutated tooltip fails the test
+✅ localStorage access wrapped in try/catch (grep)
+   → every read and write is in try/catch (uiPrefs.tsx); a test with throwing storage passes; an unguarded read fails it
+✅ Makefile web targets and Playwright webServer use $(PYTHON) / .venv python and the nvm Node 20 PATH (Clarifications)
+   → web-* prepend $(NODE_BIN) (nvm v20.19.0); demo and the webServer use $(PYTHON) / .venv/bin/python -m uvicorn
+✅ Backend make lint / typecheck / test still green (no backend regressions)
+   → lint / mypy clean; 408 passed, 98%; backend tests unchanged; ruff + mypy --strict clean on scripts/dump_openapi.py
+```
+
+**Issues found and fixes (Sep 27, 2026, via /phase-loop, 1 fix-up round):**
+
+```
+✅ FIXED ❌ Data obfuscation: dump_openapi.py rewrote "http://" to "http:\u002f\u002f" in the recorded samples so the URL grep found
+   nothing. Samples are now plain readable JSON; the grep hits are recorded honestly above.
+✅ FIXED ❌ Network guard proved nothing: it was a non-automatic fixture, and the guard test used an unresolvable .invalid domain, so with
+   the guard disabled both tests still passed. It is now an auto fixture that fails in teardown; the guard test fails under that mutation.
+✅ FIXED ❌ Unreadable formatting: many files were single lines of 170–297 chars. Reformatted to ≤ 100, with ESLint max-len enforcing it.
+✅ Mutation check after the fix: noulView 0.5 boundary, ErrorCard request id, ModeBadge tooltip, api() throwing ApiError, localStorage
+   guard, network guard → each makes a test fail; files restored byte-identical.
+⚠️ The guard test uses test.fail(), which passes on ANY failure; the planted guard bug shows its teardown is the real signal.
+ℹ️ No frontend coverage tool is configured (not required by the plan); behaviour is covered by 12 Vitest and 2 Playwright tests.
 ```
 
 **D2a evaluation record:**
 
 ```
-Evaluated: <date> by <session>
-Results:   <checklist with evidence>
-Verdict:   PASS | FAIL
+Evaluated: Sep 27, 2026 by Claude Code via /phase-loop (Codex headless; 1 fix-up round, same session)
+Checks:    backend 408 (unchanged), 98%; web: eslint/tsc clean, Vitest 12/12, Playwright 2/2; build < 1 MB per file
+Results:   11/12 checklist items ✅, 1 ⚠️ (URL grep hits are FHIR identifiers in sample data); 3 ❌ fixed; 6/6 mutations caught
+Verdict:   PASS. D2b can start.
 ```
 
 ---

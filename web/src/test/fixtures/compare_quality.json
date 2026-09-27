@@ -1,0 +1,126 @@
+{
+  "audit_event": {
+    "agent": [
+      {
+        "requestor": false,
+        "who": {
+          "display": "Jev \u00d7 FHIR quality_scorer"
+        }
+      }
+    ],
+    "entity": [
+      {
+        "detail": [
+          {
+            "type": "decision",
+            "valueString": "auto_accept"
+          }
+        ],
+        "what": {
+          "reference": "Patient/12345"
+        }
+      }
+    ],
+    "recorded": "2000-01-01T00:00:00Z",
+    "resourceType": "AuditEvent",
+    "source": {
+      "observer": {
+        "display": "Jev \u00d7 FHIR Decision Layer"
+      }
+    },
+    "type": {
+      "code": "rest",
+      "display": "RESTful Operation",
+      "system": "http://terminology.hl7.org/CodeSystem/audit-event-type"
+    }
+  },
+  "ground_truth": {
+    "approved_by": null,
+    "expected_action": "auto_accept",
+    "expected_nik_valid": true,
+    "expected_score_range": [
+      70,
+      100
+    ],
+    "rationale": "All core demographics and a valid 16-digit NIK are present; the record is usable for intake.",
+    "resource_type": "Patient"
+  },
+  "jev": {
+    "action": "auto_accept",
+    "confidence": 0.71,
+    "latency_ms": 0.0,
+    "level": "acceptable",
+    "missing_fields": [
+      "telecom"
+    ],
+    "nik_confidence": 0.94,
+    "nik_valid": true,
+    "resource_reference": "Patient/12345",
+    "score": 80
+  },
+  "jev_decision": "auto_accept",
+  "jev_raw": [
+    {
+      "options": null,
+      "primitive": "score",
+      "question": "Rate the data quality and completeness of this clinical resource from 0 (empty/invalid) to 100 (all fields present, correctly formatted, clinically complete)",
+      "result": {
+        "confidence": 0.71,
+        "latency_ms": 0.0,
+        "level_probabilities": {
+          "high": 0.71,
+          "low": 0.29
+        },
+        "score": 80,
+        "tokens_used": 10
+      }
+    },
+    {
+      "options": null,
+      "primitive": "noul",
+      "question": "This patient has a valid 16-digit Indonesian NIK identifier",
+      "result": {
+        "answer": true,
+        "latency_ms": 0.0,
+        "probability": 0.94,
+        "tokens_used": 39
+      }
+    }
+  ],
+  "lane": "auto_accepted",
+  "lane_reason": "score 80 \u2265 threshold 70",
+  "module": "quality",
+  "override_applied": false,
+  "rule": {
+    "decision": "auto_accept",
+    "nik_valid": true,
+    "score": 80
+  },
+  "serialized_state": {
+    "address_country": "ID",
+    "field_completeness": 8,
+    "field_total": 10,
+    "has_address": true,
+    "has_birth_date": true,
+    "has_gender": true,
+    "has_identifier": true,
+    "has_name": true,
+    "has_telecom": false,
+    "identifier_system": "nik",
+    "identifier_value_length": 16,
+    "name_family": "Wijaya",
+    "resource_type": "Patient",
+    "telecom_count": 0
+  },
+  "thresholds": {
+    "notifiable_confirmed": 0.8,
+    "notifiable_review": 0.5,
+    "quality_threshold": 70,
+    "route_confidence_minimum": 0.5
+  },
+  "tokens_used": 49,
+  "verdict": {
+    "jev_correct": true,
+    "rule_correct": true
+  }
+}

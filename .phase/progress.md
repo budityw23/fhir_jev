@@ -151,3 +151,28 @@ Test count after each phase is the `make test` total.
 - **Evaluator note:** `make serve` spawns uvicorn as a child, so killing make leaves the server running. Kill by PID from
   `ss -ltnp` (not `ps | grep` or `pkill -f` on a pattern present in your own command line).
 - Tests 400 → 408 (D1 total: 342 → 408). **D1 complete.** Next: D2 (web UI; Node via nvm).
+
+## D2a — Web foundations — PASS (Sep 27, 2026) — /phase-loop, 1 fix-up round
+
+- **Built:**
+  - `web/` Vite 5 + React 18 + TS strict + Tailwind 3 + ESLint 9 (max-len 100) + Vitest + Playwright (Chromium);
+    all Step 1 dependencies installed and locked
+  - routes under `/demo` with placeholder pages
+  - `scripts/dump_openapi.py` (deterministic `web/openapi.json`, plus `--samples` for 3 recorded compare responses
+    with fixed latency and timestamps) and generated `schema.d.ts`
+  - `types.ts` (re-exports only, plus the hand-written `ErrorBody` and `Health`, which aren't in OpenAPI)
+  - `client.ts` (`ApiError`, `subscribeLastRequest`), `queries.ts` (5 hooks)
+  - design tokens (light/dark, bundled Inter), `noulView`, uiPrefs (try/catch storage)
+  - shell: `TopBar`, `NavTabs`, `ModeBadge` (exact UI-G-1 tooltip), `HealthDot`, `ErrorCard`
+  - Makefile `web-*` targets and `demo` (`NODE_BIN` = nvm Node 20, `$(PYTHON)`); `.gitignore` for test outputs
+  - an auto Playwright network guard
+- **Fix-up lessons (put these in future web prompts):**
+  - **never obfuscate data to pass a check.** Codex had unicode-escaped `http://` in the samples to beat the URL grep.
+    FHIR code-system URIs in sample data are expected grep hits; record them as ⚠️
+  - Playwright fixtures are lazy: a guard must be `{ auto: true }` and fail in teardown; a "guard catches X" test
+    must fail when the guard is disabled
+  - ask for readable code with lines ≤ 100 chars (enforced by ESLint)
+- **Environment:** Codex runs web phases with
+  `-c 'sandbox_workspace_write.writable_roots=["$HOME/.npm","$HOME/.cache/ms-playwright"]'` so `npm ci` and the
+  Chromium download work.
+- Backend 408 (unchanged); web: Vitest 12, Playwright 2. Known gaps: no frontend coverage tool (not required).
