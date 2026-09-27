@@ -1555,7 +1555,7 @@ Verdict:   PASS | FAIL
 
 **Goal:** a working web app at `/demo` with the global shell, Overview, the three-column Studio and the Playground, all typed against the backend's OpenAPI schema.
 
-**Prerequisite:** Node.js 20 LTS in WSL (`node --version` → v20.x). It isn't installed on the dev machine today: `node` is missing even though `npm` resolves. Install it with nvm (`nvm install 20`) and confirm before starting.
+**Prerequisite:** Node.js 20 LTS in WSL (`node --version` → v20.x). *(Corrected Sep 27, 2026: Node **is** installed through nvm, with v20.18.0, v20.19.0, v24.13.0 and v24.15.0, but non-interactive shells don't load nvm, so `node` looks missing there. Use `source ~/.nvm/nvm.sh && nvm use 20`, or put `$HOME/.nvm/versions/node/v20.19.0/bin` on PATH, before running the `web/` commands.)*
 
 **Step 1 — Scaffold `web/`:**
 

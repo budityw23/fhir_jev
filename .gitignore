@@ -26,3 +26,7 @@ web/dist/
 # Local tooling
 .claude/settings.local.json
 .DS_Store
+
+# Phase loop (.phase/): logs and exit codes are local; prompts, results and sessions are tracked
+.phase/*.log
+.phase/*.exit
