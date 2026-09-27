@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { ObservabilityDrawer } from "../components/shell/ObservabilityDrawer";
 import { api } from "../api/client";
 import { App } from "../App";
+import { TopBar } from "../components/shell/TopBar";
 import { Pipeline } from "../pages/Pipeline";
 
 class MockEventSource {
@@ -180,3 +181,38 @@ function response(body: unknown, requestId: string, duration: number): Response 
     },
   });
 }
+
+describe("TopBar height", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    document.documentElement.style.removeProperty("--top-bar-height");
+  });
+  it("publishes its measured height so the drawer opens below it", () => {
+    let notify: (() => void) | undefined;
+    const disconnect = vi.fn();
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(callback: () => void) {
+          notify = callback;
+        }
+        observe() {}
+        disconnect = disconnect;
+      },
+    );
+    vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>(() => undefined)));
+    const view = render(
+      <QueryClientProvider client={new QueryClient()}>
+        <MemoryRouter>
+          <TopBar onObservability={vi.fn()} observabilityOpen={false} />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+    const header = view.container.querySelector("header") as HTMLElement;
+    Object.defineProperty(header, "offsetHeight", { configurable: true, value: 97 });
+    notify?.();
+    expect(document.documentElement.style.getPropertyValue("--top-bar-height")).toBe("97px");
+    view.unmount();
+    expect(disconnect).toHaveBeenCalled();
+  });
+});

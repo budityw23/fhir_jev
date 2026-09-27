@@ -262,3 +262,12 @@ Test count after each phase is the `make test` total.
     shown). Recording demo decisions needs a backend change: ask Budi (D4 candidate)
   - drawer screenshot: the TopBar button overlaps the drawer heading; charts captured mid-animation (D4 polish)
 - **D3 complete:** backend 408 → 411; web Vitest 28 → 46, Playwright 8 → 16. Next: D4 (Benchmarks, presenter mode).
+
+## D3 follow-up — metrics + polish (Sep 27, 2026, Budi approved; evaluator-implemented)
+
+- Demo decisions now count in `jev_fhir_decisions_total`: `Comparer.compare` calls `record_decision` with the same
+  module labels as the Phase 4 routes, so `/compare` and pipeline runs fill the drawer's decisions table.
+- Drawer opens below the TopBar (`--top-bar-height`, published by TopBar via ResizeObserver; CSS fallback 3.375rem);
+  Recharts animation off (`isAnimationActive={false}`) so screenshots never catch a half-drawn chart; the ThresholdSliders
+  "Thresholds" heading is hidden inside the Pipeline's module-labelled groups (props unchanged).
+- Backend 411 → 412; Vitest 46 → 47; Playwright 16. Both new tests fail when their behaviour is removed.

@@ -20,6 +20,7 @@ from jev_fhir.demo.schemas import (
 from jev_fhir.fhir_helpers.audit_event import AuditEventBuilder
 from jev_fhir.jev_client.client import JevClient
 from jev_fhir.jev_client.recording import RecordingJevClient
+from jev_fhir.metrics import record_decision
 from jev_fhir.modules.bundle_router import BundleRouter, BundleRouteResponse
 from jev_fhir.modules.notifiable_detector import (
     NotifiableDetectionResponse,
@@ -81,6 +82,7 @@ class Comparer:
                 PatientSerializer() if resource_type == "Patient" else ObservationSerializer()
             ).serialize(resource)
             decision = response.action
+            confidence = response.confidence
             reference = response.resource_reference
             audit_module = "quality_scorer"
         elif module == "router":
@@ -90,6 +92,7 @@ class Comparer:
             rule = RuleDecision(decision=route_bundle(resource))
             state = BundleSerializer().serialize(resource)
             decision = response.category
+            confidence = response.confidence
             reference = f"Bundle/{response.bundle_id}"
             audit_module = "bundle_router"
         else:
@@ -103,6 +106,7 @@ class Comparer:
             )
             state = ConditionSerializer().serialize(resource)
             decision = response.status
+            confidence = response.probability
             reference = f"Condition/{resource.get('id', 'unknown')}"
             audit_module = "notifiable_detector"
         calls = recording.drain()
@@ -127,6 +131,8 @@ class Comparer:
                 jev_correct = (decision == "confirmed_notifiable") == expected
                 rule_correct = (rule.decision == "confirmed_notifiable") == expected
         lane, reason = assign_lane(module, response, thresholds, override)
+        # Same labels as the Phase 4 routes, so demo and API decisions share one series.
+        record_decision(audit_module, decision, confidence)
         return CompareResponse(
             module=module,
             jev=response,

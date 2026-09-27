@@ -112,7 +112,7 @@ function OpenDrawer({ onClose }: Pick<Props, "onClose">) {
         </div>
         {metricsError && <p className="metrics-error">{metricsError}</p>}
         {decisionMetrics.length === 0 ? (
-          <p>No decision metrics yet: demo calls don't increment jev_fhir_decisions_total.</p>
+          <p>No decision metrics yet: run a compare or a pipeline.</p>
         ) : (
           <MetricsTable
             title="Decisions"

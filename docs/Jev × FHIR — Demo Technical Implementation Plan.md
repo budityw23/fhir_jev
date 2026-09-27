@@ -2354,6 +2354,12 @@ The reconnect check may be an e2e test with its own controlled server, or a docu
   were captured mid-animation (the plain Pipeline screenshot is fine). D4 polish: disable chart animation for captures.
 - ⚠️ Codex hit its usage limit mid-fix2; the same round was resumed after the reset (`D3b.fix2.resume.prompt.md`).
 - Additive helpers: `getLastRequest()` and `apiText()` in `api/client.ts` (existing `api()` behaviour unchanged).
+- **Follow-up (Sep 27, 2026, Budi approved):** the ⚠️ items above are resolved. `Comparer.compare` now calls
+  `record_decision` with the Phase 4 module labels (`quality_scorer`, `bundle_router`, `notifiable_detector`), so demo
+  compares and pipeline runs fill `jev_fhir_decisions_total` (new pytest; removing the call fails it). The drawer opens
+  below the TopBar (the bar publishes its measured height via ResizeObserver; Vitest covers it), chart animation is
+  off, and the redundant "Thresholds" heading is hidden inside the Pipeline's module groups. Backend 412, Vitest 47,
+  Playwright 16; screenshots re-viewed.
 
 **D3b / final D3 evaluation record:**
 

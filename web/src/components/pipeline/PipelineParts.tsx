@@ -182,7 +182,7 @@ export function LatencySparkline({ values }: { values: number[] }) {
       <h3>Latency</h3>
       <ResponsiveContainer width="100%" height={140}>
         <LineChart data={shown.map((value, index) => ({ index, value }))}>
-          <Line dataKey="value" stroke="#16803c" dot={false} />
+          <Line dataKey="value" stroke="#16803c" dot={false} isAnimationActive={false} />
           <Tooltip />
         </LineChart>
       </ResponsiveContainer>
@@ -217,9 +217,9 @@ export function ConfidenceHistogram({ events }: { events: DecisionEvent[] }) {
           <XAxis dataKey="bucket" />
           <YAxis />
           <Tooltip />
-          <Bar dataKey="quality" stackId="a" fill="#16803c" />
-          <Bar dataKey="router" stackId="a" fill="#667085" />
-          <Bar dataKey="notifiable" stackId="a" fill="#b42318" />
+          <Bar dataKey="quality" stackId="a" fill="#16803c" isAnimationActive={false} />
+          <Bar dataKey="router" stackId="a" fill="#667085" isAnimationActive={false} />
+          <Bar dataKey="notifiable" stackId="a" fill="#b42318" isAnimationActive={false} />
         </BarChart>
       </ResponsiveContainer>
     </section>

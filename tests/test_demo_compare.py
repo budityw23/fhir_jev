@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Literal
 
 import pytest
+from prometheus_client import REGISTRY
 
 from jev_fhir.config import Settings
 from jev_fhir.demo.catalog import FixtureCatalog
@@ -173,3 +174,21 @@ def test_non_integer_rule_score_raises_type_error(monkeypatch: pytest.MonkeyPatc
     resource = cat.load_resource("tests/fixtures/patients/complete_patient.json")
     with pytest.raises(TypeError, match="integer score"):
         asyncio.run(comparer.compare("quality", CompareRequest(resource=resource)))
+
+
+def test_compare_records_decision_metric_for_each_module() -> None:
+    """Demo compares (and so pipeline runs) must show up in jev_fhir_decisions_total."""
+    cat = FixtureCatalog(ROOT / "benchmarks/dataset/labels")
+    comparer = Comparer(MockJevClient(), cat, thresholds(), ROOT / "data/notifiable_diseases.json")
+    cases: tuple[tuple[Literal["quality", "router", "notifiable"], str, str], ...] = (
+        ("quality", "quality_scorer", "tests/fixtures/patients/complete_patient.json"),
+        ("router", "bundle_router", "tests/fixtures/bundles/lab_bundle.json"),
+        ("notifiable", "notifiable_detector", "tests/fixtures/conditions/dengue_a90.json"),
+    )
+    for module, label, fixture_id in cases:
+        resource = cat.load_resource(fixture_id)
+        result = asyncio.run(comparer.compare(module, CompareRequest(resource=resource)))
+        labels = {"module": label, "decision": result.jev_decision}
+        before = REGISTRY.get_sample_value("jev_fhir_decisions_total", labels) or 0.0
+        asyncio.run(comparer.compare(module, CompareRequest(resource=resource)))
+        assert REGISTRY.get_sample_value("jev_fhir_decisions_total", labels) == before + 1

@@ -58,17 +58,21 @@ input {
   font-size: 1rem;
   margin: 0;
 }
+:root {
+  --top-bar-height: 3.375rem;
+}
+/* The drawer opens below the TopBar so its toggle never covers the drawer heading. */
 .observability-drawer {
   background: var(--c-surface);
   border-left: 1px solid var(--c-border);
   box-shadow: -0.5rem 0 1.5rem rgb(16 24 40 / 18%);
   box-sizing: border-box;
-  height: 100vh;
+  height: calc(100vh - var(--top-bar-height));
   overflow-y: auto;
   padding: 1.25rem;
   position: fixed;
   right: 0;
-  top: 0;
+  top: var(--top-bar-height);
   width: min(36rem, 100vw);
   z-index: 10;
 }
@@ -492,4 +496,8 @@ main > h2 {
   .lane-board {
     grid-template-columns: 1fr;
   }
+}
+/* Each Pipeline group is already labelled by its module legend. */
+.threshold-group h4 {
+  display: none;
 }
