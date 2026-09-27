@@ -77,6 +77,7 @@ instead of substituting TestClient.
 - **Don't tick checklists or fill in Evaluation Records** in the plan doc, and don't edit the
   plan's Verify or checklist wording. A separate evaluator does that.
 - Don't edit `.phase/progress.md`; the evaluator maintains it.
+- Never delete or edit any `.phase/*` file (prompts, results, session IDs, logs); they aren't throwaway.
 - Don't touch `.env` or print secrets. Use `.env.example` for new settings.
 - Delete any throwaway files your verification creates (e.g. benchmark reports under
   `benchmarks/results/`, temp logs, scratch scripts).
