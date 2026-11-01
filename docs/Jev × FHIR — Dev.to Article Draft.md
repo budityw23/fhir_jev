@@ -1,12 +1,12 @@
 ---
-title: "I Put a Jev Decision Layer on Top of FHIR Validation, and Rules Still Won on Routing"
+title: "I Built a Jev Decision Layer Over FHIR, and Its Worst Failures Were in My Own Pipeline"
 published: false
 tags: fhir, healthcare, ai, python
 ---
 
 A FHIR resource can pass validation and still be the wrong thing to act on. I built a small decision layer for that gap: it takes parsed FHIR R4 resources, sends a flattened state to TypeSafe AI's Jev model, and turns the answer into accept, route, flag or human review.
 
-On 204 synthetic records, the live model beat my hand-written rules on two decisions and lost on the third. It also missed my latency target by a wide margin. The most useful result was a bug in my own serializer, which the accuracy score did not reveal.
+On 204 synthetic records, the first live run lost routing to my hand-written rules, 0.814 to 0.922, and missed too many notifiable diseases. Both failures came from my own setup. One was a serializer bug and the other was a badly framed routing question. After fixing both, Jev scored above the rules on all three decisions, on the same records. It still misses my latency target by a wide margin.
 
 This is a proof of concept. It runs on synthetic data and it is not connected to any production system.
 
@@ -147,13 +147,15 @@ I compared Jev with a transparent rule baseline for each decision. The rules are
 
 The dataset has 204 labelled fixtures, including a hard set built to separate semantic judgment from exact matching. Labels are never computed from the logic under test. The test suite uses a mock Jev client and never calls the live API, and the benchmark runs against the live model only when I ask it to.
 
-| Decision | Fixtures | Jev | Rules | My target |
-| --- | ---: | ---: | ---: | --- |
-| Quality (accuracy) | 71 | **0.648** | 0.549 | ≥ 0.85, missed |
-| Routing (accuracy) | 102 | 0.814 | **0.922** | ≥ 0.90, missed |
-| Notifiable (accuracy) | 31 | **0.935** | 0.677 | none set |
-| Notifiable (recall) | 31 | **0.895** | 0.579 | ≥ 0.95, missed |
-| Notifiable (precision) | 31 | **1.000** | 0.846 | ≥ 0.80, met |
+| Decision | Fixtures | Jev, first run | Jev, final | Rules | My target |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Quality (accuracy) | 71 | 0.676 | **0.662** | 0.549 | ≥ 0.85, missed |
+| Routing (accuracy) | 102 | 0.814 | **0.951** | 0.922 | ≥ 0.90, met |
+| Notifiable (accuracy) | 31 | 0.839 | **0.935** | 0.677 | none set |
+| Notifiable (recall) | 31 | 0.737 | **0.895** | 0.579 | ≥ 0.95, missed |
+| Notifiable (precision) | 31 | 1.000 | **1.000** | 0.846 | ≥ 0.80, met |
+
+The rest of this article explains how the first-run column became the final one.
 
 ## The bug the state panel exposed
 
@@ -188,7 +190,51 @@ I then compared the two live reports row by row. Exactly three notifiable rows c
 
 Accuracy went from 0.839 to 0.935, and recall went from 0.737 to 0.895. The earlier score was measuring my pipeline, not the model. Without the row-level comparison, I could not have told that apart from noise, because quality accuracy moved from 0.676 to 0.648 between the same two runs on rows the fix does not touch.
 
-The two remaining misses, `B20` HIV and typhoid `A01.0`, have proper codes. Both landed in the review band at 0.76 and 0.77, so a person would see them. All 19 notifiable cases were either confirmed or sent to review, and none was dismissed.
+The two remaining misses, `B20` HIV and typhoid `A01.0`, have proper codes. Both landed in the review band at about 0.77, so a person would see them. All 19 notifiable cases were either confirmed or sent to review, and none was dismissed.
+
+## Why rules first won routing
+
+My first explanation for the routing loss was that routing is mostly clear logic. I had written that down, but I had not measured it. So I compared the flat state of every Bundle Jev got right and wrong.
+
+All 12 of its encounter errors followed one pattern:
+
+| Conditions in the Bundle | Bundles | Jev correct |
+| ---: | ---: | ---: |
+| 1 | 6 | 6 |
+| 2 | 2 | 1 |
+| 3 or more | 11 | 0 |
+
+Both live runs showed this, and 100 of the 102 routing decisions were identical across the runs. This was a systematic failure, not noise.
+
+Two things in my setup could explain it. The question was "What type of clinical data does this FHIR Bundle primarily contain?". One Encounter with eight Conditions primarily contains Conditions, and no category exists for that, so `unknown` was a fair answer. The same word would also explain the other errors, because all seven misrouted mixed Bundles went to the pipeline for their most common resource type.
+
+The state was also uneven. It had direct flags for labs, immunizations and medications, which scored at 1.00 confidence, but nothing direct for encounters. `dominant_resource_type` said `Condition`.
+
+I changed both:
+
+```diff
+# src/jev_fhir/modules/bundle_router.py
+-ROUTE_QUESTION = "What type of clinical data does this FHIR Bundle primarily contain?"
++ROUTE_QUESTION = "Which processing pipeline should handle this FHIR Bundle?"
+
+# src/jev_fhir/serializer/bundle.py
+             "contains_medication": "MedicationDispense" in resource_types,
++            "contains_encounter": "Encounter" in resource_types,
+```
+
+To see which change mattered, I ran the flag on its own first:
+
+| Live routing run | Accuracy | 3+ Condition Bundles correct |
+| --- | ---: | ---: |
+| Original | 0.814 | 0 of 11 |
+| Flag only | 0.863 | 4 of 11 |
+| Flag and new question | 0.951 | 11 of 11 |
+
+Fourteen rows improved and none got worse. The question did most of the work, which I did not expect. It was one sentence, and it had been costing more than the missing data.
+
+The rule baseline stayed the same, and a test confirms it does not use the new field. In the final run Jev was right on three Bundles the rules got wrong, and the reverse never happened. That margin is small, so I would not read it as a clear win. The rules scored 0.922 with no model at all.
+
+Five mixed Bundles are still wrong, and three of those are at 0.87 confidence or higher, so the floor does not catch them. One of them, `vitals_only`, has a label I have not settled. The rules' 0.95 on generated Bundles also needs care: the rule checks `has_encounter_reference`, and my generator links every generated encounter Bundle that way, so the two share a signal.
 
 ## Where each side won
 
@@ -196,16 +242,9 @@ Jev did best where the decision depends on more than one field. On the 14 hard C
 
 Some of that gap is cheap to close. Prefix matching would handle subcodes like `A15.0`, and checking `verificationStatus` would handle the refuted case. A serious rule set would do both.
 
-Rules won routing because routing is mostly clear logic. They were right on 12 Bundles that Jev got wrong, and the reverse happened once. The errors have different shapes, though:
+For routing, the rules remain the sensible default. They are simple and free, and a model can act as a second opinion, with disagreements going to a person.
 
-| Error | Jev | Rules |
-| --- | ---: | ---: |
-| Encounter Bundle returned as `unknown` | 12 | 0 |
-| `unknown` Bundle sent to a real pipeline | 7 | 8 |
-
-The first row costs a person some extra work. The second row is the dangerous one, and on that row Jev and the rules were about equal. Jev's seven came at 0.81 to 1.00 confidence, so the floor did not catch them. I have not diagnosed why those encounter Bundles score so low. For this decision I would use rules.
-
-Quality scoring sits in between. Of 45 records that needed review, Jev let 15 through and the rules let 32 through. But Jev also held 10 of 26 good records, and the rules held none.
+Quality scoring is the weakest result. Of 45 records that needed review, Jev let 14 through and the rules let 32 through. But Jev also held 10 of 26 good records, and the rules held none.
 
 ## Confidence only works where it is calibrated
 
@@ -213,25 +252,25 @@ A threshold is only useful if confidence means something, so the benchmark bucke
 
 | Decision | Count | Mean confidence | Observed accuracy |
 | --- | ---: | ---: | ---: |
-| Notifiable | 17 | 0.846 | 1.000 |
-| Routing | 85 | 0.995 | 0.918 |
-| Quality | 26 | 0.822 | 0.692 |
+| Notifiable | 17 | 0.844 | 1.000 |
+| Routing | 84 | 0.982 | 0.964 |
+| Quality | 24 | 0.825 | 0.667 |
 
-Notifiable looks trustworthy here. Quality does not: a confidence of 0.82 was right about 69% of the time, so I would not automate anything on that threshold yet.
+Notifiable looks trustworthy here, and routing improved after the question change, from 0.918 in this bucket. Quality does not: a confidence of 0.82 was right about two times in three, so I would not automate anything on that threshold yet.
 
 ## What it gets wrong
 
-**Latency.** My target was a p50 under 30 ms. The live p50 was 235 ms for routing and notifiable, and 470 ms for quality, where a Patient takes two calls. The p95 ranged from 268 ms to 584 ms. These are client-side round trips from my machine, so they include the network, and I have not separated model time. The fast-decision premise is not proven by this data.
+**Latency.** My target was a p50 under 30 ms. The live p50 was about 235 ms for routing and notifiable, and 458 ms for quality, where a Patient takes two calls. The p95 ranged from 263 ms to 510 ms. These are client-side round trips from my machine, so they include the network, and I have not separated model time. The fast-decision premise is not proven by this data.
 
-**Cost target.** The full run used 146,760 tokens for about $0.006. That is about $0.03 per 1,000 records, three times my $0.01 target. It is still very cheap.
+**Cost target.** The full run used 147,401 tokens for about $0.006. That is about $0.03 per 1,000 records, three times my $0.01 target. It is still very cheap.
 
-**Evaluation quality.** No human has approved the labels yet. 124 are pending review, and the other 80 are correct by construction because a generator produced them. The hard sets are small. I also fixed the bug after seeing these same fixtures fail, so the 0.935 is not a held-out result. It needs confirming on data the system has not seen.
+**Evaluation quality.** No human has approved the labels yet. 124 are pending review, and the other 80 are correct by construction because a generator produced them. The hard sets are small. I also made both fixes after seeing these same fixtures fail, so 0.935 and 0.951 are not held-out results. They need confirming on data the system has not seen.
 
 ## What comes next
 
-The first step is human review of the labels, because every number here depends on them. After that I want a held-out set for the notifiable decision, and a latency measurement that separates the network from the model. Two gaps from this work are still open: `ObservationSerializer` drops `code.text` the same way the Condition serializer did, and all the serializers read only the first `coding`.
+The first step is human review of the labels, because every number here depends on them. After that I want a held-out set for the notifiable and routing decisions, and a latency measurement that separates the network from the model. Two gaps from this work are still open: `ObservationSerializer` drops `code.text` the same way the Condition serializer did, and all the serializers read only the first `coding`.
 
-The result I would keep is the shape of the system, more than any single score: parse first, flatten to a state a person can inspect, use a threshold per decision, give uncertain cases a lane, and keep a baseline that can beat the model. That baseline did beat it on routing, and the state panel is what exposed my own bug.
+The result I would keep is the shape of the system, more than any single score: parse first, flatten to a state a person can inspect, use a threshold per decision, give uncertain cases a lane, and keep a baseline that can beat the model. That baseline did beat it, and that is why I went looking. Before blaming a model, I now check what it actually received and what I actually asked.
 
 ---
 
@@ -245,7 +284,7 @@ Before publishing (remove this block):
 4. Confirm TypeSafe AI is happy for these results to be published.
 5. Cross-link: consider one sentence linking to https://dev.to/budiwidhiyanto/fhir-r4-for-ai-engineers-what-actually-lives-in-a-patient-record-1839
 
-Numbers: live reports bench_20261031T150439Z (before) and bench_20261101T001036Z (after).
+Numbers: live reports bench_20261031T150439Z (first run), bench_20261101T001036Z (after the code.text fix) and bench_20261101T054220Z (final). The flag-only routing run was a throwaway script, so 0.863 and 4 of 11 have no committed report.
 
 Cover image prompt (use your shared style block from FHIR_RAG/docs/article-dev.to/cover-image-prompts.md):
 A horizontal flow of small document cards passing through a thin gate, then splitting into four labelled lanes, with one lane highlighted in amber for human review.

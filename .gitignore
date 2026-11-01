@@ -34,6 +34,7 @@ web/*.tsbuildinfo
 
 # Job-application material stays out of this public repo
 *upwork*
+.phase/video3.*
 
 # Large regenerable media; the narrated MP4 is the tracked copy
 docs/demo-video/*.wav

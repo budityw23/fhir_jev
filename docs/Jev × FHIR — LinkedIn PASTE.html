@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A FHIR Record Can Be Valid: LinkedIn paste version</title>
+<style>
+  /* Deliberately plain: h1, h2, p, strong, ul, ol, li survive a browser to LinkedIn paste. */
+  body { max-width: 700px; margin: 0 auto; padding: 40px 20px 80px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 17px; line-height: 1.6; color: #1b1b1f; background: #fff; }
+  h1 { font-size: 1.7rem; line-height: 1.25; }
+  h2 { font-size: 1.2rem; margin-top: 34px; }
+  .img-slot { background: #fff3cd; border: 1px dashed #d39e00; color: #664d03; padding: 10px 14px; margin: 20px 0; font-size: 0.9rem; }
+  .howto { background: #eef4fb; border: 1px solid #b6d4f5; padding: 16px 20px; margin-bottom: 34px; font-size: 0.9rem; line-height: 1.5; }
+  .howto p { margin: 0 0 8px; }
+  .howto ol { margin: 0; padding-left: 20px; }
+</style>
+</head>
+<body>
+
+<div class="howto">
+  <p><strong>How to use this file (this box is not part of the article).</strong></p>
+  <ol>
+    <li>Open this file in a browser (double-click it).</li>
+    <li>Click just before the article title, then drag or Shift-click to the very end. Copy with Ctrl+C.</li>
+    <li>On LinkedIn: Start a post, then Write article.</li>
+    <li>Type the title into LinkedIn's title box. Paste the rest into the body with Ctrl+V, then delete the pasted title line.</li>
+    <li>Add a cover image, check the preview, then publish.</li>
+  </ol>
+</div>
+
+<h1>A FHIR Record Can Be Valid and Still Be Wrong to Act On</h1>
+<p>A clinic sends a Patient record. The structure is correct, and the name and birth date are there. But the NIK, Indonesia's national ID number, has 15 digits instead of 16.</p>
+<p>Another clinic sends a Condition coded as dengue. It's also well-formed. But its status says "refuted", which means the patient doesn't have dengue.</p>
+<p>Both records can pass FHIR validation. Neither should be treated like a normal record.</p>
+<p>That gap is what made me want to build this project.</p>
+<h2>What I built</h2>
+<p>I built Jev × FHIR, a proof of concept that adds a decision layer on top of FHIR data. FHIR is the standard healthcare systems use to exchange data. Jev is a decision model from TypeSafe AI that returns a structured judgment and a confidence score, without generating text.</p>
+<p>The system makes three decisions:</p>
+<ul>
+  <li><strong>Quality:</strong> is this record good enough to accept automatically?</li>
+  <li><strong>Routing:</strong> which pipeline should process this Bundle of records?</li>
+  <li><strong>Notifiable disease:</strong> does this condition need reporting to the health office?</li>
+</ul>
+<h2>How it works</h2>
+<ol>
+  <li><strong>Check the record.</strong> It must parse as valid FHIR R4 before any decision is made.</li>
+  <li><strong>Flatten it.</strong> The record becomes a small set of typed fields. The demo shows exactly what the model sees.</li>
+  <li><strong>Decide.</strong> Jev returns a score, category or yes/no answer, with a confidence.</li>
+  <li><strong>Act.</strong> Thresholds turn that answer into an action: accept it, route it, flag it, or send it to a person.</li>
+</ol>
+<p>That last option is the part I care about most. The system is allowed to say "I'm not sure" and hand the case to a human.</p>
+<h2>Why it matters</h2>
+<p>FHIR conformance asks: is this record valid?</p>
+<p>A decision layer asks: what should we do with it?</p>
+<p>Both matter, and this doesn't replace validation. In my system, validation comes first. But healthcare data pipelines are full of decisions that come after it: who should review this, where should it go, and does someone need to be told today?</p>
+<p>Many teams handle those decisions with growing piles of rules, or by waiting for someone to notice. I wanted to know whether a fast model could do better, so I tested it.</p>
+<h2>The results</h2>
+<p>I ran the live model against handwritten rules on 204 synthetic records. These are the accuracy results:</p>
+<ul>
+  <li><strong>Notifiable disease:</strong> Jev 94%, rules 68%</li>
+  <li><strong>Bundle routing:</strong> Jev 95%, rules 92%</li>
+  <li><strong>Quality scoring:</strong> Jev 66%, rules 55%</li>
+</ul>
+<p>The model won all three in the final run, but it didn't start there. My first results were 84% on notifiable disease and 81% on routing, where the rules won. It also still misses several of the targets I set before starting.</p>
+<p><strong>The first gain came from fixing my own bug.</strong> While reviewing the demo, I noticed the system was dropping free-text diagnoses. A disease written only as "TB paru" reached the model as a blank. I added that one field and re-ran the benchmark: exactly three disease records changed, all of them those free-text cases, and accuracy rose to 94%.</p>
+<p><strong>Jev was best at context.</strong> On the hardest disease cases it scored 93% against 36% for the rules. It refused to confirm the refuted dengue case and sent it to a person, and it recognized diseases coded in SNOMED that an ICD-10 lookup can't see. A better rule set would close part of that gap.</p>
+<p><strong>The second gain came from asking a better question.</strong> Rules first beat Jev on routing, 92% to 81%. The misses had a clear pattern: Jev got 0 of 11 encounter Bundles right when they held three or more diagnoses. I had asked what a Bundle "primarily" contains, and the data had no direct signal for encounters. I added that signal and asked which pipeline should handle the Bundle instead. All 11 then routed correctly, and accuracy rose to 95%. Fourteen records improved and none got worse.</p>
+<p><strong>Rules are still a strong baseline.</strong> They scored 92% on routing with no model at all. Jev still gets five mixed Bundles wrong, three of them at 87% confidence or higher, so confidence alone doesn't catch every mistake.</p>
+<p><strong>No real disease case was dismissed.</strong> Of 19 notifiable cases, Jev confirmed 17 and sent the other two to human review. Every alert it raised was correct. That's the design working as intended, though it's one run on a small synthetic set.</p>
+<p><strong>It missed my speed target by a wide margin.</strong> I aimed for 30 ms. Typical response times were about 230 to 460 ms, including network time.</p>
+<p><strong>The cost was tiny.</strong> The whole benchmark cost less than one cent.</p>
+<p>All of this comes with limits. The data is synthetic, the hard test sets are small, and no human has reviewed the labels yet. I also made both fixes after seeing these same records fail, so the 94% and 95% still need confirming on data the system hasn't seen. Results also shift between runs: quality scoring moved between 65% and 68%. Treat these numbers as provisional.</p>
+<h2>Real-life cases</h2>
+<p><strong>Public health surveillance.</strong> This is the strongest fit. Likely cases of a disease like dengue or tuberculosis could go to a surveillance officer sooner, with the report already drafted. It would be an extra safety net with a person confirming every report, and it wouldn't replace existing reporting.</p>
+<p><strong>A provincial health data hub.</strong> Clinics send data to a shared hub, and weak records could be held for review before they reach analytics. Jev let through 14 of 45 records that needed review, compared with 32 for the rules. But it also held back 10 of 26 good records, so I'd start with a dashboard that shows scores and blocks nothing.</p>
+<p><strong>Routing data from many sources.</strong> This went from my weakest case to a close one. Rules are simple and scored 92%, so I'd keep them as the default and use Jev as a second opinion, with disagreements going to a person.</p>
+<h2>The potential</h2>
+<p>The result I care about isn't a model beating rules. It's a pattern:</p>
+<ul>
+  <li>Validate first.</li>
+  <li>Check exactly what the model receives.</li>
+  <li>Use rules where the logic is clear.</li>
+  <li>Use a model where the decision depends on context.</li>
+  <li>Send uncertain, high-stakes cases to a person.</li>
+  <li>Measure all of it, so the data can prove you wrong.</li>
+</ul>
+<p>The same pattern could help reduce clinical alert fatigue, or flag possible duplicate patients across facilities. I haven't built or tested those, so they're still only ideas.</p>
+<p>Before any of this could touch real care, it would need testing on real de-identified records, labels reviewed by clinicians, a privacy review, and approval from health authorities.</p>
+<p>Next, I'm getting the labels reviewed by a person and testing on data the system hasn't seen.</p>
+<p>If you work with FHIR or public health data, I'd like to know where you'd put a decision layer, or where you'd never allow one.</p>
+
+</body>
+</html>

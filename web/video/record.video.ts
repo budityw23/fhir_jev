@@ -50,11 +50,11 @@ test("record the Jev × FHIR demo", async ({ page }) => {
   await page.goto("/demo/");
   await expect(page.getByRole("heading", { name: "Overview", exact: true })).toBeVisible();
   await expect(page.getByText("● MOCK", { exact: true })).toBeVisible();
-  await caption(1, "Jev × FHIR\nA decision layer for FHIR data", 7, true);
+  await caption(1, "Jev × FHIR\nA decision layer for FHIR data", 6, true);
   await caption(2, "FHIR conformance asks: is this resource valid?\n" +
     "This project asks: what should we do with it?", 6, true);
   await caption(3, "FHIR is flattened into typed state. Jev returns a decision and a confidence," +
-    "\nnot generated text.", 9);
+    "\nnot generated text.", 8);
   await key("1", /quality.*complete_patient/);
   await expect(page.getByTestId("quality-action")).toContainText("auto_accept");
   await caption(4, "A complete Patient is scored and auto-accepted. " +
@@ -93,20 +93,20 @@ test("record the Jev × FHIR demo", async ({ page }) => {
   await expect(page.getByTestId("run-status")).toContainText(/running|finished/);
   await expect(page.getByTestId("lane-count-auto_accepted")).not.toHaveText("0");
   await caption(11, "In a stream, each resource lands in a lane: " +
-    "auto_accepted, routed, flagged, or review.", 10);
+    "auto_accepted, routed, flagged, or review.", 9);
   await clear();
   await page.keyboard.press("5");
-  await page.getByLabel("Benchmark report").selectOption("bench_20261101T001036Z");
+  await page.getByLabel("Benchmark report").selectOption("bench_20261101T054220Z");
   await expect(page.locator(".report-details")).toContainText("LIVE");
-  await expect(page.locator(".benchmark-card").first()).toContainText("65%");
+  await expect(page.locator(".benchmark-card").first()).toContainText("66%");
   // Scroll within the existing viewport: retain the persistent MOCK header and both tables.
   await page.mouse.wheel(0, 1);
   await caption(12, "Live results on 204 synthetic fixtures. " +
-    "Jev beats rules on quality and notifiable disease. Rules win routing.", 11);
-  await caption(13, "Live latency misses the target: about 235–470 ms at p50 " +
+    "Jev beats rules on all three decisions, after two fixes to my pipeline.", 11);
+  await caption(13, "Live latency misses the target: about 230–460 ms at p50 " +
     "against a 30 ms goal. Labels are still provisional.", 7);
   await caption(14, "A proof of concept on synthetic data.\n" +
-    "Conformance first, decisions on top.", 6, true);
+    "Conformance first, decisions on top.", 5, true);
   await writeFile("test-results/video-timings.json", JSON.stringify(timings, null, 2));
   const video = page.video()!;
   await page.close();
