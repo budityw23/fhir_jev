@@ -93,6 +93,7 @@ def test_condition_extracts_icd10_and_statuses() -> None:
         "code_system": "http://hl7.org/fhir/sid/icd-10",
         "code_value": "A90",
         "code_display": "Dengue fever [classical dengue]",
+        "code_text": None,
         "clinical_status": "active",
         "verification_status": "confirmed",
         "has_subject": True,
@@ -107,6 +108,65 @@ def test_condition_handles_missing_optional_fields() -> None:
     assert result["code_value"] == "J06.9"
     assert result["category"] is None
     assert result["has_onset"] is False
+
+
+def test_condition_text_only_keeps_text_and_null_coded_fields() -> None:
+    """Free text reaches the flat state without inventing a coding."""
+    condition = load_fixture("conditions/dengue_a90.json")
+    condition["code"] = {"text": "Demam berdarah dengue (DBD)"}
+
+    result = ConditionSerializer().serialize(condition)
+
+    assert result["code_text"] == condition["code"]["text"]
+    assert result["code_system"] is None
+    assert result["code_value"] is None
+    assert result["code_display"] is None
+
+
+def test_condition_keeps_coding_and_text() -> None:
+    """Coding display remains distinct from the free text label."""
+    condition = load_fixture("conditions/dengue_a90.json")
+    condition["code"]["text"] = "Demam berdarah dengue (DBD)"
+
+    result = ConditionSerializer().serialize(condition)
+
+    assert result["code_text"] == condition["code"]["text"]
+    assert result["code_system"] == "http://hl7.org/fhir/sid/icd-10"
+    assert result["code_value"] == "A90"
+    assert result["code_display"] == "Dengue fever [classical dengue]"
+
+
+def test_condition_without_code_has_no_text() -> None:
+    """An absent optional code does not produce free text."""
+    condition = load_fixture("conditions/dengue_a90.json")
+    del condition["code"]
+
+    assert ConditionSerializer().serialize(condition)["code_text"] is None
+
+
+@pytest.mark.parametrize("length", [200, 250])
+def test_condition_code_text_is_limited_to_200_characters(length: int) -> None:
+    """The boundary preserves characters, including multibyte Unicode text."""
+    condition = load_fixture("conditions/dengue_a90.json")
+    text = "é" * length
+    condition["code"] = {"text": text}
+
+    result = ConditionSerializer().serialize(condition)
+
+    assert result["code_text"] == text[:200]
+    assert len(result["code_text"]) == 200
+
+
+@pytest.mark.parametrize("text", [123, True, [], {}])
+def test_condition_rejects_non_string_code_text(text: object) -> None:
+    """FHIR validation rejects non-string text before extraction."""
+    condition = load_fixture("conditions/dengue_a90.json")
+    condition["code"] = {"text": text}
+
+    with pytest.raises(ValidationError, match=r"code\.text"):
+        Condition.parse_obj(condition)
+    with pytest.raises(ValidationError, match=r"code\.text"):
+        ConditionSerializer().serialize(condition)
 
 
 def test_condition_rejects_invalid_fhir_resource() -> None:

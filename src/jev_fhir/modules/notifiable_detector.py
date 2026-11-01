@@ -71,7 +71,9 @@ class NotifiableDiseaseDetector:
             )
             flag_resource = self._flag_builder.build(
                 condition_code=serialized["code_value"] or "unknown",
-                condition_display=serialized["code_display"] or "Unknown condition",
+                condition_display=serialized["code_display"]
+                or serialized["code_text"]
+                or "Unknown condition",
                 subject_reference=subject_reference
                 if isinstance(subject_reference, str)
                 else "Patient/unknown",
@@ -91,7 +93,9 @@ class NotifiableDiseaseDetector:
             probability=result.probability,
             status=status,
             condition_code=serialized["code_value"] or "unknown",
-            condition_display=serialized["code_display"] or "Unknown condition",
+            condition_display=serialized["code_display"]
+            or serialized["code_text"]
+            or "Unknown condition",
             flag_resource=flag_resource,
             latency_ms=round((perf_counter() - started_at) * 1000, 3),
         )

@@ -87,7 +87,7 @@
         "answer": true,
         "latency_ms": 0.0,
         "probability": 0.95,
-        "tokens_used": 12
+        "tokens_used": 10
       }
     }
   ],
@@ -105,6 +105,7 @@
     "clinical_status": "active",
     "code_display": "Japanese encephalitis",
     "code_system": "http://hl7.org/fhir/sid/icd-10",
+    "code_text": null,
     "code_value": "A83.0",
     "has_onset": false,
     "has_subject": true,
@@ -117,7 +118,7 @@
     "quality_threshold": 70,
     "route_confidence_minimum": 0.5
   },
-  "tokens_used": 12,
+  "tokens_used": 10,
   "verdict": {
     "jev_correct": true,
     "rule_correct": true

@@ -11,13 +11,22 @@ from fhir.resources.R4B.flag import Flag
 from pydantic import ValidationError
 from pydantic.v1 import ValidationError as PydanticV1ValidationError
 
+from jev_fhir.config import PROJECT_ROOT
+from jev_fhir.demo.catalog import FixtureCatalog
+from jev_fhir.demo.compare import Comparer
+from jev_fhir.demo.schemas import CompareRequest, Thresholds
 from jev_fhir.fhir_helpers.audit_event import AuditEventBuilder
 from jev_fhir.jev_client.client import JevClient
 from jev_fhir.jev_client.mock import MockJevClient
 from jev_fhir.jev_client.models import ChoiceResult, NoulResult, ScoreResult
 from jev_fhir.modules.bundle_router import BundleRouter
-from jev_fhir.modules.notifiable_detector import NotifiableDiseaseDetector
+from jev_fhir.modules.notifiable_detector import (
+    NOTIFIABLE_STATEMENT,
+    NotifiableDetectionResponse,
+    NotifiableDiseaseDetector,
+)
 from jev_fhir.modules.quality_scorer import QualityScorer
+from jev_fhir.serializer.condition import ConditionSerializer
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -50,6 +59,7 @@ class StubJevClient(JevClient):
             answer=True, probability=0.95, latency_ms=12, tokens_used=10
         )
         self.calls: list[str] = []
+        self.noul_states: list[dict[str, Any]] = []
 
     async def choice(
         self, state: dict[str, Any], question: str, options: list[str]
@@ -69,6 +79,7 @@ class StubJevClient(JevClient):
 
     async def noul(self, state: dict[str, Any], statement: str) -> NoulResult:
         self.calls.append("noul")
+        self.noul_states.append(state)
         return self.noul_result
 
 
@@ -176,6 +187,132 @@ async def test_notifiable_detector_confirms_dengue_and_builds_flag() -> None:
     assert response.condition_code == "A90"
     assert response.flag_resource is not None
     Flag.parse_obj(response.flag_resource)
+
+
+@pytest.mark.asyncio
+async def test_notifiable_detector_sends_text_only_fixture_to_noul() -> None:
+    """The actual hard fixture's disease label is visible to Jev."""
+    path = PROJECT_ROOT / "benchmarks/dataset/hard/conditions/dbd_text_only.json"
+    condition = json.loads(path.read_text())
+    client = StubJevClient()
+
+    await NotifiableDiseaseDetector(client).detect(condition)
+
+    assert client.calls == ["noul"]
+    assert len(client.noul_states) == 1
+    assert client.noul_states[0]["code_text"] == condition["code"]["text"]
+    assert client.noul_states[0]["code_value"] is None
+
+
+@pytest.mark.asyncio
+async def test_notifiable_detector_confirmed_text_only_flag_and_response_display() -> None:
+    """Both display paths retain the text while the condition code stays unknown."""
+    path = PROJECT_ROOT / "benchmarks/dataset/hard/conditions/dbd_text_only.json"
+    condition = json.loads(path.read_text())
+    comparer = Comparer(
+        StubJevClient(),
+        FixtureCatalog(PROJECT_ROOT / "benchmarks/dataset/labels"),
+        Thresholds(
+            quality_threshold=70,
+            route_confidence_minimum=0.5,
+            notifiable_confirmed=0.8,
+            notifiable_review=0.5,
+        ),
+        PROJECT_ROOT / "data/notifiable_diseases.json",
+    )
+
+    comparison = await comparer.compare("notifiable", CompareRequest(resource=condition))
+
+    response = comparison.jev
+    assert isinstance(response, NotifiableDetectionResponse)
+    assert response.is_notifiable is True
+    assert response.status == "confirmed_notifiable"
+    assert response.condition_code == "unknown"
+    assert response.condition_display == condition["code"]["text"]
+    assert response.flag_resource is not None
+    Flag.parse_obj(response.flag_resource)
+    assert response.flag_resource["code"]["text"] == (
+        f"{condition['code']['text']} (unknown) - mandatory reporting"
+    )
+    assert "Unknown condition" not in json.dumps(response.model_dump())
+    AuditEvent.parse_obj(comparison.audit_event)
+    assert comparison.audit_event["entity"][0]["detail"] == [
+        {"type": "decision", "valueString": "confirmed_notifiable"}
+    ]
+
+
+@pytest.mark.asyncio
+async def test_notifiable_detector_prefers_coding_display_over_text() -> None:
+    """Free text supplements rather than replaces an existing coding display."""
+    condition = load_fixture("conditions/dengue_a90.json")
+    condition["code"]["text"] = "Alternative label"
+
+    response = await NotifiableDiseaseDetector(StubJevClient()).detect(condition)
+
+    display = condition["code"]["coding"][0]["display"]
+    assert response.condition_display == display
+    assert response.flag_resource is not None
+    assert response.flag_resource["code"]["text"] == f"{display} (A90) - mandatory reporting"
+
+
+@pytest.mark.asyncio
+async def test_mock_notifiable_detector_still_rejects_text_only_condition() -> None:
+    """The real mock deliberately remains code-only even when text reaches it."""
+    path = PROJECT_ROOT / "benchmarks/dataset/hard/conditions/dbd_text_only.json"
+    condition = json.loads(path.read_text())
+
+    response = await NotifiableDiseaseDetector(MockJevClient()).detect(condition)
+
+    assert response.is_notifiable is False
+    assert response.status == "not_notifiable"
+    assert response.flag_resource is None
+    assert response.condition_display == condition["code"]["text"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "fixture_path",
+    sorted(FIXTURES.glob("conditions/*.json"))
+    + sorted((PROJECT_ROOT / "benchmarks/dataset").glob("**/conditions/*.json")),
+    ids=lambda path: str(path.relative_to(PROJECT_ROOT)),
+)
+async def test_mock_notifiable_decisions_stay_code_only_for_every_condition_fixture(
+    fixture_path: Path,
+) -> None:
+    """Mock answers and probabilities depend only on its existing exact code list."""
+    condition = json.loads(fixture_path.read_text())
+    state = ConditionSerializer().serialize(condition)
+    previous_state = {key: value for key, value in state.items() if key != "code_text"}
+    client = MockJevClient()
+
+    previous = await client.noul(previous_state, NOTIFIABLE_STATEMENT)
+    current = await client.noul(state, NOTIFIABLE_STATEMENT)
+    condition.setdefault("code", {})["text"] = "Demam berdarah dengue (DBD)"
+    with_text = await client.noul(ConditionSerializer().serialize(condition), NOTIFIABLE_STATEMENT)
+
+    # These are the mock's deliberate exact codes and probabilities, not live model evidence.
+    expected = state["code_value"] in {
+        "A00",
+        "A01",
+        "A15",
+        "A16",
+        "A17",
+        "A18",
+        "A19",
+        "A30",
+        "A83.0",
+        "A90",
+        "A91",
+        "B20",
+        "B50",
+        "B51",
+        "B52",
+        "B53",
+        "B54",
+    }
+    for result in (previous, current, with_text):
+        assert result.answer is expected
+        assert result.probability == (0.95 if expected else 0.1)
 
 
 @pytest.mark.asyncio

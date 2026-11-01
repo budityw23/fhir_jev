@@ -6,6 +6,8 @@ from fhir.resources.R4B.condition import Condition
 
 from jev_fhir.serializer.base import FHIRSerializer, first_coding_code, first_coding_value
 
+CODE_TEXT_MAX_LENGTH = 200
+
 
 class ConditionSerializer(FHIRSerializer):
     """Flatten a Condition's coding, statuses, and clinical references."""
@@ -17,6 +19,7 @@ class ConditionSerializer(FHIRSerializer):
         """Validate a Condition and extract its decision-relevant fields."""
         Condition.parse_obj(resource)
         code = resource.get("code")
+        code_text = code.get("text") if isinstance(code, dict) else None
         onset = resource.get("onsetDateTime")
 
         return {
@@ -24,6 +27,7 @@ class ConditionSerializer(FHIRSerializer):
             "code_system": first_coding_value(code, "system"),
             "code_value": first_coding_code(code),
             "code_display": first_coding_value(code, "display"),
+            "code_text": code_text[:CODE_TEXT_MAX_LENGTH] if isinstance(code_text, str) else None,
             "clinical_status": first_coding_code(resource.get("clinicalStatus")),
             "verification_status": first_coding_code(resource.get("verificationStatus")),
             "has_subject": isinstance(resource.get("subject"), dict),
