@@ -29,7 +29,16 @@ web/*.tsbuildinfo
 
 # Local tooling
 .claude/settings.local.json
+.kilo/
 .DS_Store
+
+# Job-application material stays out of this public repo
+*upwork*
+
+# Large regenerable media; the narrated MP4 is the tracked copy
+docs/demo-video/*.wav
+docs/demo-video/*.mp3
+docs/demo-video/jev-fhir-demo-narrated.webm
 
 # Phase loop (.phase/): logs and exit codes are local; prompts, results and sessions are tracked
 .phase/*.log
