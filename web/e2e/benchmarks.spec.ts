@@ -6,6 +6,10 @@ const latestTitle = [
 ].join("");
 test(latestTitle, async ({ page }) => {
   await page.goto("/demo/benchmarks");
+  const reportSelect = page.getByLabel("Benchmark report");
+  const latestReport = await reportSelect.locator("option").first().getAttribute("value");
+  await expect(reportSelect).toHaveValue(latestReport!);
+  await reportSelect.selectOption("bench_20260927T120759Z");
   await expect(
     page.getByText(
       "Mock decisions mirror rule logic; this report validates the harness, not Jev.",

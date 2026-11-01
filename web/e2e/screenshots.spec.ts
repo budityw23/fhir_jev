@@ -72,6 +72,9 @@ test("captures all D2 pages at projector and desktop sizes", async ({
       await expect(
         page.getByRole("heading", { name: "Benchmarks" }),
       ).toBeVisible();
+      await page
+        .getByLabel("Benchmark report")
+        .selectOption("bench_20260927T120759Z");
       await expect(
         page.getByText(
           "Mock decisions mirror rule logic; this report validates the harness, not Jev.",
