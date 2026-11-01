@@ -9,7 +9,7 @@ from jev_fhir.jev_client.client import JevClient
 from jev_fhir.logger import log_decision
 from jev_fhir.serializer.bundle import BundleSerializer
 
-ROUTE_QUESTION = "What type of clinical data does this FHIR Bundle primarily contain?"
+ROUTE_QUESTION = "Which processing pipeline should handle this FHIR Bundle?"
 ROUTE_OPTIONS = [
     "lab_result",
     "encounter_summary",

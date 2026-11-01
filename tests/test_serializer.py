@@ -239,3 +239,40 @@ def test_bundle_handles_empty_entries() -> None:
     assert result["entry_count"] == 0
     assert result["entry_resource_types"] == []
     assert result["dominant_resource_type"] is None
+
+
+@pytest.mark.parametrize("has_encounter", [True, False])
+def test_bundle_contains_encounter_tracks_entries(has_encounter: bool) -> None:
+    """An Encounter entry alone determines the explicit encounter signal."""
+    bundle = load_fixture("bundles/encounter_bundle.json")
+    if not has_encounter:
+        bundle["entry"] = bundle["entry"][1:]
+
+    state = BundleSerializer().serialize(bundle)
+
+    assert state["contains_encounter"] is has_encounter
+
+
+def test_bundle_contains_encounter_when_conditions_dominate() -> None:
+    """Eight Conditions do not hide the single Encounter entry."""
+    bundle = load_fixture("bundles/encounter_bundle.json")
+    encounter, condition = bundle["entry"]
+    bundle["entry"] = [encounter] + [condition] * 8
+
+    state = BundleSerializer().serialize(bundle)
+
+    assert state["entry_resource_types"].count("Condition") == 8
+    assert state["entry_resource_types"].count("Encounter") == 1
+    assert state["contains_encounter"] is True
+    assert state["dominant_resource_type"] == "Condition"
+
+
+def test_bundle_encounter_reference_without_entry() -> None:
+    """A reference does not imply that the Bundle contains an Encounter."""
+    bundle = load_fixture("bundles/encounter_bundle.json")
+    bundle["entry"] = bundle["entry"][1:]
+
+    state = BundleSerializer().serialize(bundle)
+
+    assert state["contains_encounter"] is False
+    assert state["has_encounter_reference"] is True

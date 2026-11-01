@@ -63,7 +63,7 @@
         "unknown"
       ],
       "primitive": "choice",
-      "question": "What type of clinical data does this FHIR Bundle primarily contain?",
+      "question": "Which processing pipeline should handle this FHIR Bundle?",
       "result": {
         "choice": "lab_result",
         "confidence": 0.92,
@@ -75,7 +75,7 @@
           "medication_dispense": 0.02,
           "unknown": 0.02
         },
-        "tokens_used": 40
+        "tokens_used": 33
       }
     }
   ],
@@ -91,6 +91,7 @@
   "serialized_state": {
     "bundle_type": "collection",
     "contains_condition_codes": true,
+    "contains_encounter": false,
     "contains_immunization": false,
     "contains_lab_codes": true,
     "contains_medication": false,
@@ -110,7 +111,7 @@
     "quality_threshold": 70,
     "route_confidence_minimum": 0.99
   },
-  "tokens_used": 40,
+  "tokens_used": 33,
   "verdict": {
     "jev_correct": true,
     "rule_correct": false

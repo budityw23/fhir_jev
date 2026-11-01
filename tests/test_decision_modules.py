@@ -11,6 +11,7 @@ from fhir.resources.R4B.flag import Flag
 from pydantic import ValidationError
 from pydantic.v1 import ValidationError as PydanticV1ValidationError
 
+from jev_fhir.baselines.bundle_router import route_bundle
 from jev_fhir.config import PROJECT_ROOT
 from jev_fhir.demo.catalog import FixtureCatalog
 from jev_fhir.demo.compare import Comparer
@@ -26,6 +27,7 @@ from jev_fhir.modules.notifiable_detector import (
     NotifiableDiseaseDetector,
 )
 from jev_fhir.modules.quality_scorer import QualityScorer
+from jev_fhir.serializer.bundle import BundleSerializer
 from jev_fhir.serializer.condition import ConditionSerializer
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -60,11 +62,13 @@ class StubJevClient(JevClient):
         )
         self.calls: list[str] = []
         self.noul_states: list[dict[str, Any]] = []
+        self.choice_inputs: list[tuple[dict[str, Any], str, list[str]]] = []
 
     async def choice(
         self, state: dict[str, Any], question: str, options: list[str]
     ) -> ChoiceResult:
         self.calls.append("choice")
+        self.choice_inputs.append((state, question, options))
         return self.choice_result
 
     async def score(
@@ -387,3 +391,51 @@ def test_audit_event_builder_returns_valid_fhir_resource() -> None:
             "detail": [{"type": "decision", "valueString": "auto_accept"}],
         }
     ]
+
+
+@pytest.mark.asyncio
+async def test_bundle_router_sends_pipeline_question_and_encounter_state() -> None:
+    """The choice call receives the experiment's exact question and entry signal."""
+    client = StubJevClient()
+    bundle = load_fixture("bundles/encounter_bundle.json")
+
+    await BundleRouter(client).route(bundle)
+
+    assert client.calls == ["choice"]
+    assert len(client.choice_inputs) == 1
+    state, question, options = client.choice_inputs[0]
+    assert question == "Which processing pipeline should handle this FHIR Bundle?"
+    assert state == BundleSerializer().serialize(bundle)
+    assert state["contains_encounter"] is True
+    assert options == [
+        "lab_result",
+        "encounter_summary",
+        "immunization_report",
+        "medication_dispense",
+        "unknown",
+    ]
+
+
+@pytest.mark.parametrize(
+    "fixture_path",
+    sorted(
+        path
+        for root in (FIXTURES, PROJECT_ROOT / "benchmarks/dataset")
+        for path in root.rglob("*.json")
+        if isinstance(resource := json.loads(path.read_text()), dict)
+        and resource.get("resourceType") == "Bundle"
+    ),
+    ids=lambda path: str(path.relative_to(PROJECT_ROOT)),
+)
+def test_rule_bundle_routing_ignores_contains_encounter(
+    fixture_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Every Bundle fixture keeps its rule route when the new field is absent."""
+    bundle = json.loads(fixture_path.read_text())
+    state = BundleSerializer().serialize(bundle)
+    assert "contains_encounter" in state
+    with_field = route_bundle(bundle)
+    del state["contains_encounter"]
+    monkeypatch.setattr(BundleSerializer, "serialize", lambda self, resource: state)
+
+    assert route_bundle(bundle) == with_field

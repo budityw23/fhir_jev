@@ -73,4 +73,5 @@ class BundleSerializer(FHIRSerializer):
             "contains_condition_codes": "Condition" in resource_types,
             "contains_immunization": "Immunization" in resource_types,
             "contains_medication": "MedicationDispense" in resource_types,
+            "contains_encounter": "Encounter" in resource_types,
         }
