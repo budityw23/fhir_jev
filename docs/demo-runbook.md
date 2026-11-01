@@ -29,7 +29,7 @@ resets the current scene, `F` toggles 100%/125% type, `O` opens observability, a
 | 0 Overview | Start at Overview; `→` | Animated FHIR → serializer → Jev → action path; mode badge and health dot. |
 | 1 Quality | `→`: `complete_patient` → `invalid_nik` → `nik_dotted` → `minimal_patient` → complete at threshold 85 | Flat state, NIK gate, then how the threshold changes automation. |
 | 2 Router | `→`: `lab_bundle` → `immunization_bundle` → `mixed_bundle` → mixed at 0.99 | Probability bars, both-wrong mock result, then `unknown` as human review. |
-| 3 Notifiable | `→`: `japanese_encephalitis_a83` → `common_cold_j06` → `dbd_text_only` | Confirmed report card, generated FHIR Flag, and AuditEvent. State honestly when mock misses DBD. |
+| 3 Notifiable | `→`: `japanese_encephalitis_a83` → `common_cold_j06` → `dbd_text_only` | Confirmed report card, generated FHIR Flag, and AuditEvent. State honestly when mock misses DBD: the mock reads codes only, while the live model catches it (`bench_20261101T001036Z`). |
 | 4 Pipeline | `→` starts unit ingestion at 4/s | Lanes, review queue, counters, latency and confidence charts. |
 | 5 Benchmarks | `→` | PRD chips, latency, calibration, disagreement links, and mock disclaimer. |
 | 6 What's next | `→` | Dimmed low-confidence → LLM reasoning layer → human branch. |
