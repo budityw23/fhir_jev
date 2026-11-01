@@ -3,7 +3,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: ".",
-  testMatch: "record.video.ts",
+  testMatch: "*.video.ts",
   timeout: 180_000,
   workers: 1,
   retries: 0,

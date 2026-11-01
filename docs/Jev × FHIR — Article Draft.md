@@ -88,7 +88,7 @@ The details are more useful than the scoreboard.
 **The biggest gain came from fixing my own bug.** My first live run scored 0.839 on notifiable disease.
 Reading the misses, I found that the serializer dropped `code.text`, so a disease written only as
 "Demam berdarah dengue" or "TB paru" reached the model as blank. I added that one field and re-ran.
-Exactly three fixtures flipped, all of them the text-only cases, and accuracy rose to 0.935. Before
+Exactly three disease fixtures flipped, all of them the text-only cases, and accuracy rose to 0.935. Before
 blaming a model, check what you actually sent it.
 
 **Where Jev earned its place: context.** On the 14 hard Condition fixtures, Jev scored 0.929 and the

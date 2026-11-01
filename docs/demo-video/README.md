@@ -6,7 +6,7 @@ export PATH="$HOME/.nvm/versions/node/v20.19.0/bin:$PATH"
 make web-build
 DEMO_ENABLED=true MOCK_JEV=true .venv/bin/python -m uvicorn jev_fhir.main:app --host 127.0.0.1 --port 18760 & demo_pid=$!
 trap 'kill "$demo_pid"; wait "$demo_pid"' EXIT
-(cd web && npx playwright test --config video/playwright.config.ts)
+(cd web && npx playwright test record.video --config video/playwright.config.ts)
 ```
 | Row | Approximate seconds (caption hold; transitions between rows) | Scene |
 | --- | --- | --- |
@@ -22,3 +22,24 @@ trap 'kill "$demo_pid"; wait "$demo_pid"' EXIT
 | 10 | 70.15–77.15 | Text-only dengue missed by mock; live catches it after fix |
 | 11 | 77.31–88.46 | Pipeline at 4/s; actual lane names in caption |
 | 12–14 | 88.57–99.57 / 99.57–106.58 / 106.58–119.48 | Live accuracy / latency / closing card (including recorder tail) |
+
+### Narrated version
+
+- [Narrated video](jev-fhir-demo-narrated.mp4): English AI voice-over synchronized to the 14 scenes above.
+- [Narration script](jev-fhir-demo-narration.md): scene timings and spoken text.
+
+The narrated WebM and the separate WAV and MP3 audio are kept locally and aren't in git.
+
+Voice: Microsoft Edge `en-US-GuyNeural`; AI-generated narration. Only the approved script text was sent for synthesis.
+The original silent WebM is retained. Its VP8 picture stream was copied without re-encoding; the narrated WebM adds Opus audio.
+
+Verification: full audio/video decode passed; original and narrated video packet SHA-256 hashes match.
+Measured narration loudness: −16.37 LUFS integrated, −1.49 dBTP true peak. Each voice segment fits its scene window.
+The WebM container reports 119.49 seconds, including Opus timing overhead.
+No application source, dependencies, endpoints, or tests were changed; application test suites and HTTP curl checks were not run for this media-only task.
+
+
+### Playback compatibility
+
+For players that do not play the WebM/Opus audio, use [the narrated MP4](jev-fhir-demo-narrated.mp4), encoded as H.264 video with a default stereo AAC audio track and fast-start metadata.
+The source WebM audio was decoded and measured at −17.9 dB mean / −1.2 dB peak; it contains a non-silent signal. The cause of silence in a particular player has not been confirmed.

@@ -4,7 +4,7 @@ A Patient can pass validation with a 15-digit national ID. A Condition can be we
 
 Validation tells you a record meets the spec. It doesn't tell you what to do next.
 
-So I built Jev × FHIR, a proof of concept that adds a decision layer on top of FHIR data. It uses Typesafe AI's Jev model to score record quality, route data, and flag notifiable diseases. When it's unsure, a person decides.
+So I built Jev × FHIR, a proof of concept that adds a decision layer on top of FHIR data. It uses TypeSafe AI's Jev model to score record quality, route data, and flag notifiable diseases. When it's unsure, a person decides.
 
 I tested the live model against handwritten rules on 204 synthetic records:
 
@@ -14,7 +14,7 @@ I tested the live model against handwritten rules on 204 synthetic records:
 
 It also missed my speed target and most of my accuracy targets. The labels are still provisional.
 
-The biggest jump came from fixing my own bug. Free-text diagnoses were never reaching the model. One added field took disease accuracy from 84% to 94%.
+The biggest jump came from fixing my own bug. Free-text diagnoses were never reaching the model. One added field took disease accuracy from 84% to 94% on the same test set.
 
 My takeaway: validate first, use rules for clear logic, use a model where context matters, and keep a person on the uncertain cases.
 
