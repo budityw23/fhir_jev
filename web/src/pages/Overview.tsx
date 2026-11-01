@@ -5,7 +5,7 @@ import { ModuleCard } from "../components/overview/ModuleCard";
 /** Explain the product and link into the first Studio scene. */
 export function Overview() {
   return (
-    <main>
+    <main className="page-container">
       <h2>Overview</h2>
       <p>Typed, probabilistic clinical decisions between FHIR data and operational workflows.</p>
       <Link className="button-link" to="/studio/quality">Start demo</Link>

@@ -94,13 +94,13 @@ function StudioPage({ module }: { module: DemoModule }) {
   };
   if (config.error instanceof ApiError) {
     return (
-      <main>
+      <main className="page-container">
         <ErrorCard error={config.error.body} />
       </main>
     );
   }
   return (
-    <main>
+    <main className="page-container">
       <h2>Studio</h2>
       <div className="studio-tabs">
         {modules.map((item) => (

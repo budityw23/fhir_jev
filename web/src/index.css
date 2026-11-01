@@ -166,15 +166,28 @@ nav a.active {
   font-weight: 700;
 }
 main {
-  padding: 2rem;
+  padding-block: 2rem;
+}
+.page-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-inline-size: 88rem;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 2vw, 2rem);
+}
+main.page-container > * {
+  margin-block: 0;
+  min-inline-size: 0;
+}
+.page-container > .button-link {
+  align-self: flex-start;
 }
 main > h2 {
   font-size: 1.75rem;
   letter-spacing: -0.02em;
   margin: 0 0 0.5rem;
-}
-.benchmarks-page {
-  max-width: 88rem;
 }
 .benchmark-card,
 .mock-disclaimer,
@@ -182,8 +195,16 @@ main > h2 {
   background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: 0.5rem;
-  margin: 1rem 0;
   padding: 1rem;
+}
+.benchmark-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-inline-size: 0;
+}
+.benchmark-card > * {
+  margin-block: 0;
 }
 .mock-disclaimer {
   border-color: var(--c-review);
@@ -211,20 +232,26 @@ main > h2 {
 }
 .benchmark-table {
   border-collapse: collapse;
-  margin: 0.75rem 0;
   width: 100%;
 }
 .benchmark-table th,
 .benchmark-table td {
   border-bottom: 1px solid var(--c-border);
-  padding: 0.45rem;
+  padding: 0.45rem 0.5rem;
   text-align: left;
   vertical-align: top;
+}
+.benchmark-table .numeric-cell {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.benchmark-table td.numeric-cell {
+  white-space: nowrap;
 }
 .benchmark-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
 }
 .prd-chip {
   border-radius: 999px;
@@ -249,22 +276,38 @@ main > h2 {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  inline-size: 100%;
+  max-inline-size: 84rem;
+  margin-inline: auto;
 }
 .breakdown-module {
-  border: 1px solid var(--c-border);
-  border-radius: 0.35rem;
-  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 .breakdown-module h4 {
-  margin: 0.25rem 0;
+  margin: 0;
 }
 .breakdown-pairs {
   display: grid;
-  gap: 0.5rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 1rem;
+  grid-template-columns: auto auto;
 }
 .breakdown-pairs .benchmark-table {
-  font-size: 0.82rem;
+  font-size: 0.9rem;
+  width: auto;
+}
+.breakdown-pairs th {
+  overflow-wrap: anywhere;
+}
+.breakdown-pairs th:first-child {
+  min-inline-size: 3.5rem;
+}
+.breakdown-pairs caption {
+  font-weight: 700;
+  padding-block-end: 0.5rem;
+  text-align: left;
 }
 .disagreement-list {
   display: grid;
@@ -280,17 +323,14 @@ main > h2 {
   color: var(--c-muted);
   display: block;
 }
-@media (max-width: 1023px) {
-  .benchmark-grid,
+@media (max-width: 85rem) {
   .breakdown-grid {
     grid-template-columns: 1fr;
-  }
-  .breakdown-pairs {
-    grid-template-columns: 1fr;
+    max-inline-size: 48rem;
   }
 }
-@media (max-width: 1400px) {
-  .breakdown-grid {
+@media (max-width: 40rem) {
+  .breakdown-pairs {
     grid-template-columns: 1fr;
   }
 }

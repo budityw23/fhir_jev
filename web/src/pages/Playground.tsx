@@ -57,7 +57,7 @@ export function Playground() {
   };
 
   return (
-    <main>
+    <main className="page-container">
       <h2>Playground</h2>
       <label>
         Module

@@ -95,8 +95,8 @@ export function AccuracyTable({ report }: { report: BenchmarkReport }) {
         <thead>
           <tr>
             <th>Module</th>
-            <th>Jev</th>
-            <th>Rules</th>
+            <th className="numeric-cell">Jev</th>
+            <th className="numeric-cell">Rules</th>
             <th>PRD target</th>
           </tr>
         </thead>
@@ -107,8 +107,8 @@ export function AccuracyTable({ report }: { report: BenchmarkReport }) {
               <tr key={key}>
                 <th>{label}</th>
                 <LabelGuard report={report} module={key}>
-                  <td>{percent(data.jev_accuracy)}</td>
-                  <td>{percent(data.rule_accuracy)}</td>
+                  <td className="numeric-cell">{percent(data.jev_accuracy)}</td>
+                  <td className="numeric-cell">{percent(data.rule_accuracy)}</td>
                   <td>
                     <span
                       className={`prd-chip ${pass(key, data) ? "prd-pass" : "prd-fail"}`}
@@ -196,18 +196,18 @@ function Breakdown({
       <thead>
         <tr>
           <th>Group</th>
-          <th>Count</th>
-          <th>Jev</th>
-          <th>Rules</th>
+          <th className="numeric-cell">Count</th>
+          <th className="numeric-cell">Jev</th>
+          <th className="numeric-cell">Rules</th>
         </tr>
       </thead>
       <tbody>
         {Object.entries(values).map(([key, value]) => (
           <tr key={key}>
             <th>{key}</th>
-            <td>{value.count}</td>
-            <td>{percent(value.jev_accuracy)}</td>
-            <td>{percent(value.rule_accuracy)}</td>
+            <td className="numeric-cell">{value.count}</td>
+            <td className="numeric-cell">{percent(value.jev_accuracy)}</td>
+            <td className="numeric-cell">{percent(value.rule_accuracy)}</td>
           </tr>
         ))}
       </tbody>
@@ -224,9 +224,9 @@ export function LatencyPanel({ report }: { report: BenchmarkReport }) {
         <thead>
           <tr>
             <th>Module</th>
-            <th>Mean</th>
-            <th>p50</th>
-            <th>p95</th>
+            <th className="numeric-cell">Mean</th>
+            <th className="numeric-cell">p50</th>
+            <th className="numeric-cell">p95</th>
             <th>PRD</th>
           </tr>
         </thead>
@@ -238,9 +238,9 @@ export function LatencyPanel({ report }: { report: BenchmarkReport }) {
             return (
               <tr key={key}>
                 <th>{label}</th>
-                <td>{value(latency.mean_ms)}</td>
-                <td>{value(latency.p50_ms)}</td>
-                <td>{value(latency.p95_ms)}</td>
+                <td className="numeric-cell">{value(latency.mean_ms)}</td>
+                <td className="numeric-cell">{value(latency.p50_ms)}</td>
+                <td className="numeric-cell">{value(latency.p95_ms)}</td>
                 <td>
                   <span className={`prd-chip ${ok ? "prd-pass" : "prd-fail"}`}>
                     {ok ? "PASS" : "FAIL"}
@@ -379,18 +379,18 @@ export function NotifiablePRF({ report }: { report: BenchmarkReport }) {
         <thead>
           <tr>
             <th>Method</th>
-            <th>Precision</th>
-            <th>Recall</th>
-            <th>F1</th>
+            <th className="numeric-cell">Precision</th>
+            <th className="numeric-cell">Recall</th>
+            <th className="numeric-cell">F1</th>
           </tr>
         </thead>
         <tbody>
           {rows.map(([name, prf]) => (
             <tr key={name}>
               <th>{name}</th>
-              <td>{percent(prf.precision)}</td>
-              <td>{percent(prf.recall)}</td>
-              <td>{percent(prf.f1)}</td>
+              <td className="numeric-cell">{percent(prf.precision)}</td>
+              <td className="numeric-cell">{percent(prf.recall)}</td>
+              <td className="numeric-cell">{percent(prf.f1)}</td>
             </tr>
           ))}
         </tbody>
@@ -440,16 +440,16 @@ export function LiveVsMock({
         <thead>
           <tr>
             <th>Module</th>
-            <th>Mock</th>
-            <th>Live</th>
+            <th className="numeric-cell">Mock</th>
+            <th className="numeric-cell">Live</th>
           </tr>
         </thead>
         <tbody>
           {modules.map(([key, label]) => (
             <tr key={key}>
               <th>{label}</th>
-              <td>{percent(mock.modules[key].jev_accuracy)}</td>
-              <td>{percent(live.modules[key].jev_accuracy)}</td>
+              <td className="numeric-cell">{percent(mock.modules[key].jev_accuracy)}</td>
+              <td className="numeric-cell">{percent(live.modules[key].jev_accuracy)}</td>
             </tr>
           ))}
         </tbody>

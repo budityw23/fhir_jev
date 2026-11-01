@@ -55,7 +55,7 @@ export function Pipeline() {
     navigate("/pipeline", { replace: true });
   }, [config.data, connected, navigate, params]);
   return (
-    <main className="pipeline-page">
+    <main className="page-container pipeline-page">
       <RunControls
         current={state.current}
         onReset={() => dispatch({ type: "reset" })}

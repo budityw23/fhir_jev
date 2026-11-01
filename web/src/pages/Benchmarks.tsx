@@ -39,7 +39,7 @@ export function Benchmarks() {
   });
   if (summaries.error instanceof ApiError) {
     return (
-      <main>
+      <main className="page-container">
         <h2>Benchmarks</h2>
         <ErrorCard error={summaries.error.body} />
       </main>
@@ -47,14 +47,14 @@ export function Benchmarks() {
   }
   if (summaries.data?.length === 0)
     return (
-      <main>
+      <main className="page-container">
         <h2>Benchmarks</h2>
         <p>no report yet</p>
       </main>
     );
   if (!selected || !summaries.data) {
     return (
-      <main>
+      <main className="page-container">
         <h2>Benchmarks</h2>
         <p>Loading reports…</p>
       </main>
@@ -62,7 +62,7 @@ export function Benchmarks() {
   }
   if (report.error instanceof ApiError) {
     return (
-      <main>
+      <main className="page-container">
         <h2>Benchmarks</h2>
         <ErrorCard error={report.error.body} />
       </main>
@@ -70,13 +70,13 @@ export function Benchmarks() {
   }
   if (!report.data)
     return (
-      <main>
+      <main className="page-container">
         <h2>Benchmarks</h2>
         <p>Loading report…</p>
       </main>
     );
   return (
-    <main className="benchmarks-page">
+    <main className="page-container benchmarks-page">
       <h2>Benchmarks</h2>
       <ReportSelector
         reports={summaries.data}
